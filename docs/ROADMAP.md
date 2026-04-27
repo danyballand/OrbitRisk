@@ -92,15 +92,15 @@ Goal: turn the masking moat into measurable evidence.
 Deliverables:
 
 - [x] Batch wrapper for `benchmark-masks-2022`.
-- [ ] JSON and Markdown aggregate reports across AOIs.
-- [ ] Metrics for crop coverage, non-crop pixels, valid pixel deltas, cloud deltas, and NDMI
+- [x] JSON and Markdown aggregate reports across AOIs.
+- [x] Metrics for crop coverage, non-crop pixels, valid pixel deltas, cloud deltas, and NDMI
   deltas.
 - [ ] Explicit comparison of naive AOI mean vs negative buffer vs external crop mask.
 - [ ] Chart artifacts for NDMI, valid pixels, cloud percentage, and mask coverage.
 
 Exit criteria:
 
-- [ ] The report identifies which AOIs improve, degrade, or remain ambiguous after masking.
+- [x] The report identifies which AOIs improve, degrade, or remain ambiguous after masking.
 - [ ] The report can be shown in a discovery call without hand-editing.
 - [ ] Any proprietary vegetation mask is benchmarked against RPG/crop-mask baseline before
   being described as a moat.

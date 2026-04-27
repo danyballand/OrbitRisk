@@ -112,3 +112,12 @@ pixel-support checks, skips accepted AOIs without crop masks by default, and iso
 provider failures so one AOI does not crash the full run. Use
 `--include-without-crop-mask` to run partial raw/buffer benchmarks for AOIs that do not
 yet have crop masks.
+
+The batch report includes:
+
+- per-AOI status: `success`, `skipped`, `rejected`, or `failed`;
+- basis-risk classification counts: `improved`, `degraded`, `ambiguous`, `not_run`;
+- per-AOI key metrics for crop-mask coverage, valid-pixel delta, non-crop delta, and
+  NDMI EMA delta;
+- variant rollups for `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`;
+- comparison rollups for buffer-vs-raw and crop-mask-vs-raw.

@@ -659,6 +659,7 @@ def summarize_mask_benchmark_batch(
     provider_name: str,
     collection: str,
 ) -> dict[str, Any]:
+    enriched_results = [_enrich_batch_aoi_result(result) for result in aoi_results]
     return {
         "manifest": {
             "name": manifest.name,
@@ -677,18 +678,199 @@ def summarize_mask_benchmark_batch(
             "collection": collection,
         },
         "summary": {
-            "success_count": _count_aoi_status(aoi_results, "success"),
-            "skipped_count": _count_aoi_status(aoi_results, "skipped"),
-            "rejected_count": _count_aoi_status(aoi_results, "rejected"),
-            "failed_count": _count_aoi_status(aoi_results, "failed"),
-            "aoi_count": len(aoi_results),
+            "success_count": _count_aoi_status(enriched_results, "success"),
+            "skipped_count": _count_aoi_status(enriched_results, "skipped"),
+            "rejected_count": _count_aoi_status(enriched_results, "rejected"),
+            "failed_count": _count_aoi_status(enriched_results, "failed"),
+            "aoi_count": len(enriched_results),
         },
-        "aois": aoi_results,
+        "aggregate": _batch_aggregate_metrics(enriched_results),
+        "aois": enriched_results,
     }
 
 
 def _count_aoi_status(aoi_results: list[dict[str, Any]], status: str) -> int:
     return sum(1 for result in aoi_results if result["status"] == status)
+
+
+def _enrich_batch_aoi_result(result: dict[str, Any]) -> dict[str, Any]:
+    if result["status"] != "success":
+        return {
+            **result,
+            "basis_risk_assessment": {
+                "classification": "not_run",
+                "reasons": result.get("reasons", []),
+            },
+        }
+
+    benchmark = result["benchmark"]
+    raw = _benchmark_variant(benchmark, "raw_aoi")
+    buffered = _benchmark_variant(benchmark, "buffered_aoi")
+    vector = _benchmark_variant(benchmark, "vector_crop_mask")
+    vector_comparison = _benchmark_comparison(benchmark, "vector_crop_mask")
+    buffered_comparison = _benchmark_comparison(benchmark, "buffered_aoi")
+    return {
+        **result,
+        "key_metrics": {
+            "raw_median_valid_pixel_count": _nested_get(
+                raw,
+                "aggregate_metrics",
+                "median_valid_pixel_count",
+            ),
+            "buffered_median_valid_pixel_count": _nested_get(
+                buffered,
+                "aggregate_metrics",
+                "median_valid_pixel_count",
+            ),
+            "crop_mask_median_valid_pixel_count": _nested_get(
+                vector,
+                "aggregate_metrics",
+                "median_valid_pixel_count",
+            ),
+            "crop_mask_coverage_pct": _nested_get(
+                vector,
+                "aoi_metrics",
+                "crop_mask_coverage_pct",
+            ),
+            "crop_mask_non_crop_pixel_delta": vector_comparison.get("non_crop_pixel_delta"),
+            "crop_mask_valid_pixel_delta_pct": vector_comparison.get(
+                "median_valid_pixel_delta_pct"
+            ),
+            "crop_mask_min_ndmi_ema_delta": vector_comparison.get("min_ndmi_ema_delta"),
+            "buffered_valid_pixel_delta_pct": buffered_comparison.get(
+                "median_valid_pixel_delta_pct"
+            ),
+        },
+        "basis_risk_assessment": _basis_risk_assessment(vector, vector_comparison),
+    }
+
+
+def _basis_risk_assessment(
+    vector_variant: dict[str, Any],
+    vector_comparison: dict[str, Any],
+) -> dict[str, Any]:
+    if not vector_variant or vector_variant.get("status") == "skipped":
+        return {
+            "classification": "not_run",
+            "reasons": ["missing_crop_mask"],
+        }
+
+    non_crop_delta = vector_comparison.get("non_crop_pixel_delta")
+    valid_delta_pct = vector_comparison.get("median_valid_pixel_delta_pct")
+    crop_coverage = _nested_get(vector_variant, "aoi_metrics", "crop_mask_coverage_pct")
+    reasons: list[str] = []
+
+    if crop_coverage is None or float(crop_coverage) <= 0:
+        reasons.append("empty_crop_mask_coverage")
+    if valid_delta_pct is not None and float(valid_delta_pct) < -75:
+        reasons.append("excessive_valid_pixel_loss")
+    if non_crop_delta is not None and int(non_crop_delta) > 0:
+        reasons.append("non_crop_pixels_removed")
+
+    if "empty_crop_mask_coverage" in reasons or "excessive_valid_pixel_loss" in reasons:
+        classification = "degraded"
+    elif "non_crop_pixels_removed" in reasons:
+        classification = "improved"
+    else:
+        classification = "ambiguous"
+        reasons.append("no_measurable_non_crop_delta")
+
+    return {
+        "classification": classification,
+        "reasons": reasons,
+    }
+
+
+def _batch_aggregate_metrics(aoi_results: list[dict[str, Any]]) -> dict[str, Any]:
+    successful = [result for result in aoi_results if result["status"] == "success"]
+    return {
+        "basis_risk_classification_counts": {
+            "improved": _count_assessment(successful, "improved"),
+            "degraded": _count_assessment(successful, "degraded"),
+            "ambiguous": _count_assessment(successful, "ambiguous"),
+            "not_run": len(aoi_results) - len(successful),
+        },
+        "variant_rollups": {
+            variant_name: _variant_rollup(successful, variant_name)
+            for variant_name in ["raw_aoi", "buffered_aoi", "vector_crop_mask"]
+        },
+        "comparison_rollups": {
+            "buffered_aoi_vs_raw_aoi": _comparison_rollup(successful, "buffered_aoi"),
+            "vector_crop_mask_vs_raw_aoi": _comparison_rollup(
+                successful,
+                "vector_crop_mask",
+            ),
+        },
+    }
+
+
+def _count_assessment(aoi_results: list[dict[str, Any]], classification: str) -> int:
+    return sum(
+        1
+        for result in aoi_results
+        if result["basis_risk_assessment"]["classification"] == classification
+    )
+
+
+def _variant_rollup(aoi_results: list[dict[str, Any]], variant_name: str) -> dict[str, Any]:
+    variants = [
+        _benchmark_variant(result["benchmark"], variant_name)
+        for result in aoi_results
+    ]
+    completed = [variant for variant in variants if variant and variant["status"] != "skipped"]
+    return {
+        "aoi_count": len(completed),
+        "detected_count": sum(1 for variant in completed if variant["detected"]),
+        "mean_confidence": _mean_optional([variant.get("confidence") for variant in completed]),
+        "mean_median_valid_pixel_count": _mean_optional(
+            [
+                _nested_get(variant, "aggregate_metrics", "median_valid_pixel_count")
+                for variant in completed
+            ]
+        ),
+        "mean_cloud_pct": _mean_optional(
+            [_nested_get(variant, "aggregate_metrics", "mean_cloud_pct") for variant in completed]
+        ),
+        "min_ndmi_ema": _min_optional(
+            [_nested_get(variant, "aggregate_metrics", "min_ndmi_ema") for variant in completed]
+        ),
+        "mean_crop_mask_coverage_pct": _mean_optional(
+            [_nested_get(variant, "aoi_metrics", "crop_mask_coverage_pct") for variant in completed]
+        ),
+        "total_non_crop_pixels": sum(
+            int(_nested_get(variant, "aggregate_metrics", "total_non_crop_pixels") or 0)
+            for variant in completed
+        ),
+    }
+
+
+def _comparison_rollup(aoi_results: list[dict[str, Any]], candidate_variant: str) -> dict[str, Any]:
+    comparisons = [
+        _benchmark_comparison(result["benchmark"], candidate_variant)
+        for result in aoi_results
+    ]
+    completed = [comparison for comparison in comparisons if comparison]
+    return {
+        "aoi_count": len(completed),
+        "mean_valid_pixel_delta_pct": _mean_optional(
+            [comparison.get("median_valid_pixel_delta_pct") for comparison in completed]
+        ),
+        "mean_cloud_delta_pct_points": _mean_optional(
+            [comparison.get("mean_cloud_delta_pct_points") for comparison in completed]
+        ),
+        "mean_min_ndmi_mean_delta": _mean_optional(
+            [comparison.get("min_ndmi_mean_delta") for comparison in completed]
+        ),
+        "mean_min_ndmi_ema_delta": _mean_optional(
+            [comparison.get("min_ndmi_ema_delta") for comparison in completed]
+        ),
+        "mean_confidence_delta": _mean_optional(
+            [comparison.get("confidence_delta") for comparison in completed]
+        ),
+        "total_non_crop_pixel_delta": sum(
+            int(comparison.get("non_crop_pixel_delta") or 0) for comparison in completed
+        ),
+    }
 
 
 def _summarize_benchmark_variant(
@@ -942,16 +1124,30 @@ def render_mask_benchmark_batch_markdown(summary: dict[str, Any]) -> str:
         f"- Rejected: `{counts['rejected_count']}`",
         f"- Failed: `{counts['failed_count']}`",
         "",
+        "## Basis-Risk Summary",
+        "",
+        "| Improved | Degraded | Ambiguous | Not run |",
+        "| ---: | ---: | ---: | ---: |",
+        "| {improved} | {degraded} | {ambiguous} | {not_run} |".format(
+            improved=summary["aggregate"]["basis_risk_classification_counts"]["improved"],
+            degraded=summary["aggregate"]["basis_risk_classification_counts"]["degraded"],
+            ambiguous=summary["aggregate"]["basis_risk_classification_counts"]["ambiguous"],
+            not_run=summary["aggregate"]["basis_risk_classification_counts"]["not_run"],
+        ),
+        "",
+        "## AOI Summary",
+        "",
         "| AOI | Region | Status | Completed variants | Detected | Confidence | "
-        "Crop coverage % | Reasons |",
-        "| --- | --- | --- | ---: | --- | ---: | ---: | --- |",
+        "Crop coverage % | Assessment | Reasons |",
+        "| --- | --- | --- | ---: | --- | ---: | ---: | --- | --- |",
     ]
     for result in summary["aois"]:
         benchmark = result.get("benchmark", {})
         vector_variant = _benchmark_variant(benchmark, "vector_crop_mask")
+        assessment = result.get("basis_risk_assessment", {})
         lines.append(
             "| {aoi_id} | {region} | {status} | {variants} | {detected} | {confidence} | "
-            "{coverage} | {reasons} |".format(
+            "{coverage} | {assessment} | {reasons} |".format(
                 aoi_id=result["aoi_id"],
                 region=result["region"],
                 status=result["status"],
@@ -961,7 +1157,33 @@ def render_mask_benchmark_batch_markdown(summary: dict[str, Any]) -> str:
                 coverage=_format_optional(
                     vector_variant.get("aoi_metrics", {}).get("crop_mask_coverage_pct")
                 ),
+                assessment=assessment.get("classification", ""),
                 reasons=", ".join(result.get("reasons", [])),
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Variant Rollup",
+            "",
+            "| Variant | AOIs | Detected | Mean confidence | Mean valid px | Mean cloud % | "
+            "Min NDMI EMA | Crop coverage % | Non-crop px |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for variant_name, rollup in summary["aggregate"]["variant_rollups"].items():
+        lines.append(
+            "| {variant} | {aois} | {detected} | {confidence} | {valid} | {cloud} | "
+            "{ndmi} | {coverage} | {non_crop} |".format(
+                variant=variant_name,
+                aois=rollup["aoi_count"],
+                detected=rollup["detected_count"],
+                confidence=_format_optional(rollup["mean_confidence"]),
+                valid=_format_optional(rollup["mean_median_valid_pixel_count"]),
+                cloud=_format_optional(rollup["mean_cloud_pct"]),
+                ndmi=_format_optional(rollup["min_ndmi_ema"]),
+                coverage=_format_optional(rollup["mean_crop_mask_coverage_pct"]),
+                non_crop=rollup["total_non_crop_pixels"],
             )
         )
     lines.append("")
@@ -973,6 +1195,39 @@ def _benchmark_variant(benchmark: dict[str, Any], variant_name: str) -> dict[str
         if isinstance(variant, dict) and variant.get("variant") == variant_name:
             return variant
     return {}
+
+
+def _benchmark_comparison(benchmark: dict[str, Any], candidate_variant: str) -> dict[str, Any]:
+    for comparison in benchmark.get("comparisons", []):
+        if (
+            isinstance(comparison, dict)
+            and comparison.get("candidate_variant") == candidate_variant
+        ):
+            return comparison
+    return {}
+
+
+def _nested_get(document: dict[str, Any], *keys: str) -> Any:
+    current: Any = document
+    for key in keys:
+        if not isinstance(current, dict):
+            return None
+        current = current.get(key)
+    return current
+
+
+def _mean_optional(values: list[Any]) -> float | None:
+    numeric = [float(value) for value in values if value is not None]
+    if not numeric:
+        return None
+    return statistics.fmean(numeric)
+
+
+def _min_optional(values: list[Any]) -> float | None:
+    numeric = [float(value) for value in values if value is not None]
+    if not numeric:
+        return None
+    return min(numeric)
 
 
 def _format_optional(value: Any) -> str:

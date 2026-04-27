@@ -55,7 +55,17 @@ def test_run_mask_benchmark_batch_handles_success_and_rejected_aoi(tmp_path: Pat
 
     assert report["summary"]["success_count"] == 1
     assert report["summary"]["rejected_count"] == 1
+    assert report["aggregate"]["basis_risk_classification_counts"]["improved"] == 1
+    assert report["aggregate"]["basis_risk_classification_counts"]["not_run"] == 1
+    assert (
+        report["aggregate"]["comparison_rollups"]["vector_crop_mask_vs_raw_aoi"][
+            "total_non_crop_pixel_delta"
+        ]
+        == 100
+    )
     assert report["aois"][0]["benchmark"]["completed_variant_count"] == 3
+    assert report["aois"][0]["basis_risk_assessment"]["classification"] == "improved"
+    assert report["aois"][0]["key_metrics"]["crop_mask_non_crop_pixel_delta"] == 100
     assert report["aois"][1]["status"] == "rejected"
     assert "insufficient_pixels" in report["aois"][1]["reasons"]
     assert [call["request_id"] for call in engine.calls] == [
@@ -179,6 +189,8 @@ def test_render_mask_benchmark_batch_markdown_includes_status_table(tmp_path: Pa
     rendered = render_mask_benchmark_batch_markdown(report)
 
     assert "# OrbitRisk 2022 Batch Mask Benchmark: batch-md" in rendered
+    assert "## Basis-Risk Summary" in rendered
+    assert "## Variant Rollup" in rendered
     assert "| valid-with-mask | bordeaux | success | 3 |" in rendered
 
 
