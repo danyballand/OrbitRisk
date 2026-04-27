@@ -1,0 +1,1 @@
+"""Spatial masking strategies."""

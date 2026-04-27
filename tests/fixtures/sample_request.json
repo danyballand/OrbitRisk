@@ -1,0 +1,27 @@
+{
+  "request_id": "quote_2026_000123",
+  "aoi": {
+    "type": "Feature",
+    "properties": {
+      "asset_id": "FR_VINEYARD_42",
+      "crop": "vineyard"
+    },
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [4.82, 45.73],
+          [4.83, 45.73],
+          [4.83, 45.74],
+          [4.82, 45.74],
+          [4.82, 45.73]
+        ]
+      ]
+    }
+  },
+  "crs": "EPSG:4326",
+  "date_range": {
+    "start": "2021-01-01",
+    "end": "2026-04-01"
+  }
+}
