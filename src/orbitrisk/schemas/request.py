@@ -45,7 +45,7 @@ class DateRange(BaseModel):
 
 
 class AggregationOptions(BaseModel):
-    temporal: str = Field(default="P10D", pattern=r"^P\d+D$")
+    temporal: str = Field(default="P10D", pattern=r"^P(\d+D|1M)$")
     spatial_stats: list[SpatialStat] = Field(default_factory=default_spatial_stats)
 
 

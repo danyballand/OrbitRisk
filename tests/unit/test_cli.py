@@ -58,6 +58,7 @@ def test_smoke_runner_uses_fixed_geobox(monkeypatch, tmp_path: Path) -> None:
             resolution_m=10,
             max_items=1,
             max_cloud_cover_pct=80.0,
+            temporal=None,
         )
     )
 
@@ -65,3 +66,5 @@ def test_smoke_runner_uses_fixed_geobox(monkeypatch, tmp_path: Path) -> None:
     assert calls["query"].max_items == 1
     assert calls["geobox"] is not None
     assert calls["summary_kwargs"]["requested_indices"] == ["ndvi"]
+    assert result["temporal"] == "P10D"
+    assert result["composites"] == []

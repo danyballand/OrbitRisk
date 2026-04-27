@@ -12,6 +12,7 @@ OrbitRisk now has a working technical spine:
 - AOI raster mask,
 - Planetary Computer/STAC provider,
 - xarray datacube summarization,
+- P10D/monthly observation compositing,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

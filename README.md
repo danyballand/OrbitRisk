@@ -49,6 +49,8 @@ Run a tiny real-data smoke test through Planetary Computer:
 orbitrisk smoke-pc tests/fixtures/sample_request.json --start 2022-07-01 --end 2022-07-10 --max-items 1
 ```
 
+Use `--temporal P10D` or `--temporal P1M` to inspect the composited actuarial series.
+
 ## Environment
 
 Copy `.env.example` to `.env` and fill the Sentinel Hub credentials when ready.

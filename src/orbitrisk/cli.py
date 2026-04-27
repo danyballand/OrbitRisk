@@ -9,6 +9,7 @@ from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.processing.datacube import summarize_datacube
 from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvider
+from orbitrisk.timeseries.compositing import composite_observations
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -21,6 +22,7 @@ def main(argv: list[str] | None = None) -> int:
     smoke.add_argument("--resolution-m", type=int, default=10)
     smoke.add_argument("--max-items", type=int, default=2)
     smoke.add_argument("--max-cloud-cover-pct", type=float, default=80.0)
+    smoke.add_argument("--temporal", default=None, help="Aggregation period, e.g. P10D or P1M")
 
     args = parser.parse_args(argv)
     if args.command == "smoke-pc":
@@ -59,11 +61,19 @@ def run_planetary_computer_smoke(args: argparse.Namespace) -> dict[str, Any]:
         min_clear_fraction=payload.get("masking", {}).get("min_clear_fraction", 0.7),
         exclude_scl_classes=set(payload.get("masking", {}).get("exclude_scl_classes", [])) or None,
     )
+    temporal = args.temporal or payload.get("aggregation", {}).get("temporal", "P10D")
+    composites = composite_observations(
+        observations,
+        temporal=temporal,
+        start=date_start,
+        end=date_end,
+    )
 
     return {
         "request_id": payload["request_id"],
         "provider": "planetary-computer",
         "processing_crs": prepared_aoi.processing_crs.to_string(),
+        "temporal": temporal,
         "grid": {
             "height": job.grid.height,
             "width": job.grid.width,
@@ -80,6 +90,21 @@ def run_planetary_computer_smoke(args: argparse.Namespace) -> dict[str, Any]:
                 "mask_counts": observation.stats.mask_counts,
             }
             for observation in observations
+        ],
+        "composites": [
+            {
+                "period": composite.period,
+                "selected_date": composite.selected.observed_at.isoformat(),
+                "candidate_count": composite.candidate_count,
+                "accepted_candidate_count": composite.accepted_candidate_count,
+                "rejected_candidate_count": composite.rejected_candidate_count,
+                "quality": composite.selected.stats.quality,
+                "valid_pixel_count": composite.selected.stats.valid_pixel_count,
+                "cloud_pct": composite.selected.stats.cloud_pct,
+                "indices": composite.selected.stats.index_stats,
+                "mask_counts": composite.selected.stats.mask_counts,
+            }
+            for composite in composites
         ],
     }
 
