@@ -20,6 +20,7 @@ class ObservationStats:
     valid_pixel_count: int
     cloud_pct: float
     quality: str
+    quality_flags: list[str]
     index_stats: dict[str, dict[str, float]]
     mask_counts: dict[str, int]
 
@@ -72,11 +73,21 @@ def summarize_observation(
         min_clear_fraction=min_clear_fraction,
         cloud_pct=cloud_pct,
     )
+    quality_flags = _quality_flags(
+        valid_pixel_count=valid_pixel_count,
+        inside_count=inside_count,
+        min_valid_pixels=min_valid_pixels,
+        clear_fraction=clear_fraction,
+        min_clear_fraction=min_clear_fraction,
+        cloud_pct=cloud_pct,
+        has_index_stats=bool(index_stats),
+    )
 
     return ObservationStats(
         valid_pixel_count=valid_pixel_count,
         cloud_pct=cloud_pct,
         quality=quality,
+        quality_flags=quality_flags,
         index_stats=index_stats,
         mask_counts={
             "valid": valid_pixel_count,
@@ -128,3 +139,27 @@ def _quality(
     if cloud_pct > 15:
         return "moderate"
     return "good"
+
+
+def _quality_flags(
+    *,
+    valid_pixel_count: int,
+    inside_count: int,
+    min_valid_pixels: int,
+    clear_fraction: float,
+    min_clear_fraction: float,
+    cloud_pct: float,
+    has_index_stats: bool,
+) -> list[str]:
+    flags: list[str] = []
+    if inside_count == 0:
+        flags.append("no_data_in_aoi")
+    if valid_pixel_count < min_valid_pixels:
+        flags.append("too_few_valid_pixels")
+    if clear_fraction < min_clear_fraction:
+        flags.append("low_clear_fraction")
+    if cloud_pct > 15:
+        flags.append("high_cloud_fraction")
+    if not has_index_stats:
+        flags.append("no_index_stats")
+    return flags

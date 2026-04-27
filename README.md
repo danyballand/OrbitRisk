@@ -51,6 +51,12 @@ orbitrisk smoke-pc tests/fixtures/sample_request.json --start 2022-07-01 --end 2
 
 Use `--temporal P10D` or `--temporal P1M` to inspect the composited actuarial series.
 
+Run a first drought-2022 validation summary:
+
+```bash
+orbitrisk validate-2022 tests/fixtures/sample_request.json --region bordeaux --max-items 80
+```
+
 ## Environment
 
 Copy `.env.example` to `.env` and fill the Sentinel Hub credentials when ready.

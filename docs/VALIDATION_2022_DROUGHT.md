@@ -49,3 +49,15 @@ The validation report must list:
 - ambiguous AOIs,
 - naive parcel mean vs RPG + buffer vs OrbitRisk mask comparison,
 - charts for NDMI, NDVI, valid pixel count, and cloud percentage.
+
+## Current Runner
+
+OrbitRisk includes a first JSON validation runner:
+
+```bash
+orbitrisk validate-2022 tests/fixtures/sample_request.json --region bordeaux --max-items 80
+```
+
+The runner executes the live Planetary Computer path, filters July-August 2022, and reports
+NDMI mean, EMA, anomaly z-score, baseline percentile, baseline count, quality flags, and
+critical periods.

@@ -50,6 +50,7 @@ def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     assert calls["geobox"] is not None
     assert body["source"]["provider"] == "planetary-computer"
     assert body["series"][0]["indices"]["ndmi"]["ema"] is not None
+    assert body["series"][0]["quality_flags"] == []
 
 
 def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:

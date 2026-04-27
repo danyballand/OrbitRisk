@@ -14,6 +14,8 @@ OrbitRisk now has a working technical spine:
 - xarray datacube summarization,
 - P10D/monthly observation compositing,
 - live API endpoint backed by Planetary Computer,
+- seasonal baseline metadata,
+- drought-2022 validation summary runner,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

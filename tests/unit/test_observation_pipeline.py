@@ -46,6 +46,7 @@ def test_summarize_observation_excludes_cloud_shadow_snow_and_non_crop() -> None
     assert np.isclose(summary.index_stats["ndvi"]["mean"], 0.5)
     assert np.isclose(summary.index_stats["ndmi"]["mean"], 1 / 3)
     assert summary.quality == "good"
+    assert summary.quality_flags == []
 
 
 def test_summarize_observation_rejects_too_few_pixels() -> None:
@@ -67,4 +68,5 @@ def test_summarize_observation_rejects_too_few_pixels() -> None:
     )
 
     assert summary.quality == "rejected"
+    assert "too_few_valid_pixels" in summary.quality_flags
     assert summary.index_stats == {}

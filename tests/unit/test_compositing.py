@@ -74,6 +74,7 @@ def _obs(
             valid_pixel_count=valid,
             cloud_pct=cloud,
             quality=quality,
+            quality_flags=[] if quality != "rejected" else ["too_few_valid_pixels"],
             index_stats={"ndmi": {"mean": 0.1}} if has_indices else {},
             mask_counts={
                 "valid": valid,

@@ -11,12 +11,14 @@ FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "sample_request.jso
 
 
 class FakeProvider:
-    def __init__(self) -> None:
+    def __init__(self, dates: list[str] | None = None, *, drought_last: bool = False) -> None:
         self.calls = []
+        self.dates = dates or ["2022-07-01", "2022-07-11", "2022-07-21"]
+        self.drought_last = drought_last
 
     def load_datacube(self, query, *, geobox=None):
         self.calls.append((query, geobox))
-        return _dataset(tuple(geobox.shape))
+        return _dataset(tuple(geobox.shape), dates=self.dates, drought_last=self.drought_last)
 
 
 def test_risk_engine_builds_live_response_from_provider_datacube() -> None:
@@ -49,11 +51,40 @@ def test_risk_engine_builds_live_response_from_provider_datacube() -> None:
     assert response.risk_signal.confidence > 0
 
 
-def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:
+def test_risk_engine_adds_seasonal_baseline_metadata() -> None:
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2020-07-01", "end": "2023-07-31"}
+    request = RiskRequest.model_validate(payload)
+    provider = FakeProvider(
+        dates=["2020-07-11", "2021-07-11", "2022-07-11", "2023-07-11"],
+        drought_last=True,
+    )
+
+    response = RiskEngine(
+        provider,
+        provider_name="fake-provider",
+        collection="sentinel-2-l2a",
+    ).quote(request, max_items=20)
+
+    latest_ndmi = response.series[-1].indices["ndmi"]
+    assert latest_ndmi.baseline_count == 3
+    assert latest_ndmi.baseline_percentile == 0.0
+    assert latest_ndmi.anomaly_z is not None
+
+
+def _dataset(
+    grid_shape: tuple[int, int],
+    *,
+    dates: list[str],
+    drought_last: bool,
+) -> xr.Dataset:
     height, width = grid_shape
-    shape = (3, height, width)
+    shape = (len(dates), height, width)
+    swir = np.full(shape, 0.30, dtype=np.float32)
+    if drought_last:
+        swir[-1] = 0.52
     coords = {
-        "time": np.array(["2022-07-01", "2022-07-11", "2022-07-21"], dtype="datetime64[D]"),
+        "time": np.array(dates, dtype="datetime64[D]"),
         "y": np.arange(height),
         "x": np.arange(width),
     }
@@ -63,7 +94,7 @@ def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:
             "B04": (("time", "y", "x"), np.full(shape, 0.20, dtype=np.float32)),
             "B05": (("time", "y", "x"), np.full(shape, 0.30, dtype=np.float32)),
             "B08": (("time", "y", "x"), np.full(shape, 0.60, dtype=np.float32)),
-            "B11": (("time", "y", "x"), np.full(shape, 0.30, dtype=np.float32)),
+            "B11": (("time", "y", "x"), swir),
             "SCL": (("time", "y", "x"), np.full(shape, 4, dtype=np.uint8)),
         },
         coords=coords,

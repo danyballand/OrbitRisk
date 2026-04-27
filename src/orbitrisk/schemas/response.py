@@ -27,6 +27,8 @@ class IndexStats(BaseModel):
     std: float | None = None
     ema: float | None = None
     anomaly_z: float | None = None
+    baseline_percentile: float | None = Field(default=None, ge=0.0, le=1.0)
+    baseline_count: int | None = Field(default=None, ge=0)
 
 
 class MaskCounts(BaseModel):
@@ -44,6 +46,7 @@ class Observation(BaseModel):
     valid_pixel_count: int = Field(ge=0)
     cloud_pct: float = Field(ge=0.0, le=100.0)
     quality: Quality
+    quality_flags: list[str] = Field(default_factory=list)
     indices: dict[str, IndexStats]
     mask_counts: MaskCounts
 

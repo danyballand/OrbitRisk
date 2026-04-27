@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any, Literal, Protocol, cast
 
 from orbitrisk.engine import prepare_raster_job
@@ -16,6 +17,7 @@ from orbitrisk.schemas.response import (
     SourceMetadata,
 )
 from orbitrisk.timeseries.anomalies import z_scores
+from orbitrisk.timeseries.baseline import seasonal_baseline
 from orbitrisk.timeseries.compositing import CompositeObservation, composite_observations
 from orbitrisk.timeseries.smoothing import ema
 from orbitrisk.timeseries.triggers import detect_water_stress_trigger
@@ -23,6 +25,9 @@ from orbitrisk.timeseries.triggers import detect_water_stress_trigger
 
 class RasterProvider(Protocol):
     def load_datacube(self, query: Any, *, geobox: Any | None = None) -> Any: ...
+
+
+IndexEnrichment = dict[int, tuple[float | None, float | None, float | None, int | None]]
 
 
 class RiskEngine:
@@ -124,6 +129,7 @@ def _build_observation_series(
             valid_pixel_count=composite.selected.stats.valid_pixel_count,
             cloud_pct=composite.selected.stats.cloud_pct,
             quality=cast(Quality, composite.selected.stats.quality),
+            quality_flags=composite.selected.stats.quality_flags,
             indices=_index_models(
                 composite.selected.stats,
                 index_enrichment=enrichment,
@@ -140,24 +146,33 @@ def _index_enrichment(
     *,
     indices: list[str],
     smoothing_alpha: float,
-) -> dict[str, dict[int, tuple[float, float]]]:
-    enrichment: dict[str, dict[int, tuple[float, float]]] = {}
+) -> dict[str, IndexEnrichment]:
+    enrichment: dict[str, IndexEnrichment] = {}
     for index_name in indices:
         positions: list[int] = []
+        dates: list[date] = []
         values: list[float] = []
         for position, composite in enumerate(composites):
             stats = composite.selected.stats.index_stats.get(index_name)
             if stats is None:
                 continue
             positions.append(position)
+            dates.append(composite.selected.observed_at)
             values.append(stats["mean"])
 
         if not values:
             continue
         smoothed = ema(values, alpha=smoothing_alpha)
-        anomalies = z_scores(values)
+        fallback_anomalies = z_scores(values)
+        baseline = seasonal_baseline(dates, values, window_days=20, min_samples=3, max_years=5)
         enrichment[index_name] = {
-            position: (smoothed[idx], anomalies[idx]) for idx, position in enumerate(positions)
+            position: (
+                smoothed[idx],
+                baseline[idx].z_score if idx in baseline else fallback_anomalies[idx],
+                baseline[idx].percentile if idx in baseline else None,
+                baseline[idx].baseline_count if idx in baseline else None,
+            )
+            for idx, position in enumerate(positions)
         }
     return enrichment
 
@@ -165,14 +180,17 @@ def _index_enrichment(
 def _index_models(
     stats: ObservationStats,
     *,
-    index_enrichment: dict[str, dict[int, tuple[float, float]]],
+    index_enrichment: dict[str, IndexEnrichment],
     observation_index: int,
 ) -> dict[str, IndexStats]:
     models: dict[str, IndexStats] = {}
     for index_name, raw_stats in stats.index_stats.items():
-        smoothed, anomaly = index_enrichment.get(index_name, {}).get(
+        smoothed, anomaly, baseline_percentile, baseline_count = index_enrichment.get(
+            index_name,
+            {},
+        ).get(
             observation_index,
-            (None, None),
+            (None, None, None, None),
         )
         models[index_name] = IndexStats(
             mean=raw_stats["mean"],
@@ -182,6 +200,8 @@ def _index_models(
             std=raw_stats["std"],
             ema=smoothed,
             anomaly_z=anomaly,
+            baseline_percentile=baseline_percentile,
+            baseline_count=baseline_count,
         )
     return models
 

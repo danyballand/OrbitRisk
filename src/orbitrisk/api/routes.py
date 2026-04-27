@@ -50,6 +50,7 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
                 valid_pixel_count=220 + idx * 7,
                 cloud_pct=4.0 + idx,
                 quality="good" if idx < 4 else "moderate",
+                quality_flags=[],
                 indices={
                     "ndvi": IndexStats(
                         mean=ndvi_mean,
