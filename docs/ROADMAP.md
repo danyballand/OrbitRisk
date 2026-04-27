@@ -16,10 +16,10 @@ By 2026-05-31, OrbitRisk should produce a defensible demo pack for 5-10 vineyard
 - [ ] one API request per AOI with strict input contract,
 - [ ] one JSON risk response per AOI,
 - [x] one raw-vs-buffer-vs-crop-mask benchmark report,
-- [ ] one 2022 drought validation report for Bordeaux and/or Languedoc,
+- [x] one 2022 drought validation report for Bordeaux and/or Languedoc,
 - [x] explicit accepted/rejected/ambiguous AOI classification logic,
 - [ ] observed accepted/rejected/ambiguous classification on real AOIs,
-- [ ] clear reasons when the signal is weak, cloudy, under-sampled, or not benchmarkable,
+- [x] clear reasons when the signal is weak, cloudy, under-sampled, or not benchmarkable,
 - [ ] a technical explanation an actuary can audit without trusting a black box.
 
 ## P0 Exit Criteria
@@ -128,7 +128,7 @@ Exit criteria:
 
 - [x] At least one known drought AOI shows a clear NDMI/EMA crash in July-August 2022.
 - [ ] Rejected AOIs have explicit non-handwavy rejection reasons.
-- [ ] Ambiguous AOIs are not counted as wins.
+- [x] Ambiguous AOIs are not counted as wins.
 
 ### M4: API Hardening for Pilot Use
 

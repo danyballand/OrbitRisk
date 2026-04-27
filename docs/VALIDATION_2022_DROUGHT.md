@@ -74,6 +74,26 @@ Results are cached under `data/cache` by default. Use `--no-cache` to force a fr
 is intended for RPG IGN or other parcel/crop masks. The vector mask is reprojected onto
 the fixed Sentinel grid and affects `valid_pixel_count` and `mask_counts.non_crop`.
 
+## Batch Drought Validation Runner
+
+Use the batch runner once AOIs are listed in an AOI manifest:
+
+```bash
+orbitrisk validate-2022-batch examples/rpg_2023_vineyard_candidate_manifest.json \
+  --region bordeaux \
+  --max-items 40 \
+  --output-json reports/bordeaux-2022-batch-validation.json \
+  --output-md reports/bordeaux-2022-batch-validation.md
+```
+
+The batch runner validates AOI geometry first, uses crop masks when they are present in
+the manifest, isolates provider failures per AOI, and reports an `accepted`, `rejected`,
+`ambiguous`, or `not_run` assessment for each AOI.
+
+The first Bordeaux batch is summarized in `docs/BORDEAUX_2022_BATCH_VALIDATION.md`:
+five live AOIs completed, four were `accepted`, and one was `ambiguous` because cloud
+quality warnings require manual review.
+
 ## Drought Validation Classifier
 
 The drought-event classifier is separate from the basis-risk masking classifier. It

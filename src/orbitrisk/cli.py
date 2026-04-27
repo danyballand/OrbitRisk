@@ -63,6 +63,27 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--output-md", type=Path, default=None)
     validate.add_argument("--crop-mask-geojson", type=Path, default=None)
     validate.add_argument("--crop-mask-crs", default="EPSG:4326")
+    validate_batch_2022 = subparsers.add_parser(
+        "validate-2022-batch",
+        help="Run drought-2022 validation for every accepted AOI in a batch manifest",
+    )
+    validate_batch_2022.add_argument("manifest_json", type=Path)
+    validate_batch_2022.add_argument(
+        "--region",
+        default=None,
+        help="Optional region filter, for example bordeaux or languedoc",
+    )
+    validate_batch_2022.add_argument(
+        "--baseline-start",
+        type=date.fromisoformat,
+        default=date(2019, 6, 1),
+    )
+    validate_batch_2022.add_argument("--end", type=date.fromisoformat, default=date(2022, 8, 31))
+    validate_batch_2022.add_argument("--max-items", type=int, default=80)
+    validate_batch_2022.add_argument("--cache", action=argparse.BooleanOptionalAction, default=True)
+    validate_batch_2022.add_argument("--cache-dir", type=Path, default=None)
+    validate_batch_2022.add_argument("--output-json", type=Path, default=None)
+    validate_batch_2022.add_argument("--output-md", type=Path, default=None)
     benchmark = subparsers.add_parser(
         "benchmark-masks-2022",
         help="Compare raw AOI, buffered AOI, and vector crop-mask drought signals",
@@ -115,6 +136,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "validate-2022":
         result = run_2022_validation(args)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "validate-2022-batch":
+        result = run_2022_validation_batch(args)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.command == "benchmark-masks-2022":
@@ -258,6 +283,39 @@ def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
     return summary
 
 
+def run_2022_validation_batch(args: argparse.Namespace) -> dict[str, Any]:
+    manifest = load_aoi_batch_manifest(args.manifest_json)
+    if args.region is not None:
+        manifest = _filter_manifest_by_region(manifest, args.region)
+    settings = get_settings()
+    provider_name = "planetary-computer"
+    collection = settings.planetary_computer_collection
+    engine = RiskEngine(
+        PlanetaryComputerProvider(settings),
+        provider_name=provider_name,
+        collection=collection,
+    )
+    summary = _run_2022_validation_batch(
+        manifest,
+        manifest_path=args.manifest_json,
+        baseline_start=args.baseline_start,
+        end=args.end,
+        max_items=args.max_items,
+        cache_enabled=args.cache,
+        cache_dir=args.cache_dir or settings.cache_dir,
+        engine=engine,
+        provider_name=provider_name,
+        collection=collection,
+    )
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
+    if args.output_md is not None:
+        args.output_md.parent.mkdir(parents=True, exist_ok=True)
+        args.output_md.write_text(render_validation_batch_markdown(summary))
+    return summary
+
+
 def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
     payload = json.loads(args.request_json.read_text())
     crop_mask_geojson = _benchmark_crop_mask(payload, args.crop_mask_geojson)
@@ -305,6 +363,105 @@ def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
         args.output_md.parent.mkdir(parents=True, exist_ok=True)
         args.output_md.write_text(render_mask_benchmark_markdown(summary))
     return summary
+
+
+def _filter_manifest_by_region(manifest: AoiBatchManifest, region: str) -> AoiBatchManifest:
+    entries = [entry for entry in manifest.aois if entry.region == region]
+    if not entries:
+        raise ValueError(f"No AOIs found for region: {region}")
+    return manifest.model_copy(
+        update={
+            "name": f"{manifest.name}-{region}",
+            "aois": entries,
+        }
+    )
+
+
+def _run_2022_validation_batch(
+    manifest: AoiBatchManifest,
+    *,
+    manifest_path: Path,
+    baseline_start: date,
+    end: date,
+    max_items: int,
+    cache_enabled: bool,
+    cache_dir: Path,
+    engine: RiskEngine,
+    provider_name: str,
+    collection: str,
+) -> dict[str, Any]:
+    base_dir = manifest_path.parent
+    quality_report = validate_aoi_manifest(manifest, manifest_path=manifest_path)
+    quality_by_aoi_id = {result["aoi_id"]: result for result in quality_report["aois"]}
+    aoi_results: list[dict[str, Any]] = []
+
+    for entry in manifest.aois:
+        quality = quality_by_aoi_id[entry.aoi_id]
+        if quality["status"] == "rejected":
+            aoi_results.append(
+                {
+                    "aoi_id": entry.aoi_id,
+                    "region": entry.region,
+                    "status": "rejected",
+                    "reasons": quality["reasons"],
+                    "quality_gate": quality,
+                }
+            )
+            continue
+
+        try:
+            crop_mask = resolve_crop_mask_document(entry, base_dir=base_dir)
+            payload = risk_request_payload_from_manifest_entry(
+                manifest,
+                entry,
+                base_dir=base_dir,
+                date_start=baseline_start,
+                date_end=end,
+                include_crop_mask=False,
+            )
+            response = _quote_with_cache(
+                engine,
+                RiskRequest.model_validate(payload),
+                provider_name=provider_name,
+                collection=collection,
+                max_items=max_items,
+                enabled=cache_enabled,
+                cache_dir=cache_dir,
+                crop_mask_geojson=crop_mask,
+                crop_mask_crs=entry.crop_mask_crs,
+            )
+            aoi_results.append(
+                {
+                    "aoi_id": entry.aoi_id,
+                    "region": entry.region,
+                    "status": "success",
+                    "crop_mask_used": crop_mask is not None,
+                    "quality_gate": quality,
+                    "validation": summarize_2022_validation(response, region=entry.region),
+                }
+            )
+        except Exception as exc:
+            aoi_results.append(
+                {
+                    "aoi_id": entry.aoi_id,
+                    "region": entry.region,
+                    "status": "failed",
+                    "reasons": ["validation_failed"],
+                    "error": str(exc),
+                    "quality_gate": quality,
+                }
+            )
+
+    return summarize_2022_validation_batch(
+        manifest,
+        aoi_results,
+        baseline_start=baseline_start,
+        end=end,
+        max_items=max_items,
+        cache_enabled=cache_enabled,
+        provider_name=provider_name,
+        collection=collection,
+    )
 
 
 def run_mask_benchmark_batch_2022(args: argparse.Namespace) -> dict[str, Any]:
@@ -668,6 +825,76 @@ def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[st
         "quality_flag_counts": quality_flag_counts,
         "critical_periods": critical_periods,
         "ndmi_periods": ndmi_periods,
+    }
+
+
+def summarize_2022_validation_batch(
+    manifest: AoiBatchManifest,
+    aoi_results: list[dict[str, Any]],
+    *,
+    baseline_start: date,
+    end: date,
+    max_items: int,
+    cache_enabled: bool,
+    provider_name: str,
+    collection: str,
+) -> dict[str, Any]:
+    return {
+        "manifest": {
+            "name": manifest.name,
+            "version": manifest.version,
+        },
+        "run": {
+            "provider": provider_name,
+            "collection": collection,
+            "baseline_start": baseline_start.isoformat(),
+            "end": end.isoformat(),
+            "max_items": max_items,
+            "cache_enabled": cache_enabled,
+        },
+        "summary": {
+            "aoi_count": len(aoi_results),
+            "success_count": sum(1 for result in aoi_results if result["status"] == "success"),
+            "rejected_count": sum(1 for result in aoi_results if result["status"] == "rejected"),
+            "failed_count": sum(1 for result in aoi_results if result["status"] == "failed"),
+        },
+        "aggregate": _validation_batch_aggregate(aoi_results),
+        "aois": aoi_results,
+    }
+
+
+def _validation_batch_aggregate(aoi_results: list[dict[str, Any]]) -> dict[str, Any]:
+    classification_counts = {
+        "accepted": 0,
+        "rejected": 0,
+        "ambiguous": 0,
+        "not_run": 0,
+    }
+    total_target_periods = 0
+    total_baseline_supported_periods = 0
+    trigger_count = 0
+    crop_mask_used_count = 0
+    for result in aoi_results:
+        validation = result.get("validation")
+        if result.get("crop_mask_used"):
+            crop_mask_used_count += 1
+        if not isinstance(validation, dict):
+            classification_counts["not_run"] += 1
+            continue
+        assessment = validation["validation_assessment"]
+        classification = assessment["classification"]
+        classification_counts[classification] += 1
+        total_target_periods += int(validation["target_period_count"])
+        total_baseline_supported_periods += int(validation["baseline_supported_period_count"])
+        if validation["detected"]:
+            trigger_count += 1
+
+    return {
+        "validation_classification_counts": classification_counts,
+        "trigger_count": trigger_count,
+        "crop_mask_used_count": crop_mask_used_count,
+        "total_target_periods": total_target_periods,
+        "total_baseline_supported_periods": total_baseline_supported_periods,
     }
 
 
@@ -1104,6 +1331,71 @@ def render_validation_markdown(summary: dict[str, Any]) -> str:
             lines.append(f"- {period['start']} to {period['end']}: {period['severity']}")
     else:
         lines.append("- None")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_validation_batch_markdown(summary: dict[str, Any]) -> str:
+    manifest = summary["manifest"]
+    counts = summary["summary"]
+    classifications = summary["aggregate"]["validation_classification_counts"]
+    lines = [
+        f"# OrbitRisk 2022 Batch Drought Validation: {manifest['name']}",
+        "",
+        f"- AOIs: `{counts['aoi_count']}`",
+        f"- Success: `{counts['success_count']}`",
+        f"- Rejected before live load: `{counts['rejected_count']}`",
+        f"- Failed: `{counts['failed_count']}`",
+        "",
+        "## Validation Summary",
+        "",
+        "| Accepted | Rejected | Ambiguous | Not run |",
+        "| ---: | ---: | ---: | ---: |",
+        "| {accepted} | {rejected} | {ambiguous} | {not_run} |".format(
+            accepted=classifications["accepted"],
+            rejected=classifications["rejected"],
+            ambiguous=classifications["ambiguous"],
+            not_run=classifications["not_run"],
+        ),
+        "",
+        "## AOI Summary",
+        "",
+        "| AOI | Region | Status | Assessment | Detected | Confidence | Target periods | "
+        "Baseline periods | Min valid px | Mean cloud % | Reasons |",
+        "| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
+    ]
+    for result in summary["aois"]:
+        validation = result.get("validation")
+        if isinstance(validation, dict):
+            assessment = validation["validation_assessment"]
+            inputs = assessment["inputs"]
+            reasons = ", ".join(assessment["reasons"])
+            lines.append(
+                "| {aoi_id} | {region} | {status} | {assessment} | {detected} | "
+                "{confidence} | {target} | {baseline} | {valid} | {cloud} | {reasons} |".format(
+                    aoi_id=result["aoi_id"],
+                    region=result["region"],
+                    status=result["status"],
+                    assessment=assessment["classification"],
+                    detected=validation["detected"],
+                    confidence=_format_optional(validation["confidence"]),
+                    target=validation["target_period_count"],
+                    baseline=validation["baseline_supported_period_count"],
+                    valid=inputs["min_valid_pixel_count"] or "",
+                    cloud=_format_optional(inputs["mean_cloud_pct"]),
+                    reasons=reasons,
+                )
+            )
+            continue
+
+        lines.append(
+            "| {aoi_id} | {region} | {status} | not_run |  |  |  |  |  |  | {reasons} |".format(
+                aoi_id=result["aoi_id"],
+                region=result["region"],
+                status=result["status"],
+                reasons=", ".join(result.get("reasons", [])),
+            )
+        )
     lines.append("")
     return "\n".join(lines)
 

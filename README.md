@@ -83,6 +83,16 @@ orbitrisk validate-2022 tests/fixtures/sample_request.json \
   --output-md reports/bordeaux-2022.md
 ```
 
+Run the RPG Bordeaux drought-2022 validation batch:
+
+```bash
+orbitrisk validate-2022-batch examples/rpg_2023_vineyard_candidate_manifest.json \
+  --region bordeaux \
+  --max-items 40 \
+  --output-json reports/bordeaux-2022-batch-validation.json \
+  --output-md reports/bordeaux-2022-batch-validation.md
+```
+
 Compare raw AOI, negative-buffer, and external crop-mask variants:
 
 ```bash

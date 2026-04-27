@@ -1,0 +1,791 @@
+{
+  "aggregate": {
+    "crop_mask_used_count": 5,
+    "total_baseline_supported_periods": 26,
+    "total_target_periods": 34,
+    "trigger_count": 5,
+    "validation_classification_counts": {
+      "accepted": 4,
+      "ambiguous": 1,
+      "not_run": 0,
+      "rejected": 0
+    }
+  },
+  "aois": [
+    {
+      "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 2989,
+          "area_ha": 33.3349910606465,
+          "crop_mask_area_ha": 26.06,
+          "crop_mask_coverage_pct": 87.18634994981599,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 2606,
+          "grid_height": 68,
+          "grid_width": 75,
+          "has_crop_mask": true,
+          "masked_area_pct": 10.521264912345652,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32630",
+          "resolution_m": 10,
+          "usable_area_ha": 29.82772834264914
+        },
+        "reasons": [],
+        "region": "bordeaux",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "bordeaux",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 6,
+        "confidence": 0.5606,
+        "critical_periods": [
+          {
+            "end": "2021-06-24",
+            "severity": "high",
+            "start": "2020-07-22"
+          },
+          {
+            "end": "2022-08-31",
+            "severity": "high",
+            "start": "2022-06-22"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-02",
+            "ndmi_anomaly_z": -1.535434209511523,
+            "ndmi_baseline_count": 9,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.11613983057081878,
+            "ndmi_mean": 0.09311580657958984,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2606
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-09",
+            "ndmi_anomaly_z": -0.8115137340194832,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.25,
+            "ndmi_ema": 0.10985423269263025,
+            "ndmi_mean": 0.09818097949028015,
+            "period": "2022-07-05/2022-07-14",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2606
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-24",
+            "ndmi_anomaly_z": -1.2864658394530186,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.25,
+            "ndmi_ema": 0.07524912638643608,
+            "ndmi_mean": 0.01098250038921833,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2606
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-01",
+            "ndmi_anomaly_z": -1.4146263104998493,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.125,
+            "ndmi_ema": 0.047080855437904565,
+            "ndmi_mean": -0.005231647752225399,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2606
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-11",
+            "ndmi_anomaly_z": -1.7163764528927103,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.02169385825814156,
+            "ndmi_mean": -0.025453422218561172,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2606
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-31",
+            "ndmi_anomaly_z": -1.4851291750162963,
+            "ndmi_baseline_count": 6,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.0024834110477951806,
+            "ndmi_mean": -0.033193133771419525,
+            "period": "2022-08-24/2022-08-31",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2606
+          }
+        ],
+        "quality_flag_counts": {},
+        "region": "bordeaux",
+        "request_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "status": "partial",
+        "target_period_count": 7,
+        "validation_assessment": {
+          "classification": "accepted",
+          "inputs": {
+            "baseline_supported_period_count": 6,
+            "confidence": 0.5606,
+            "critical_period_count": 2,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 0.0,
+            "min_valid_pixel_count": 2606,
+            "preflight_reasons": [],
+            "quality_flag_counts": {},
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 7,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "clear_drought_trigger"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_02",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_02",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 2443,
+          "area_ha": 27.73810694249306,
+          "crop_mask_area_ha": 21.02,
+          "crop_mask_coverage_pct": 86.04175194433074,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 2102,
+          "grid_height": 62,
+          "grid_width": 87,
+          "has_crop_mask": true,
+          "masked_area_pct": 12.07518272575201,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32630",
+          "resolution_m": 10,
+          "usable_area_ha": 24.38867984452252
+        },
+        "reasons": [],
+        "region": "bordeaux",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "bordeaux",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 6,
+        "confidence": 0.5243589743589744,
+        "critical_periods": [
+          {
+            "end": "2022-08-31",
+            "severity": "high",
+            "start": "2019-06-03"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-02",
+            "ndmi_anomaly_z": -1.4005515660259664,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.14285714285714285,
+            "ndmi_ema": 0.022967642441468285,
+            "ndmi_mean": 2.6668853024602868e-05,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2102
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-09",
+            "ndmi_anomaly_z": -2.0070814368235315,
+            "ndmi_baseline_count": 6,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.003436131111582072,
+            "ndmi_mean": -0.0328366756439209,
+            "period": "2022-07-05/2022-07-14",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2102
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-24",
+            "ndmi_anomaly_z": -2.0281690873849025,
+            "ndmi_baseline_count": 6,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.015394278153111566,
+            "ndmi_mean": -0.050365038216114044,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2102
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-01",
+            "ndmi_anomaly_z": -1.55326141981414,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.02641856763245117,
+            "ndmi_mean": -0.04689224809408188,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2102
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-11",
+            "ndmi_anomaly_z": -1.642542115101828,
+            "ndmi_baseline_count": 9,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.03573840339494688,
+            "ndmi_mean": -0.05304666981101036,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 2102
+          },
+          {
+            "cloud_pct": 37.044617273843635,
+            "date": "2022-08-31",
+            "ndmi_anomaly_z": -1.4948822654704617,
+            "ndmi_baseline_count": 6,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.03590264096044911,
+            "ndmi_mean": -0.0362076535820961,
+            "period": "2022-08-24/2022-08-31",
+            "quality": "poor",
+            "quality_flags": [
+              "low_clear_fraction",
+              "high_cloud_fraction"
+            ],
+            "valid_pixel_count": 1312
+          }
+        ],
+        "quality_flag_counts": {
+          "high_cloud_fraction": 1,
+          "low_clear_fraction": 1
+        },
+        "region": "bordeaux",
+        "request_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_02",
+        "status": "partial",
+        "target_period_count": 7,
+        "validation_assessment": {
+          "classification": "ambiguous",
+          "inputs": {
+            "baseline_supported_period_count": 6,
+            "confidence": 0.5243589743589744,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 6.174102878973939,
+            "min_valid_pixel_count": 1312,
+            "preflight_reasons": [],
+            "quality_flag_counts": {
+              "high_cloud_fraction": 1,
+              "low_clear_fraction": 1
+            },
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 7,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "quality_warnings_require_review"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_MEDOC_01",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_MEDOC_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 7968,
+          "area_ha": 85.30058993933345,
+          "crop_mask_area_ha": 74.11,
+          "crop_mask_coverage_pct": 93.00953815261043,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 7411,
+          "grid_height": 120,
+          "grid_width": 132,
+          "has_crop_mask": true,
+          "masked_area_pct": 6.505834723670878,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32630",
+          "resolution_m": 10,
+          "usable_area_ha": 79.75107453956419
+        },
+        "reasons": [],
+        "region": "bordeaux",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "bordeaux",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 4,
+        "confidence": 0.6098685714285714,
+        "critical_periods": [
+          {
+            "end": "2022-08-11",
+            "severity": "high",
+            "start": "2019-06-03"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-02",
+            "ndmi_anomaly_z": 0.003503541770699937,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.6666666666666666,
+            "ndmi_ema": 0.016786271173847428,
+            "ndmi_mean": 0.006798119749873877,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 7411
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-17",
+            "ndmi_anomaly_z": -1.029342168986643,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.001974340222368377,
+            "ndmi_mean": -0.036815475672483444,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 7411
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-01",
+            "ndmi_anomaly_z": -1.1694803002970524,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.14285714285714285,
+            "ndmi_ema": -0.023645205410677522,
+            "ndmi_mean": -0.06389109790325165,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 7411
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-11",
+            "ndmi_anomaly_z": -1.1122042473168288,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.2857142857142857,
+            "ndmi_ema": -0.03945000236037663,
+            "ndmi_mean": -0.06880176812410355,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 7411
+          }
+        ],
+        "quality_flag_counts": {},
+        "region": "bordeaux",
+        "request_id": "FR_RPG23_MEDOC_01",
+        "status": "partial",
+        "target_period_count": 6,
+        "validation_assessment": {
+          "classification": "accepted",
+          "inputs": {
+            "baseline_supported_period_count": 4,
+            "confidence": 0.6098685714285714,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 0.0,
+            "min_valid_pixel_count": 7411,
+            "preflight_reasons": [],
+            "quality_flag_counts": {},
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 6,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "clear_drought_trigger"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_MEDOC_02",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_MEDOC_02",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 3906,
+          "area_ha": 42.70533337999243,
+          "crop_mask_area_ha": 35.35,
+          "crop_mask_coverage_pct": 90.50179211469535,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 3535,
+          "grid_height": 80,
+          "grid_width": 89,
+          "has_crop_mask": true,
+          "masked_area_pct": 8.541206405772407,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32630",
+          "resolution_m": 10,
+          "usable_area_ha": 39.057782709734056
+        },
+        "reasons": [],
+        "region": "bordeaux",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "bordeaux",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 5,
+        "confidence": 0.5215868421052632,
+        "critical_periods": [
+          {
+            "end": "2022-08-11",
+            "severity": "high",
+            "start": "2019-06-13"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-02",
+            "ndmi_anomaly_z": -0.10080452088525048,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.7142857142857143,
+            "ndmi_ema": 0.06678728116685989,
+            "ndmi_mean": 0.05066316947340965,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3535
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-12",
+            "ndmi_anomaly_z": -0.7376304208612093,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.14285714285714285,
+            "ndmi_ema": 0.05351693408104427,
+            "ndmi_mean": 0.02887200377881527,
+            "period": "2022-07-05/2022-07-14",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3535
+          },
+          {
+            "cloud_pct": 2.150537634408602,
+            "date": "2022-07-22",
+            "ndmi_anomaly_z": -1.334062509958292,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.03283110642320883,
+            "ndmi_mean": -0.005585430655628443,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3009
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-01",
+            "ndmi_anomaly_z": -1.158278198141263,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.14285714285714285,
+            "ndmi_ema": 0.014052772858754115,
+            "ndmi_mean": -0.02082127518951893,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3535
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-11",
+            "ndmi_anomaly_z": -1.3966886420158606,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.125,
+            "ndmi_ema": -0.0010680978418787755,
+            "ndmi_mean": -0.02914971485733986,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3535
+          }
+        ],
+        "quality_flag_counts": {},
+        "region": "bordeaux",
+        "request_id": "FR_RPG23_MEDOC_02",
+        "status": "partial",
+        "target_period_count": 7,
+        "validation_assessment": {
+          "classification": "accepted",
+          "inputs": {
+            "baseline_supported_period_count": 5,
+            "confidence": 0.5215868421052632,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 0.4301075268817204,
+            "min_valid_pixel_count": 3009,
+            "preflight_reasons": [],
+            "quality_flag_counts": {},
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 7,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "clear_drought_trigger"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_SAUTERNES_01",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_SAUTERNES_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 4909,
+          "area_ha": 52.97831821802613,
+          "crop_mask_area_ha": 44.68,
+          "crop_mask_coverage_pct": 91.01650030556121,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 4468,
+          "grid_height": 109,
+          "grid_width": 82,
+          "has_crop_mask": true,
+          "masked_area_pct": 7.4398251837898055,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32630",
+          "resolution_m": 10,
+          "usable_area_ha": 49.03682395729312
+        },
+        "reasons": [],
+        "region": "bordeaux",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "bordeaux",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 5,
+        "confidence": 0.47314102564102567,
+        "critical_periods": [
+          {
+            "end": "2020-06-02",
+            "severity": "high",
+            "start": "2019-08-09"
+          },
+          {
+            "end": "2021-07-22",
+            "severity": "high",
+            "start": "2020-07-12"
+          },
+          {
+            "end": "2022-08-11",
+            "severity": "high",
+            "start": "2021-08-21"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-02",
+            "ndmi_anomaly_z": -1.4999480983672273,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.08618225569070066,
+            "ndmi_mean": 0.06087591499090195,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4468
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-09",
+            "ndmi_anomaly_z": -1.9816807920848778,
+            "ndmi_baseline_count": 5,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.06323874655566061,
+            "ndmi_mean": 0.02062937244772911,
+            "period": "2022-07-05/2022-07-14",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4468
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-24",
+            "ndmi_anomaly_z": -2.4037067272646633,
+            "ndmi_baseline_count": 6,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.03143926458265324,
+            "ndmi_mean": -0.027616916224360466,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4468
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-01",
+            "ndmi_anomaly_z": -2.9355774317164114,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": 0.005199285823691497,
+            "ndmi_mean": -0.043532103300094604,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4468
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-11",
+            "ndmi_anomaly_z": -2.60166196302683,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.019545239472307168,
+            "ndmi_mean": -0.06549935787916183,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4468
+          }
+        ],
+        "quality_flag_counts": {},
+        "region": "bordeaux",
+        "request_id": "FR_RPG23_SAUTERNES_01",
+        "status": "partial",
+        "target_period_count": 7,
+        "validation_assessment": {
+          "classification": "accepted",
+          "inputs": {
+            "baseline_supported_period_count": 5,
+            "confidence": 0.47314102564102567,
+            "critical_period_count": 3,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 0.0,
+            "min_valid_pixel_count": 4468,
+            "preflight_reasons": [],
+            "quality_flag_counts": {},
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 7,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "clear_drought_trigger"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    }
+  ],
+  "manifest": {
+    "name": "rpg-2023-vineyard-candidate-pack-bordeaux",
+    "version": "orbitrisk.aoi_batch.v1"
+  },
+  "run": {
+    "baseline_start": "2019-06-01",
+    "cache_enabled": true,
+    "collection": "sentinel-2-l2a",
+    "end": "2022-08-31",
+    "max_items": 40,
+    "provider": "planetary-computer"
+  },
+  "summary": {
+    "aoi_count": 5,
+    "failed_count": 0,
+    "rejected_count": 0,
+    "success_count": 5
+  }
+}

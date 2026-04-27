@@ -1,10 +1,13 @@
 from datetime import date
 from pathlib import Path
 
+from orbitrisk.batch.manifest import AoiBatchManifest
 from orbitrisk.cli import (
     _quote_with_cache,
+    _run_2022_validation_batch,
     _validation_payload,
     render_mask_benchmark_markdown,
+    render_validation_batch_markdown,
     render_validation_markdown,
     summarize_2022_validation,
     summarize_mask_benchmark,
@@ -261,6 +264,93 @@ def test_write_mask_benchmark_charts_generates_svg_artifacts(tmp_path: Path) -> 
     assert "## Chart Artifacts" in rendered
 
 
+def test_run_2022_validation_batch_reports_aoi_classifications(tmp_path: Path) -> None:
+    manifest = AoiBatchManifest.model_validate(
+        {
+            "name": "bordeaux-batch",
+            "date_range": {"start": "2019-06-01", "end": "2022-08-31"},
+            "aois": [
+                {
+                    "aoi_id": "valid-with-mask",
+                    "region": "bordeaux",
+                    "aoi": _feature(),
+                    "crop_mask": _left_half_crop_mask(),
+                },
+                {
+                    "aoi_id": "too-small",
+                    "region": "bordeaux",
+                    "aoi": _tiny_feature(),
+                },
+            ],
+        }
+    )
+    engine = BatchFakeEngine()
+
+    report = _run_2022_validation_batch(
+        manifest,
+        manifest_path=tmp_path / "manifest.json",
+        baseline_start=date(2019, 6, 1),
+        end=date(2022, 8, 31),
+        max_items=40,
+        cache_enabled=False,
+        cache_dir=tmp_path,
+        engine=engine,
+        provider_name="fake",
+        collection="sentinel-2-l2a",
+    )
+
+    assert report["summary"]["success_count"] == 1
+    assert report["summary"]["rejected_count"] == 1
+    assert report["aggregate"]["validation_classification_counts"]["accepted"] == 1
+    assert report["aggregate"]["validation_classification_counts"]["not_run"] == 1
+    assert report["aggregate"]["crop_mask_used_count"] == 1
+    assert report["aois"][0]["validation"]["validation_assessment"]["classification"] == "accepted"
+    assert report["aois"][1]["status"] == "rejected"
+    assert engine.calls == [
+        {
+            "request_id": "valid-with-mask",
+            "max_items": 40,
+            "has_crop_mask": True,
+            "crop_mask_crs": "EPSG:4326",
+        }
+    ]
+
+
+def test_render_validation_batch_markdown_includes_rollup() -> None:
+    manifest = AoiBatchManifest.model_validate(
+        {
+            "name": "batch-md",
+            "date_range": {"start": "2019-06-01", "end": "2022-08-31"},
+            "aois": [
+                {
+                    "aoi_id": "valid-with-mask",
+                    "region": "bordeaux",
+                    "aoi": _feature(),
+                    "crop_mask": _left_half_crop_mask(),
+                },
+            ],
+        }
+    )
+    report = _run_2022_validation_batch(
+        manifest,
+        manifest_path=Path("manifest.json"),
+        baseline_start=date(2019, 6, 1),
+        end=date(2022, 8, 31),
+        max_items=40,
+        cache_enabled=False,
+        cache_dir=Path("."),
+        engine=BatchFakeEngine(),
+        provider_name="fake",
+        collection="sentinel-2-l2a",
+    )
+
+    rendered = render_validation_batch_markdown(report)
+
+    assert "# OrbitRisk 2022 Batch Drought Validation: batch-md" in rendered
+    assert "## Validation Summary" in rendered
+    assert "| valid-with-mask | bordeaux | success | accepted | True |" in rendered
+
+
 def _response(
     *,
     trigger: bool,
@@ -344,3 +434,87 @@ class FakeEngine:
     ) -> RiskResponse:
         self.calls += 1
         return _response(trigger=False, baseline_count=None)
+
+
+class BatchFakeEngine:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def quote(
+        self,
+        request: RiskRequest,
+        *,
+        max_items: int,
+        crop_mask_geojson=None,
+        crop_mask_crs: str = "EPSG:4326",
+    ) -> RiskResponse:
+        self.calls.append(
+            {
+                "request_id": request.request_id,
+                "max_items": max_items,
+                "has_crop_mask": crop_mask_geojson is not None,
+                "crop_mask_crs": crop_mask_crs,
+            }
+        )
+        return _response(
+            trigger=True,
+            baseline_count=3,
+            crop_mask_coverage_pct=55.0 if crop_mask_geojson is not None else None,
+        )
+
+
+def _feature() -> dict:
+    return {
+        "type": "Feature",
+        "properties": {"asset_id": "FR_VINEYARD_TEST", "crop": "vineyard"},
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [4.82, 45.73],
+                    [4.83, 45.73],
+                    [4.83, 45.74],
+                    [4.82, 45.74],
+                    [4.82, 45.73],
+                ]
+            ],
+        },
+    }
+
+
+def _tiny_feature() -> dict:
+    return {
+        "type": "Feature",
+        "properties": {"asset_id": "TOO_SMALL", "crop": "vineyard"},
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [4.82, 45.73],
+                    [4.82001, 45.73],
+                    [4.82001, 45.73001],
+                    [4.82, 45.73001],
+                    [4.82, 45.73],
+                ]
+            ],
+        },
+    }
+
+
+def _left_half_crop_mask() -> dict:
+    return {
+        "type": "Feature",
+        "properties": {"source": "synthetic-rpg"},
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [4.82, 45.73],
+                    [4.825, 45.73],
+                    [4.825, 45.74],
+                    [4.82, 45.74],
+                    [4.82, 45.73],
+                ]
+            ],
+        },
+    }
