@@ -22,6 +22,11 @@ returns an auditable JSON time series for actuarial workflows.
 - A supervised drought model. CatBoost belongs after we have labels, claims history, or
   trusted agronomic ground truth.
 
+## Roadmap
+
+The detailed build roadmap is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and mirrored
+as GitHub milestones/issues.
+
 ## Quickstart
 
 ```bash
