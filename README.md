@@ -54,8 +54,15 @@ Use `--temporal P10D` or `--temporal P1M` to inspect the composited actuarial se
 Run a first drought-2022 validation summary:
 
 ```bash
-orbitrisk validate-2022 tests/fixtures/sample_request.json --region bordeaux --max-items 80
+orbitrisk validate-2022 tests/fixtures/sample_request.json \
+  --region bordeaux \
+  --max-items 80 \
+  --output-json reports/bordeaux-2022.json \
+  --output-md reports/bordeaux-2022.md
 ```
+
+Validation responses are cached under `data/cache` by default. Use `--no-cache` when you
+need to force a fresh Planetary Computer run.
 
 ## Environment
 

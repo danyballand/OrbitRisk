@@ -16,6 +16,7 @@ from orbitrisk.schemas.response import (
     RiskSignal,
     SourceMetadata,
 )
+from orbitrisk.storage.cache import LocalRiskResponseCache, risk_response_cache_key
 from orbitrisk.timeseries.smoothing import ema
 from orbitrisk.timeseries.triggers import detect_water_stress_trigger
 
@@ -118,15 +119,32 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
 def quote_risk_live(
     payload: RiskRequest,
     max_items: int = Query(default=25, ge=1, le=500),
+    use_cache: bool = Query(default=True),
 ) -> RiskResponse:
     settings = get_settings()
+    provider_name = "planetary-computer"
     provider = PlanetaryComputerProvider(settings)
     engine = RiskEngine(
         provider,
-        provider_name="planetary-computer",
+        provider_name=provider_name,
         collection=settings.planetary_computer_collection,
     )
-    return engine.quote(payload, max_items=max_items)
+    cache = LocalRiskResponseCache(settings.cache_dir)
+    cache_key = risk_response_cache_key(
+        payload,
+        provider_name=provider_name,
+        collection=settings.planetary_computer_collection,
+        max_items=max_items,
+    )
+    if use_cache:
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+    response = engine.quote(payload, max_items=max_items)
+    if use_cache:
+        cache.set(cache_key, response)
+    return response
 
 
 def _sample_period_dates(start: date, end: date, limit: int) -> list[date]:

@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -25,6 +26,7 @@ class Settings(BaseSettings):
     )
     default_resolution_m: int = Field(default=10, alias="ORBITRISK_DEFAULT_RESOLUTION_M")
     min_valid_pixels: int = Field(default=20, alias="ORBITRISK_MIN_VALID_PIXELS")
+    cache_dir: Path = Field(default=Path("data/cache"), alias="ORBITRISK_CACHE_DIR")
 
     @property
     def sentinelhub_enabled(self) -> bool:

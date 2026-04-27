@@ -12,6 +12,7 @@ from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvi
 from orbitrisk.risk_engine import RiskEngine
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import RiskResponse
+from orbitrisk.storage.cache import LocalRiskResponseCache, risk_response_cache_key
 from orbitrisk.timeseries.compositing import composite_observations
 
 
@@ -32,6 +33,10 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--baseline-start", type=date.fromisoformat, default=date(2019, 6, 1))
     validate.add_argument("--end", type=date.fromisoformat, default=date(2022, 8, 31))
     validate.add_argument("--max-items", type=int, default=80)
+    validate.add_argument("--cache", action=argparse.BooleanOptionalAction, default=True)
+    validate.add_argument("--cache-dir", type=Path, default=None)
+    validate.add_argument("--output-json", type=Path, default=None)
+    validate.add_argument("--output-md", type=Path, default=None)
 
     args = parser.parse_args(argv)
     if args.command == "smoke-pc":
@@ -139,12 +144,57 @@ def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
     }
     request = RiskRequest.model_validate(payload)
     settings = get_settings()
-    response = RiskEngine(
+    provider_name = "planetary-computer"
+    collection = settings.planetary_computer_collection
+    engine = RiskEngine(
         PlanetaryComputerProvider(settings),
-        provider_name="planetary-computer",
-        collection=settings.planetary_computer_collection,
-    ).quote(request, max_items=args.max_items)
-    return summarize_2022_validation(response, region=args.region)
+        provider_name=provider_name,
+        collection=collection,
+    )
+    response = _quote_with_cache(
+        engine,
+        request,
+        provider_name=provider_name,
+        collection=collection,
+        max_items=args.max_items,
+        enabled=args.cache,
+        cache_dir=args.cache_dir or settings.cache_dir,
+    )
+    summary = summarize_2022_validation(response, region=args.region)
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
+    if args.output_md is not None:
+        args.output_md.parent.mkdir(parents=True, exist_ok=True)
+        args.output_md.write_text(render_validation_markdown(summary))
+    return summary
+
+
+def _quote_with_cache(
+    engine: RiskEngine,
+    request: RiskRequest,
+    *,
+    provider_name: str,
+    collection: str,
+    max_items: int,
+    enabled: bool,
+    cache_dir: Path,
+) -> RiskResponse:
+    if not enabled:
+        return engine.quote(request, max_items=max_items)
+    cache = LocalRiskResponseCache(cache_dir)
+    cache_key = risk_response_cache_key(
+        request,
+        provider_name=provider_name,
+        collection=collection,
+        max_items=max_items,
+    )
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+    response = engine.quote(request, max_items=max_items)
+    cache.set(cache_key, response)
+    return response
 
 
 def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[str, Any]:
@@ -188,6 +238,60 @@ def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[st
         ],
         "ndmi_periods": ndmi_periods,
     }
+
+
+def render_validation_markdown(summary: dict[str, Any]) -> str:
+    lines = [
+        f"# OrbitRisk 2022 Drought Validation: {summary['region']}",
+        "",
+        f"- Request: `{summary['request_id']}`",
+        f"- Status: `{summary['status']}`",
+        f"- Detected: `{summary['detected']}`",
+        f"- Detection reason: `{summary['detection_reason']}`",
+        f"- Confidence: `{summary['confidence']:.2f}`",
+        f"- Target periods: `{summary['target_period_count']}`",
+        f"- Baseline-supported periods: `{summary['baseline_supported_period_count']}`",
+        "",
+        "## NDMI Periods",
+        "",
+        "| Period | Date | Quality | Valid px | Cloud % | NDMI mean | EMA | z | "
+        "baseline pctl | n |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for period in summary["ndmi_periods"]:
+        lines.append(
+            "| {period} | {date} | {quality} | {valid} | {cloud:.1f} | {mean:.4f} | "
+            "{ema} | {z} | {pctl} | {count} |".format(
+                period=period["period"],
+                date=period["date"],
+                quality=period["quality"],
+                valid=period["valid_pixel_count"],
+                cloud=period["cloud_pct"],
+                mean=period["ndmi_mean"],
+                ema=_format_optional(period["ndmi_ema"]),
+                z=_format_optional(period["ndmi_anomaly_z"]),
+                pctl=_format_optional(period["ndmi_baseline_percentile"]),
+                count=period["ndmi_baseline_count"] or "",
+            )
+        )
+    lines.append("")
+    lines.append("## Critical Periods")
+    lines.append("")
+    if summary["critical_periods"]:
+        for period in summary["critical_periods"]:
+            lines.append(f"- {period['start']} to {period['end']}: {period['severity']}")
+    else:
+        lines.append("- None")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _format_optional(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, float):
+        return f"{value:.4f}"
+    return str(value)
 
 
 if __name__ == "__main__":

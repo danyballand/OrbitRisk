@@ -16,6 +16,8 @@ OrbitRisk now has a working technical spine:
 - live API endpoint backed by Planetary Computer,
 - seasonal baseline metadata,
 - drought-2022 validation summary runner,
+- local JSON response cache,
+- JSON and Markdown validation exports,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -39,7 +41,6 @@ Close, but not done.
 
 The technical POC needs:
 
-- persistence/caching for raw and summarized observations,
 - clear rejected-observation reasons,
 - baseline seasonal anomaly scoring,
 - a Bordeaux/Languedoc July-August 2022 validation run.

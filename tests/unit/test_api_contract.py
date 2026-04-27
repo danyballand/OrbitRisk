@@ -42,7 +42,7 @@ def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     payload = json.loads(FIXTURE.read_text())
     payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
 
-    response = client.post("/v1/risk/quote/live?max_items=3", json=payload)
+    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
 
     assert response.status_code == 200
     body = response.json()

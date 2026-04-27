@@ -55,9 +55,15 @@ The validation report must list:
 OrbitRisk includes a first JSON validation runner:
 
 ```bash
-orbitrisk validate-2022 tests/fixtures/sample_request.json --region bordeaux --max-items 80
+orbitrisk validate-2022 tests/fixtures/sample_request.json \
+  --region bordeaux \
+  --max-items 80 \
+  --output-json reports/bordeaux-2022.json \
+  --output-md reports/bordeaux-2022.md
 ```
 
 The runner executes the live Planetary Computer path, filters July-August 2022, and reports
 NDMI mean, EMA, anomaly z-score, baseline percentile, baseline count, quality flags, and
 critical periods.
+
+Results are cached under `data/cache` by default. Use `--no-cache` to force a fresh run.
