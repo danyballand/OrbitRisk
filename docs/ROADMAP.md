@@ -32,7 +32,7 @@ The POC is considered technically demoable only when all P0 criteria are true:
 - [x] `benchmark-masks-2022` has been run on the AOI batch.
 - [x] The benchmark compares `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`.
 - [x] At least one real crop/RPG-style mask is used, not only synthetic geometry.
-- [ ] The validation report includes July-August 2022 NDMI/EMA/baseline evidence.
+- [x] The validation report includes July-August 2022 NDMI/EMA/baseline evidence.
 - [ ] Every reported trigger has `valid_pixel_count`, `cloud_pct`, `mask_counts`, and
   `quality_flags`.
 - [ ] The demo can be reproduced from documented CLI commands.
@@ -117,16 +117,16 @@ Goal: prove the engine sees a known historical drought event.
 
 Deliverables:
 
-- [ ] Bordeaux and/or Languedoc July-August 2022 validation run.
+- [x] Bordeaux and/or Languedoc July-August 2022 validation run.
 - [x] Same-day-of-year seasonal baseline metadata for each accepted period.
 - [x] Accepted/rejected/ambiguous AOI classifier.
 - [ ] NDMI threshold and percentile calibration note.
-- [ ] Investigation of missing seasonal baseline support in the first real RPG benchmark.
+- [x] Investigation of missing seasonal baseline support in the first real RPG benchmark.
 - [ ] Failure-mode appendix covering cloud gaps, insufficient pixels, and unstable masks.
 
 Exit criteria:
 
-- [ ] At least one known drought AOI shows a clear NDMI/EMA crash in July-August 2022.
+- [x] At least one known drought AOI shows a clear NDMI/EMA crash in July-August 2022.
 - [ ] Rejected AOIs have explicit non-handwavy rejection reasons.
 - [ ] Ambiguous AOIs are not counted as wins.
 

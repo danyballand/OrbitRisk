@@ -16,15 +16,15 @@
 
 | AOI | Region | Status | Completed variants | Detected | Confidence | Crop coverage % | Assessment | Reasons |
 | --- | --- | --- | ---: | --- | ---: | ---: | --- | --- |
-| FR_RPG23_BORDEAUX_RIGHT_BANK_01 | bordeaux | success | 3 | False | 0.8185 | 87.1863 | improved |  |
+| FR_RPG23_BORDEAUX_RIGHT_BANK_01 | bordeaux | success | 3 | True | 0.5606 | 87.1863 | improved |  |
 
 ## Variant Rollup
 
 | Variant | AOIs | Detected | Mean confidence | Mean valid px | Mean cloud % | Min NDMI EMA | Crop coverage % | Non-crop px |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| raw_aoi | 1 | 0 | 0.8753 | 3341.0000 | 0.0000 | -0.0166 |  | 0 |
-| buffered_aoi | 1 | 0 | 0.8739 | 2989.0000 | 0.0000 | -0.0162 |  | 0 |
-| vector_crop_mask | 1 | 0 | 0.8185 | 2606.0000 | 0.0000 | -0.0147 | 87.1863 | 4596 |
+| raw_aoi | 1 | 1 | 0.5624 | 3341.0000 | 0.0000 | 0.0003 |  | 0 |
+| buffered_aoi | 1 | 1 | 0.5615 | 2989.0000 | 0.0000 | 0.0007 |  | 0 |
+| vector_crop_mask | 1 | 1 | 0.5606 | 2606.0000 | 0.0000 | 0.0025 | 87.1863 | 14937 |
 
 ## Chart Artifacts
 

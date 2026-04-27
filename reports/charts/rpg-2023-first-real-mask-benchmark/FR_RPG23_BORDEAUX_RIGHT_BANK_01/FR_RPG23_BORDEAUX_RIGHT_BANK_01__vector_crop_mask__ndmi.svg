@@ -6,34 +6,32 @@
 <line class="axis" x1="72" y1="52" x2="72" y2="338"/>
 <line class="axis" x1="72" y1="338" x2="872" y2="338"/>
 <line class="grid" x1="72" y1="338.0" x2="872" y2="338.0"/>
-<text class="tick" x="62" y="342.0" text-anchor="end">-0.0433</text>
+<text class="tick" x="62" y="342.0" text-anchor="end">-0.0451</text>
 <line class="grid" x1="72" y1="266.5" x2="872" y2="266.5"/>
-<text class="tick" x="62" y="270.5" text-anchor="end">-0.00663</text>
+<text class="tick" x="62" y="270.5" text-anchor="end">-0.00183</text>
 <line class="grid" x1="72" y1="195.0" x2="872" y2="195.0"/>
-<text class="tick" x="62" y="199.0" text-anchor="end">0.03</text>
+<text class="tick" x="62" y="199.0" text-anchor="end">0.0415</text>
 <line class="grid" x1="72" y1="123.5" x2="872" y2="123.5"/>
-<text class="tick" x="62" y="127.5" text-anchor="end">0.0667</text>
+<text class="tick" x="62" y="127.5" text-anchor="end">0.0848</text>
 <line class="grid" x1="72" y1="52.0" x2="872" y2="52.0"/>
-<text class="tick" x="62" y="56.0" text-anchor="end">0.103</text>
+<text class="tick" x="62" y="56.0" text-anchor="end">0.128</text>
 <text class="tick" x="72.0" y="392" text-anchor="middle">2022-07-02</text>
-<text class="tick" x="472.0" y="392" text-anchor="middle">2022-08-03</text>
+<text class="tick" x="552.0" y="392" text-anchor="middle">2022-08-01</text>
 <text class="tick" x="872.0" y="392" text-anchor="middle">2022-08-31</text>
-<polyline fill="none" stroke="#1f77b4" stroke-width="2.4" points="72.0,71.7 205.3,178.0 338.7,232.2 472.0,288.7 605.3,303.2 738.7,303.4 872.0,318.3"/>
-<circle cx="72.0" cy="71.7" r="3.4" fill="#1f77b4"/>
-<circle cx="205.3" cy="178.0" r="3.4" fill="#1f77b4"/>
-<circle cx="338.7" cy="232.2" r="3.4" fill="#1f77b4"/>
-<circle cx="472.0" cy="288.7" r="3.4" fill="#1f77b4"/>
-<circle cx="605.3" cy="303.2" r="3.4" fill="#1f77b4"/>
-<circle cx="738.7" cy="303.4" r="3.4" fill="#1f77b4"/>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2.4" points="72.0,109.7 232.0,101.4 392.0,245.3 552.0,272.1 712.0,305.5 872.0,318.3"/>
+<circle cx="72.0" cy="109.7" r="3.4" fill="#1f77b4"/>
+<circle cx="232.0" cy="101.4" r="3.4" fill="#1f77b4"/>
+<circle cx="392.0" cy="245.3" r="3.4" fill="#1f77b4"/>
+<circle cx="552.0" cy="272.1" r="3.4" fill="#1f77b4"/>
+<circle cx="712.0" cy="305.5" r="3.4" fill="#1f77b4"/>
 <circle cx="872.0" cy="318.3" r="3.4" fill="#1f77b4"/>
-<polyline fill="none" stroke="#d62728" stroke-width="2.4" points="72.0,98.1 205.3,126.1 338.7,163.2 472.0,207.2 605.3,240.8 738.7,262.7 872.0,282.1"/>
-<circle cx="72.0" cy="98.1" r="3.4" fill="#d62728"/>
-<circle cx="205.3" cy="126.1" r="3.4" fill="#d62728"/>
-<circle cx="338.7" cy="163.2" r="3.4" fill="#d62728"/>
-<circle cx="472.0" cy="207.2" r="3.4" fill="#d62728"/>
-<circle cx="605.3" cy="240.8" r="3.4" fill="#d62728"/>
-<circle cx="738.7" cy="262.7" r="3.4" fill="#d62728"/>
-<circle cx="872.0" cy="282.1" r="3.4" fill="#d62728"/>
+<polyline fill="none" stroke="#d62728" stroke-width="2.4" points="72.0,71.7 232.0,82.1 392.0,139.2 552.0,185.7 712.0,227.7 872.0,259.4"/>
+<circle cx="72.0" cy="71.7" r="3.4" fill="#d62728"/>
+<circle cx="232.0" cy="82.1" r="3.4" fill="#d62728"/>
+<circle cx="392.0" cy="139.2" r="3.4" fill="#d62728"/>
+<circle cx="552.0" cy="185.7" r="3.4" fill="#d62728"/>
+<circle cx="712.0" cy="227.7" r="3.4" fill="#d62728"/>
+<circle cx="872.0" cy="259.4" r="3.4" fill="#d62728"/>
 <line x1="72" y1="406" x2="96" y2="406" stroke="#1f77b4" stroke-width="2.4"/>
 <text class="legend" x="102" y="410">NDMI mean</text>
 <line x1="204" y1="406" x2="228" y2="406" stroke="#d62728" stroke-width="2.4"/>

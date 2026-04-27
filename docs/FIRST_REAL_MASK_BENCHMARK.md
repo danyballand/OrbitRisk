@@ -10,7 +10,8 @@ Command:
 
 ```bash
 orbitrisk benchmark-masks-batch-2022 examples/rpg_2023_first_real_benchmark_manifest.json \
-  --max-items 80 \
+  --max-items 40 \
+  --no-cache \
   --output-json reports/rpg-2023-first-real-mask-benchmark.json \
   --output-md reports/rpg-2023-first-real-mask-benchmark.md \
   --charts-dir reports/charts/rpg-2023-first-real-mask-benchmark
@@ -45,17 +46,32 @@ Key metrics:
 | Crop-mask median valid pixels | 2606 |
 | Buffered valid-pixel delta vs raw | -10.5358% |
 | Crop-mask valid-pixel delta vs raw | -21.9994% |
-| Crop-mask non-crop pixel delta vs raw | 4596 |
-| Crop-mask min NDMI EMA delta vs raw | 0.0019 |
+| Crop-mask non-crop pixel delta vs raw | 14937 |
+| Crop-mask min NDMI EMA delta vs raw | 0.0022 |
+| Raw drought validation assessment | accepted |
+| Crop-mask drought validation assessment | accepted |
+| Baseline-supported target periods | 6 |
 
 Interpretation: the RPG crop mask beats buffer-only for measurable contamination removal
 on this AOI, because buffer-only removes zero tracked non-crop pixels while the external
-crop mask removes 4596. The tradeoff is a larger valid-pixel loss, but still far above
+crop mask removes 14937. The tradeoff is a larger valid-pixel loss, but still far above
 the `min_valid_pixels` threshold.
+
+## Baseline Fix
+
+The first live run exposed a sampling bug: a global `--max-items` budget could be consumed
+by recent 2022 scenes before enough 2019-2021 same-season scenes reached the seasonal
+baseline calculator. The Planetary Computer provider now stratifies multi-year seasonal
+queries by year and samples each June-August slice chronologically.
+
+With `--max-items 40`, each target period now has baseline support (`ndmi_baseline_count`
+from 6 to 9), all three variants produce a clear drought trigger
+(`ndmi_ema_below_0.15_for_2_periods`), and the drought validation classifier marks the
+AOI as `accepted`.
 
 ## Caveat
 
-Do not use this run as drought-event proof. All variants were rejected by the drought
-validation classifier because the July-August 2022 periods had no seasonal baseline
-support (`no_baseline_support`). This is now tracked as a follow-up investigation before
-closing the 2022 drought validation milestone.
+The `--max-items 80` rerun proved the stratified search distribution in a live diagnostic
+(`20` items per year from 2019 through 2022), but the full raster benchmark timed out on
+Planetary Computer. `--max-items 40` is the current reproducible live budget for this
+single-AOI benchmark until the pipeline moves to async jobs or chunked artifact storage.

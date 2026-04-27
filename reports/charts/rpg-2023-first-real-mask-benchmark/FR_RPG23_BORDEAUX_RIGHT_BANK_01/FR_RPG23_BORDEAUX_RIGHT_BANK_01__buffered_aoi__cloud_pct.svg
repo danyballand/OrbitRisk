@@ -16,15 +16,14 @@
 <line class="grid" x1="72" y1="52.0" x2="872" y2="52.0"/>
 <text class="tick" x="62" y="56.0" text-anchor="end">100</text>
 <text class="tick" x="72.0" y="392" text-anchor="middle">2022-07-02</text>
-<text class="tick" x="472.0" y="392" text-anchor="middle">2022-08-03</text>
+<text class="tick" x="552.0" y="392" text-anchor="middle">2022-08-01</text>
 <text class="tick" x="872.0" y="392" text-anchor="middle">2022-08-31</text>
-<polyline fill="none" stroke="#7f7f7f" stroke-width="2.4" points="72.0,338.0 205.3,338.0 338.7,338.0 472.0,338.0 605.3,338.0 738.7,338.0 872.0,338.0"/>
+<polyline fill="none" stroke="#7f7f7f" stroke-width="2.4" points="72.0,338.0 232.0,338.0 392.0,338.0 552.0,338.0 712.0,338.0 872.0,338.0"/>
 <circle cx="72.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
-<circle cx="205.3" cy="338.0" r="3.4" fill="#7f7f7f"/>
-<circle cx="338.7" cy="338.0" r="3.4" fill="#7f7f7f"/>
-<circle cx="472.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
-<circle cx="605.3" cy="338.0" r="3.4" fill="#7f7f7f"/>
-<circle cx="738.7" cy="338.0" r="3.4" fill="#7f7f7f"/>
+<circle cx="232.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
+<circle cx="392.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
+<circle cx="552.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
+<circle cx="712.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
 <circle cx="872.0" cy="338.0" r="3.4" fill="#7f7f7f"/>
 <line x1="72" y1="406" x2="96" y2="406" stroke="#7f7f7f" stroke-width="2.4"/>
 <text class="legend" x="102" y="410">Cloud %</text>

@@ -107,7 +107,8 @@ Run the first real RPG crop-mask benchmark:
 
 ```bash
 orbitrisk benchmark-masks-batch-2022 examples/rpg_2023_first_real_benchmark_manifest.json \
-  --max-items 80 \
+  --max-items 40 \
+  --no-cache \
   --output-json reports/rpg-2023-first-real-mask-benchmark.json \
   --output-md reports/rpg-2023-first-real-mask-benchmark.md \
   --charts-dir reports/charts/rpg-2023-first-real-mask-benchmark
