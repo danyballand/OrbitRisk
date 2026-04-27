@@ -1,0 +1,115 @@
+{
+  "aois": [
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_bordeaux_right_bank_01.geojson",
+      "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_bordeaux_right_bank_01_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "bordeaux"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_bordeaux_right_bank_02.geojson",
+      "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_02",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_bordeaux_right_bank_02_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "bordeaux"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_medoc_01.geojson",
+      "aoi_id": "FR_RPG23_MEDOC_01",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_medoc_01_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "bordeaux"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_medoc_02.geojson",
+      "aoi_id": "FR_RPG23_MEDOC_02",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_medoc_02_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "bordeaux"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_sauternes_01.geojson",
+      "aoi_id": "FR_RPG23_SAUTERNES_01",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_sauternes_01_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "bordeaux"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_pic_saint_loup_01.geojson",
+      "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_01",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_pic_saint_loup_01_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "languedoc"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_pic_saint_loup_02.geojson",
+      "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_02",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_pic_saint_loup_02_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "languedoc"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_minervois_01.geojson",
+      "aoi_id": "FR_RPG23_MINERVOIS_01",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_minervois_01_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "languedoc"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_minervois_02.geojson",
+      "aoi_id": "FR_RPG23_MINERVOIS_02",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_minervois_02_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "languedoc"
+    },
+    {
+      "aoi_geojson_path": "../data/aoi/rpg_2023_vineyard_candidates/fr_rpg23_beziers_01.geojson",
+      "aoi_id": "FR_RPG23_BEZIERS_01",
+      "crop": "vineyard",
+      "crop_mask_crs": "EPSG:4326",
+      "crop_mask_geojson_path": "../data/rpg/rpg_2023_vineyard_candidates/fr_rpg23_beziers_01_crop_mask.geojson",
+      "crs": "EPSG:4326",
+      "region": "languedoc"
+    }
+  ],
+  "date_range": {
+    "end": "2022-08-31",
+    "start": "2019-06-01"
+  },
+  "masking": {
+    "exclude_scl_classes": [
+      0,
+      1,
+      3,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "min_clear_fraction": 0.7,
+    "min_valid_pixels": 20,
+    "negative_buffer_m": 10
+  },
+  "name": "rpg-2023-vineyard-candidate-pack",
+  "version": "orbitrisk.aoi_batch.v1"
+}

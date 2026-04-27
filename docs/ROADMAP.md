@@ -28,10 +28,10 @@ The POC is considered technically demoable only when all P0 criteria are true:
 
 - [x] AOIs can be versioned as manifests or fixtures, with CRS and crop metadata.
 - [x] Each AOI can be locally accepted or rejected before live Sentinel-2 loading.
-- [ ] 5-10 real vineyard AOIs are versioned in a validation manifest.
+- [x] 5-10 real vineyard AOIs are versioned in a validation manifest.
 - [ ] `benchmark-masks-2022` has been run on the AOI batch.
 - [ ] The benchmark compares `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`.
-- [ ] At least one real crop/RPG-style mask is used, not only synthetic geometry.
+- [x] At least one real crop/RPG-style mask is used, not only synthetic geometry.
 - [ ] The validation report includes July-August 2022 NDMI/EMA/baseline evidence.
 - [ ] Every reported trigger has `valid_pixel_count`, `cloud_pct`, `mask_counts`, and
   `quality_flags`.
@@ -73,7 +73,7 @@ Goal: make the input dataset real enough to expose geospatial failure modes.
 Deliverables:
 
 - [x] AOI batch manifest schema for vineyard test parcels.
-- [ ] 5-10 candidate AOIs across Bordeaux and/or Languedoc.
+- [x] 5-10 candidate AOIs across Bordeaux and/or Languedoc.
 - [x] Crop-mask/RPG input convention and CRS handling documented.
 - [x] Geometry and raster support checks for min area, min pixels, CRS, and invalid shapes.
 - [x] Rejection reasons surfaced before expensive Sentinel-2 loads where possible.
@@ -82,7 +82,7 @@ Exit criteria:
 
 - [x] `orbitrisk` can validate a batch manifest locally.
 - [x] Tiny or invalid AOIs fail with actionable reasons.
-- [ ] At least one real AOI has an external crop mask ready for the benchmark.
+- [x] At least one real AOI has an external crop mask ready for the benchmark.
 
 ### M2: Basis-Risk Mask Benchmark
 

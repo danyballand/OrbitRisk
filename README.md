@@ -64,6 +64,14 @@ orbitrisk validate-aoi-batch examples/aoi_batch_manifest.json \
   --output-md reports/aoi-batch-validation.md
 ```
 
+Validate the public RPG 2023 vineyard candidate pack:
+
+```bash
+orbitrisk validate-aoi-batch examples/rpg_2023_vineyard_candidate_manifest.json \
+  --output-json reports/rpg-2023-aoi-validation.json \
+  --output-md reports/rpg-2023-aoi-validation.md
+```
+
 Run a first drought-2022 validation summary:
 
 ```bash

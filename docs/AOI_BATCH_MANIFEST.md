@@ -13,6 +13,14 @@ orbitrisk validate-aoi-batch examples/aoi_batch_manifest.json \
   --output-md reports/aoi-batch-validation.md
 ```
 
+Validate the public RPG 2023 vineyard candidate pack:
+
+```bash
+orbitrisk validate-aoi-batch examples/rpg_2023_vineyard_candidate_manifest.json \
+  --output-json reports/rpg-2023-aoi-validation.json \
+  --output-md reports/rpg-2023-aoi-validation.md
+```
+
 ## Minimal Inline Manifest
 
 ```json
@@ -108,3 +116,7 @@ can still be used for raw-vs-buffer comparisons.
   explicit.
 - A small AOI can still be kept in the manifest, but it should be expected to fail the
   local quality gate when Sentinel-2 10 m pixel support is insufficient.
+- `examples/rpg_2023_vineyard_candidate_manifest.json` is generated from public IGN RPG
+  2023 WFS data. Its crop masks are the original RPG vineyard parcel geometries; its AOIs
+  are 20 m outward buffers around those parcels to simulate contaminated insured
+  boundaries for basis-risk benchmarking.
