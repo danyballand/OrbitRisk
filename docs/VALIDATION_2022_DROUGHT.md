@@ -65,13 +65,38 @@ orbitrisk validate-2022 tests/fixtures/sample_request.json \
 
 The runner executes the live Planetary Computer path, filters July-August 2022, and reports
 NDMI mean, EMA, anomaly z-score, baseline percentile, baseline count, quality flags, and
-critical periods.
+critical periods. The JSON and Markdown outputs also include a deterministic validation
+assessment: `accepted`, `rejected`, or `ambiguous`.
 
 Results are cached under `data/cache` by default. Use `--no-cache` to force a fresh run.
 
 `--crop-mask-geojson` accepts a Polygon, MultiPolygon, Feature, or FeatureCollection and
 is intended for RPG IGN or other parcel/crop masks. The vector mask is reprojected onto
 the fixed Sentinel grid and affects `valid_pixel_count` and `mask_counts.non_crop`.
+
+## Drought Validation Classifier
+
+The drought-event classifier is separate from the basis-risk masking classifier. It
+answers a different question: can this AOI honestly be counted as evidence that the
+engine detected the July-August 2022 drought?
+
+Default thresholds:
+
+- `min_valid_pixels`: `20`
+- `min_baseline_supported_periods`: `1`
+- `min_confidence`: `0.35`
+- `max_mean_cloud_pct`: `70.0`
+- `max_rejected_period_fraction`: `0.5`
+
+Classification rules:
+
+- `accepted`: clear drought trigger, baseline support, enough valid pixels, critical
+  periods, and no quality warnings requiring review.
+- `rejected`: failed response, no July-August target periods, no NDMI periods, no
+  seasonal baseline support, insufficient valid pixels, too many rejected periods, or
+  cloud gap.
+- `ambiguous`: enough data to inspect, but weak/no drought signal, low confidence, no
+  critical periods, or quality warnings that make the trigger non-decisive.
 
 ## Mask Benchmark Runner
 

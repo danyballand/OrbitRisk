@@ -30,6 +30,7 @@ def test_summarize_2022_validation_requires_trigger_and_baseline_support() -> No
 
     assert summary["region"] == "bordeaux"
     assert summary["detected"] is True
+    assert summary["validation_assessment"]["classification"] == "accepted"
     assert summary["baseline_supported_period_count"] == 1
     assert summary["ndmi_periods"][0]["ndmi_baseline_percentile"] == 0.0
 
@@ -40,6 +41,8 @@ def test_summarize_2022_validation_does_not_detect_without_baseline() -> None:
     summary = summarize_2022_validation(response, region="languedoc")
 
     assert summary["detected"] is False
+    assert summary["validation_assessment"]["classification"] == "rejected"
+    assert "no_baseline_support" in summary["validation_assessment"]["reasons"]
     assert summary["baseline_supported_period_count"] == 0
 
 
@@ -52,8 +55,37 @@ def test_render_validation_markdown_includes_key_fields() -> None:
     rendered = render_validation_markdown(summary)
 
     assert "# OrbitRisk 2022 Drought Validation: bordeaux" in rendered
+    assert "Assessment: `accepted`" in rendered
     assert "Baseline-supported periods" in rendered
     assert "2022-07-01/2022-07-10" in rendered
+
+
+def test_summarize_2022_validation_marks_weak_supported_signal_ambiguous() -> None:
+    summary = summarize_2022_validation(
+        _response(trigger=False, baseline_count=3),
+        region="bordeaux",
+    )
+
+    assert summary["validation_assessment"]["classification"] == "ambiguous"
+    assert "weak_or_no_drought_signal" in summary["validation_assessment"]["reasons"]
+
+
+def test_summarize_2022_validation_rejects_insufficient_pixels() -> None:
+    summary = summarize_2022_validation(
+        _response(
+            trigger=True,
+            baseline_count=3,
+            valid_pixel_count=5,
+            quality="rejected",
+            quality_flags=["too_few_valid_pixels", "no_index_stats"],
+            status="partial",
+        ),
+        region="bordeaux",
+    )
+
+    assert summary["validation_assessment"]["classification"] == "rejected"
+    assert "insufficient_valid_pixels" in summary["validation_assessment"]["reasons"]
+    assert summary["quality_flag_counts"]["too_few_valid_pixels"] == 1
 
 
 def test_quote_with_cache_avoids_recomputing(tmp_path: Path) -> None:
@@ -234,6 +266,10 @@ def _response(
     trigger: bool,
     baseline_count: int | None,
     valid_pixel_count: int = 500,
+    cloud_pct: float = 0.0,
+    quality: str = "good",
+    quality_flags: list[str] | None = None,
+    status: str = "completed",
     non_crop: int = 0,
     confidence: float = 0.9,
     ndmi_mean: float = 0.1,
@@ -241,7 +277,7 @@ def _response(
 ) -> RiskResponse:
     return RiskResponse(
         request_id="validation",
-        status="completed",
+        status=status,
         source=SourceMetadata(
             provider="fake",
             collection="sentinel-2-l2a",
@@ -261,9 +297,9 @@ def _response(
                 date=date(2022, 7, 11),
                 period="2022-07-01/2022-07-10",
                 valid_pixel_count=valid_pixel_count,
-                cloud_pct=0,
-                quality="good",
-                quality_flags=[],
+                cloud_pct=cloud_pct,
+                quality=quality,
+                quality_flags=quality_flags or [],
                 indices={
                     "ndmi": IndexStats(
                         mean=ndmi_mean,

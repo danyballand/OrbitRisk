@@ -16,6 +16,7 @@ OrbitRisk now has a working technical spine:
 - live API endpoint backed by Planetary Computer,
 - seasonal baseline metadata,
 - drought-2022 validation summary runner,
+- deterministic accepted/rejected/ambiguous classifier for drought-2022 validation,
 - mask benchmark runner for raw AOI vs buffer vs external crop mask,
 - batch mask benchmark runner for AOI manifests,
 - deterministic basis-risk classifier for crop-mask benchmark outputs,
@@ -49,7 +50,7 @@ The technical POC needs:
 
 - a 5-10 AOI Bordeaux/Languedoc July-August 2022 validation batch,
 - observed raw-vs-buffer-vs-crop-mask benchmark outputs,
-- explicit accepted/rejected/ambiguous AOI classification,
+- observed accepted/rejected/ambiguous AOI classifications on real validation AOIs,
 - charts for NDMI, valid pixels, and cloud percentage.
 
 The local AOI validation layer now rejects invalid geometries, empty negative buffers,

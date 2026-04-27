@@ -17,7 +17,8 @@ By 2026-05-31, OrbitRisk should produce a defensible demo pack for 5-10 vineyard
 - [ ] one JSON risk response per AOI,
 - [ ] one raw-vs-buffer-vs-crop-mask benchmark report,
 - [ ] one 2022 drought validation report for Bordeaux and/or Languedoc,
-- [ ] explicit accepted/rejected/ambiguous AOI classification,
+- [x] explicit accepted/rejected/ambiguous AOI classification logic,
+- [ ] observed accepted/rejected/ambiguous classification on real AOIs,
 - [ ] clear reasons when the signal is weak, cloudy, under-sampled, or not benchmarkable,
 - [ ] a technical explanation an actuary can audit without trusting a black box.
 
@@ -117,7 +118,7 @@ Deliverables:
 
 - [ ] Bordeaux and/or Languedoc July-August 2022 validation run.
 - [x] Same-day-of-year seasonal baseline metadata for each accepted period.
-- [ ] Accepted/rejected/ambiguous AOI classifier.
+- [x] Accepted/rejected/ambiguous AOI classifier.
 - [ ] NDMI threshold and percentile calibration note.
 - [ ] Failure-mode appendix covering cloud gaps, insufficient pixels, and unstable masks.
 

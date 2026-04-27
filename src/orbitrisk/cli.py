@@ -27,6 +27,10 @@ from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import RiskResponse
 from orbitrisk.storage.cache import LocalRiskResponseCache, risk_response_cache_key
 from orbitrisk.timeseries.compositing import composite_observations
+from orbitrisk.validation.drought import (
+    DroughtValidationInputs,
+    classify_drought_validation,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -622,20 +626,57 @@ def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[st
         period for period in ndmi_periods if period["ndmi_baseline_count"] is not None
     ]
     detected = response.risk_signal.trigger_candidate and bool(baseline_supported)
+    quality_flag_counts = _period_quality_flag_counts(ndmi_periods)
+    valid_counts = [
+        observation.valid_pixel_count
+        for observation in target_series
+        if "ndmi" in observation.indices
+    ]
+    cloud_values = [
+        observation.cloud_pct for observation in target_series if "ndmi" in observation.indices
+    ]
+    critical_periods = [
+        period.model_dump(mode="json") for period in response.risk_signal.critical_periods
+    ]
+    validation_assessment = classify_drought_validation(
+        DroughtValidationInputs(
+            response_status=response.status,
+            trigger_candidate=response.risk_signal.trigger_candidate,
+            detection_reason=response.risk_signal.trigger_reason,
+            confidence=response.risk_signal.confidence,
+            target_period_count=len(target_series),
+            baseline_supported_period_count=len(baseline_supported),
+            critical_period_count=len(critical_periods),
+            min_valid_pixel_count=min(valid_counts) if valid_counts else None,
+            mean_cloud_pct=statistics.fmean(cloud_values) if cloud_values else None,
+            rejected_period_count=sum(
+                1 for period in ndmi_periods if period["quality"] == "rejected"
+            ),
+            quality_flag_counts=quality_flag_counts,
+        )
+    )
     return {
         "request_id": response.request_id,
         "region": region,
         "status": response.status,
         "detected": detected,
+        "validation_assessment": validation_assessment,
         "detection_reason": response.risk_signal.trigger_reason,
         "confidence": response.risk_signal.confidence,
         "target_period_count": len(target_series),
         "baseline_supported_period_count": len(baseline_supported),
-        "critical_periods": [
-            period.model_dump(mode="json") for period in response.risk_signal.critical_periods
-        ],
+        "quality_flag_counts": quality_flag_counts,
+        "critical_periods": critical_periods,
         "ndmi_periods": ndmi_periods,
     }
+
+
+def _period_quality_flag_counts(periods: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for period in periods:
+        for flag in period.get("quality_flags", []):
+            counts[str(flag)] = counts.get(str(flag), 0) + 1
+    return counts
 
 
 def summarize_mask_benchmark(
@@ -1018,16 +1059,20 @@ def _pct_delta(baseline: float | int | None, candidate: float | int | None) -> f
 
 
 def render_validation_markdown(summary: dict[str, Any]) -> str:
+    assessment = summary["validation_assessment"]
     lines = [
         f"# OrbitRisk 2022 Drought Validation: {summary['region']}",
         "",
         f"- Request: `{summary['request_id']}`",
         f"- Status: `{summary['status']}`",
+        f"- Assessment: `{assessment['classification']}`",
+        f"- Assessment reasons: `{', '.join(assessment['reasons'])}`",
         f"- Detected: `{summary['detected']}`",
         f"- Detection reason: `{summary['detection_reason']}`",
         f"- Confidence: `{summary['confidence']:.2f}`",
         f"- Target periods: `{summary['target_period_count']}`",
         f"- Baseline-supported periods: `{summary['baseline_supported_period_count']}`",
+        f"- Quality flags: `{_format_counts(summary['quality_flag_counts'])}`",
         "",
         "## NDMI Periods",
         "",
@@ -1310,6 +1355,12 @@ def _format_optional(value: Any) -> str:
     if isinstance(value, float):
         return f"{value:.4f}"
     return str(value)
+
+
+def _format_counts(counts: dict[str, int]) -> str:
+    if not counts:
+        return "none"
+    return ", ".join(f"{key}={value}" for key, value in sorted(counts.items()))
 
 
 if __name__ == "__main__":
