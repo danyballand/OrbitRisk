@@ -58,6 +58,7 @@ OrbitRisk includes a first JSON validation runner:
 orbitrisk validate-2022 tests/fixtures/sample_request.json \
   --region bordeaux \
   --max-items 80 \
+  --crop-mask-geojson data/rpg/vineyard-mask.geojson \
   --output-json reports/bordeaux-2022.json \
   --output-md reports/bordeaux-2022.md
 ```
@@ -67,3 +68,7 @@ NDMI mean, EMA, anomaly z-score, baseline percentile, baseline count, quality fl
 critical periods.
 
 Results are cached under `data/cache` by default. Use `--no-cache` to force a fresh run.
+
+`--crop-mask-geojson` accepts a Polygon, MultiPolygon, Feature, or FeatureCollection and
+is intended for RPG IGN or other parcel/crop masks. The vector mask is reprojected onto
+the fixed Sentinel grid and affects `valid_pixel_count` and `mask_counts.non_crop`.

@@ -3,6 +3,7 @@ from typing import Any, Literal, Protocol, cast
 
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
+from orbitrisk.masking.vector_mask import VectorCropMask, crop_mask_from_geojson
 from orbitrisk.processing.datacube import summarize_datacube
 from orbitrisk.processing.observation import ObservationStats
 from orbitrisk.schemas.request import RiskRequest
@@ -42,7 +43,14 @@ class RiskEngine:
         self.provider_name = provider_name
         self.collection = collection
 
-    def quote(self, payload: RiskRequest, *, max_items: int | None = None) -> RiskResponse:
+    def quote(
+        self,
+        payload: RiskRequest,
+        *,
+        max_items: int | None = None,
+        crop_mask_geojson: dict[str, Any] | None = None,
+        crop_mask_crs: str = "EPSG:4326",
+    ) -> RiskResponse:
         prepared_aoi = prepare_aoi(
             payload.aoi.model_dump(),
             source_crs=payload.crs,
@@ -57,10 +65,29 @@ class RiskEngine:
             max_items=max_items,
         )
 
+        crop_mask = None
+        crop_mask_result: VectorCropMask | None = None
+        crop_mask_document = None
+        crop_mask_source_crs = crop_mask_crs
+        if crop_mask_geojson is not None:
+            crop_mask_document = crop_mask_geojson
+        elif payload.crop_mask is not None:
+            crop_mask_document = payload.crop_mask.model_dump(mode="json")
+            crop_mask_source_crs = payload.crop_mask_crs
+        if crop_mask_document is not None:
+            crop_mask_result = crop_mask_from_geojson(
+                crop_mask_document,
+                source_crs=crop_mask_source_crs,
+                grid=job.grid,
+                clip_geometry=prepared_aoi.analysis_geometry,
+            )
+            crop_mask = crop_mask_result.mask
+
         dataset = self.provider.load_datacube(job.query, geobox=job.grid.to_odc_geobox())
         observations = summarize_datacube(
             dataset,
             aoi_mask=job.aoi_mask,
+            crop_mask=crop_mask,
             requested_indices=list(payload.indices),
             min_valid_pixels=payload.masking.min_valid_pixels,
             min_clear_fraction=payload.masking.min_clear_fraction,
@@ -103,6 +130,17 @@ class RiskEngine:
                 area_ha=prepared_aoi.area_ha,
                 usable_area_ha=prepared_aoi.usable_area_ha,
                 masked_area_pct=prepared_aoi.masked_area_pct,
+                crop_mask_area_ha=_crop_mask_area_ha(
+                    crop_mask_result,
+                    resolution_m=payload.resolution_m,
+                ),
+                crop_mask_coverage_pct=_crop_mask_coverage_pct(
+                    crop_mask_result,
+                    aoi_mask=job.aoi_mask,
+                ),
+                crop_mask_geometry_count=(
+                    crop_mask_result.geometry_count if crop_mask_result is not None else None
+                ),
             ),
             series=series,
             risk_signal=RiskSignal(
@@ -113,6 +151,29 @@ class RiskEngine:
                 critical_periods=trigger.periods,
             ),
         )
+
+
+def _crop_mask_area_ha(
+    crop_mask: VectorCropMask | None,
+    *,
+    resolution_m: int,
+) -> float | None:
+    if crop_mask is None:
+        return None
+    return crop_mask.crop_pixel_count * resolution_m * resolution_m / 10_000
+
+
+def _crop_mask_coverage_pct(
+    crop_mask: VectorCropMask | None,
+    *,
+    aoi_mask: Any,
+) -> float | None:
+    if crop_mask is None:
+        return None
+    aoi_pixel_count = int(aoi_mask.sum())
+    if aoi_pixel_count == 0:
+        return 0.0
+    return crop_mask.crop_pixel_count / aoi_pixel_count * 100
 
 
 def _build_observation_series(

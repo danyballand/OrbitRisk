@@ -39,6 +39,31 @@ according to `aggregation.temporal`.
     }
   },
   "crs": "EPSG:4326",
+  "crop_mask": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "source": "RPG_IGN",
+          "crop": "vineyard"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [4.821, 45.731],
+              [4.829, 45.731],
+              [4.829, 45.739],
+              [4.821, 45.739],
+              [4.821, 45.731]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "crop_mask_crs": "EPSG:4326",
   "date_range": {
     "start": "2021-01-01",
     "end": "2026-04-01"
@@ -90,7 +115,10 @@ according to `aggregation.temporal`.
   "aoi_metrics": {
     "area_ha": 12.42,
     "usable_area_ha": 10.91,
-    "masked_area_pct": 12.2
+    "masked_area_pct": 12.2,
+    "crop_mask_area_ha": 9.84,
+    "crop_mask_coverage_pct": 90.2,
+    "crop_mask_geometry_count": 1
   },
   "series": [
     {
@@ -150,5 +178,6 @@ according to `aggregation.temporal`.
 - Reject observations below `min_valid_pixels`.
 - Reject or down-rank observations below `min_clear_fraction`.
 - Return mask counts with every observation.
-- Keep the public AOI CRS as `EPSG:4326`; reproject internally to the best local UTM CRS.
+- Accept public AOI and crop-mask CRS as explicit `EPSG:*` identifiers; reproject internally
+  to the best local UTM CRS.
 - Avoid comparing time points unless the raster grid, transform, and resolution are fixed.

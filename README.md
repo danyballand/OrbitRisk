@@ -57,6 +57,7 @@ Run a first drought-2022 validation summary:
 orbitrisk validate-2022 tests/fixtures/sample_request.json \
   --region bordeaux \
   --max-items 80 \
+  --crop-mask-geojson data/rpg/vineyard-mask.geojson \
   --output-json reports/bordeaux-2022.json \
   --output-md reports/bordeaux-2022.md
 ```

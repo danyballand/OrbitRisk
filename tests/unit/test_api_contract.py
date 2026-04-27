@@ -53,6 +53,34 @@ def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     assert body["series"][0]["quality_flags"] == []
 
 
+def test_live_quote_endpoint_accepts_feature_collection_crop_mask(monkeypatch) -> None:
+    class FakeProvider:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            return _dataset(tuple(geobox.shape))
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", FakeProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+    payload["crop_mask"] = {
+        "type": "FeatureCollection",
+        "features": [_left_half_crop_mask()],
+    }
+    payload["crop_mask_crs"] = "EPSG:4326"
+
+    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["aoi_metrics"]["crop_mask_area_ha"] > 0
+    assert 0 < body["aoi_metrics"]["crop_mask_coverage_pct"] < 100
+    assert body["aoi_metrics"]["crop_mask_geometry_count"] == 1
+    assert body["series"][0]["mask_counts"]["non_crop"] > 0
+
+
 def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:
     height, width = grid_shape
     shape = (2, height, width)
@@ -72,3 +100,22 @@ def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:
         },
         coords=coords,
     )
+
+
+def _left_half_crop_mask() -> dict:
+    return {
+        "type": "Feature",
+        "properties": {"source": "synthetic-rpg"},
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [4.82, 45.73],
+                    [4.825, 45.73],
+                    [4.825, 45.74],
+                    [4.82, 45.74],
+                    [4.82, 45.73],
+                ]
+            ],
+        },
+    }

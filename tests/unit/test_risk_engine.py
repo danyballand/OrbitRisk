@@ -72,6 +72,26 @@ def test_risk_engine_adds_seasonal_baseline_metadata() -> None:
     assert latest_ndmi.anomaly_z is not None
 
 
+def test_risk_engine_applies_crop_mask_geojson() -> None:
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+    request = RiskRequest.model_validate(payload)
+    provider = FakeProvider()
+
+    response = RiskEngine(
+        provider,
+        provider_name="fake-provider",
+        collection="sentinel-2-l2a",
+    ).quote(request, max_items=10, crop_mask_geojson=_left_half_crop_mask())
+
+    assert response.series[0].mask_counts.non_crop > 0
+    assert response.aoi_metrics.crop_mask_area_ha is not None
+    assert response.aoi_metrics.crop_mask_coverage_pct is not None
+    assert response.aoi_metrics.crop_mask_geometry_count == 1
+    full_grid_pixels = provider.calls[0][1].shape.y * provider.calls[0][1].shape.x
+    assert response.series[0].valid_pixel_count < full_grid_pixels
+
+
 def _dataset(
     grid_shape: tuple[int, int],
     *,
@@ -99,3 +119,22 @@ def _dataset(
         },
         coords=coords,
     )
+
+
+def _left_half_crop_mask() -> dict:
+    return {
+        "type": "Feature",
+        "properties": {"source": "synthetic-rpg"},
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [4.82, 45.73],
+                    [4.825, 45.73],
+                    [4.825, 45.74],
+                    [4.82, 45.74],
+                    [4.82, 45.73],
+                ]
+            ],
+        },
+    }

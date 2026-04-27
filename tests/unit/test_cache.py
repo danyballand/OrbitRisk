@@ -52,6 +52,15 @@ def test_risk_response_cache_key_is_stable_and_scoped() -> None:
     assert first == second
     assert first != different
 
+    masked = risk_response_cache_key(
+        payload,
+        provider_name="planetary-computer",
+        collection="sentinel-2-l2a",
+        max_items=10,
+        extra={"crop_mask": {"type": "Polygon", "coordinates": []}},
+    )
+    assert masked != first
+
 
 def _response() -> RiskResponse:
     return RiskResponse(

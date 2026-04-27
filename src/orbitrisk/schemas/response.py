@@ -17,6 +17,9 @@ class AoiMetrics(BaseModel):
     area_ha: float | None = None
     usable_area_ha: float | None = None
     masked_area_pct: float | None = None
+    crop_mask_area_ha: float | None = None
+    crop_mask_coverage_pct: float | None = None
+    crop_mask_geometry_count: int | None = None
 
 
 class IndexStats(BaseModel):

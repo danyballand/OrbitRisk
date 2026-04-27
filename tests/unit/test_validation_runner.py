@@ -153,6 +153,13 @@ class FakeEngine:
     def __init__(self) -> None:
         self.calls = 0
 
-    def quote(self, request: RiskRequest, *, max_items: int) -> RiskResponse:
+    def quote(
+        self,
+        request: RiskRequest,
+        *,
+        max_items: int,
+        crop_mask_geojson=None,
+        crop_mask_crs: str = "EPSG:4326",
+    ) -> RiskResponse:
         self.calls += 1
         return _response(trigger=False, baseline_count=None)

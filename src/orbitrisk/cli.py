@@ -37,6 +37,8 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--cache-dir", type=Path, default=None)
     validate.add_argument("--output-json", type=Path, default=None)
     validate.add_argument("--output-md", type=Path, default=None)
+    validate.add_argument("--crop-mask-geojson", type=Path, default=None)
+    validate.add_argument("--crop-mask-crs", default="EPSG:4326")
 
     args = parser.parse_args(argv)
     if args.command == "smoke-pc":
@@ -143,6 +145,11 @@ def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
         ),
     }
     request = RiskRequest.model_validate(payload)
+    crop_mask_geojson = (
+        json.loads(args.crop_mask_geojson.read_text())
+        if args.crop_mask_geojson is not None
+        else None
+    )
     settings = get_settings()
     provider_name = "planetary-computer"
     collection = settings.planetary_computer_collection
@@ -159,6 +166,8 @@ def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
         max_items=args.max_items,
         enabled=args.cache,
         cache_dir=args.cache_dir or settings.cache_dir,
+        crop_mask_geojson=crop_mask_geojson,
+        crop_mask_crs=args.crop_mask_crs,
     )
     summary = summarize_2022_validation(response, region=args.region)
     if args.output_json is not None:
@@ -179,20 +188,36 @@ def _quote_with_cache(
     max_items: int,
     enabled: bool,
     cache_dir: Path,
+    crop_mask_geojson: dict[str, Any] | None = None,
+    crop_mask_crs: str = "EPSG:4326",
 ) -> RiskResponse:
     if not enabled:
-        return engine.quote(request, max_items=max_items)
+        return engine.quote(
+            request,
+            max_items=max_items,
+            crop_mask_geojson=crop_mask_geojson,
+            crop_mask_crs=crop_mask_crs,
+        )
     cache = LocalRiskResponseCache(cache_dir)
     cache_key = risk_response_cache_key(
         request,
         provider_name=provider_name,
         collection=collection,
         max_items=max_items,
+        extra={
+            "crop_mask": crop_mask_geojson,
+            "crop_mask_crs": crop_mask_crs if crop_mask_geojson is not None else None,
+        },
     )
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
-    response = engine.quote(request, max_items=max_items)
+    response = engine.quote(
+        request,
+        max_items=max_items,
+        crop_mask_geojson=crop_mask_geojson,
+        crop_mask_crs=crop_mask_crs,
+    )
     cache.set(cache_key, response)
     return response
 

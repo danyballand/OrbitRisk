@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -15,22 +15,38 @@ def default_spatial_stats() -> list[SpatialStat]:
     return ["mean", "median", "p10", "p90", "std"]
 
 
+class GeoJSONPolygonalGeometry(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    type: Literal["Polygon", "MultiPolygon"]
+    coordinates: list[Any]
+
+    @field_validator("coordinates")
+    @classmethod
+    def validate_coordinates(cls, value: list[Any]) -> list[Any]:
+        if not value:
+            raise ValueError("GeoJSON geometry coordinates are required")
+        return value
+
+
 class GeoJSONFeature(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     type: Literal["Feature"]
     properties: dict[str, Any] = Field(default_factory=dict)
-    geometry: dict[str, Any]
+    geometry: GeoJSONPolygonalGeometry
 
-    @field_validator("geometry")
-    @classmethod
-    def validate_polygonal_geometry(cls, value: dict[str, Any]) -> dict[str, Any]:
-        geometry_type = value.get("type")
-        if geometry_type not in {"Polygon", "MultiPolygon"}:
-            raise ValueError("AOI geometry must be Polygon or MultiPolygon")
-        if not value.get("coordinates"):
-            raise ValueError("AOI geometry coordinates are required")
-        return value
+
+class GeoJSONFeatureCollection(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    type: Literal["FeatureCollection"]
+    features: list[GeoJSONFeature] = Field(min_length=1)
+
+
+CropMaskGeoJSON: TypeAlias = (
+    GeoJSONFeature | GeoJSONFeatureCollection | GeoJSONPolygonalGeometry
+)
 
 
 class DateRange(BaseModel):
@@ -82,7 +98,9 @@ class TriggerOptions(BaseModel):
 class RiskRequest(BaseModel):
     request_id: str = Field(min_length=1, max_length=128)
     aoi: GeoJSONFeature
+    crop_mask: CropMaskGeoJSON | None = None
     crs: str = "EPSG:4326"
+    crop_mask_crs: str = "EPSG:4326"
     date_range: DateRange
     indices: list[IndexName] = Field(default_factory=default_indices)
     aggregation: AggregationOptions = Field(default_factory=AggregationOptions)
@@ -91,7 +109,7 @@ class RiskRequest(BaseModel):
     trigger: TriggerOptions = Field(default_factory=TriggerOptions)
     resolution_m: int = Field(default=10, ge=10, le=60)
 
-    @field_validator("crs")
+    @field_validator("crs", "crop_mask_crs")
     @classmethod
     def validate_crs_name(cls, value: str) -> str:
         if not value.upper().startswith("EPSG:"):

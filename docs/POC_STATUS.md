@@ -18,6 +18,7 @@ OrbitRisk now has a working technical spine:
 - drought-2022 validation summary runner,
 - local JSON response cache,
 - JSON and Markdown validation exports,
+- optional external vector crop mask for RPG-style masking,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

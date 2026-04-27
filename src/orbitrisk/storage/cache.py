@@ -38,12 +38,14 @@ def risk_response_cache_key(
     provider_name: str,
     collection: str,
     max_items: int | None,
+    extra: dict[str, Any] | None = None,
 ) -> str:
     content: dict[str, Any] = {
         "version": CACHE_VERSION,
         "provider": provider_name,
         "collection": collection,
         "max_items": max_items,
+        "extra": extra or {},
         "payload": payload.model_dump(mode="json"),
     }
     encoded = json.dumps(content, sort_keys=True, separators=(",", ":")).encode("utf-8")
