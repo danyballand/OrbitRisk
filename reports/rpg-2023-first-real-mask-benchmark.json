@@ -1,0 +1,731 @@
+{
+  "aggregate": {
+    "basis_risk_classification_counts": {
+      "ambiguous": 0,
+      "degraded": 0,
+      "improved": 1,
+      "not_run": 0
+    },
+    "comparison_rollups": {
+      "buffered_aoi_vs_raw_aoi": {
+        "aoi_count": 1,
+        "mean_cloud_delta_pct_points": 0.0,
+        "mean_confidence_delta": -0.0014583333333333393,
+        "mean_min_ndmi_ema_delta": 0.00033373233053066165,
+        "mean_min_ndmi_mean_delta": 0.00141090527176857,
+        "mean_valid_pixel_delta_pct": -10.535767734211314,
+        "total_non_crop_pixel_delta": 0
+      },
+      "vector_crop_mask_vs_raw_aoi": {
+        "aoi_count": 1,
+        "mean_cloud_delta_pct_points": 0.0,
+        "mean_confidence_delta": -0.056791666666666685,
+        "mean_min_ndmi_ema_delta": 0.001919220984759818,
+        "mean_min_ndmi_mean_delta": 0.00404464453458786,
+        "mean_valid_pixel_delta_pct": -21.999401376833283,
+        "total_non_crop_pixel_delta": 4596
+      }
+    },
+    "variant_rollups": {
+      "buffered_aoi": {
+        "aoi_count": 1,
+        "detected_count": 0,
+        "mean_cloud_pct": 0.0,
+        "mean_confidence": 0.873875,
+        "mean_crop_mask_coverage_pct": null,
+        "mean_median_valid_pixel_count": 2989.0,
+        "min_ndmi_ema": -0.016242539050475787,
+        "total_non_crop_pixels": 0
+      },
+      "raw_aoi": {
+        "aoi_count": 1,
+        "detected_count": 0,
+        "mean_cloud_pct": 0.0,
+        "mean_confidence": 0.8753333333333333,
+        "mean_crop_mask_coverage_pct": null,
+        "mean_median_valid_pixel_count": 3341.0,
+        "min_ndmi_ema": -0.01657627138100645,
+        "total_non_crop_pixels": 0
+      },
+      "vector_crop_mask": {
+        "aoi_count": 1,
+        "detected_count": 0,
+        "mean_cloud_pct": 0.0,
+        "mean_confidence": 0.8185416666666666,
+        "mean_crop_mask_coverage_pct": 87.18634994981599,
+        "mean_median_valid_pixel_count": 2606.0,
+        "min_ndmi_ema": -0.01465705039624663,
+        "total_non_crop_pixels": 4596
+      }
+    }
+  },
+  "aois": [
+    {
+      "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+      "basis_risk_assessment": {
+        "classification": "improved",
+        "inputs": {
+          "crop_mask_coverage_pct": 87.18634994981599,
+          "crop_mask_median_valid_pixel_count": 2606,
+          "min_ndmi_ema_delta": 0.001919220984759818,
+          "min_valid_pixels": 20,
+          "non_crop_pixel_delta": 4596,
+          "valid_pixel_delta_pct": -21.999401376833283,
+          "vector_status": "completed"
+        },
+        "reasons": [
+          "non_crop_pixels_removed"
+        ],
+        "thresholds": {
+          "max_abs_ndmi_ema_delta": 0.15,
+          "max_valid_pixel_loss_pct": 75.0,
+          "min_crop_coverage_pct": 5.0,
+          "min_non_crop_pixel_delta": 1
+        }
+      },
+      "benchmark": {
+        "comparisons": [
+          {
+            "baseline_variant": "raw_aoi",
+            "candidate_variant": "buffered_aoi",
+            "confidence_delta": -0.0014583333333333393,
+            "mean_cloud_delta_pct_points": 0.0,
+            "median_valid_pixel_delta_pct": -10.535767734211314,
+            "min_ndmi_ema_delta": 0.00033373233053066165,
+            "min_ndmi_mean_delta": 0.00141090527176857,
+            "non_crop_pixel_delta": 0
+          },
+          {
+            "baseline_variant": "raw_aoi",
+            "candidate_variant": "vector_crop_mask",
+            "confidence_delta": -0.056791666666666685,
+            "mean_cloud_delta_pct_points": 0.0,
+            "median_valid_pixel_delta_pct": -21.999401376833283,
+            "min_ndmi_ema_delta": 0.001919220984759818,
+            "min_ndmi_mean_delta": 0.00404464453458786,
+            "non_crop_pixel_delta": 4596
+          }
+        ],
+        "completed_variant_count": 3,
+        "region": "bordeaux",
+        "variant_count": 3,
+        "variants": [
+          {
+            "aggregate_metrics": {
+              "mean_cloud_pct": 0.0,
+              "median_valid_pixel_count": 3341,
+              "min_ndmi_ema": -0.01657627138100645,
+              "min_ndmi_mean": -0.037237778306007385,
+              "quality_flag_counts": {
+                "high_cloud_fraction": 1,
+                "low_clear_fraction": 2
+              },
+              "total_non_crop_pixels": 0
+            },
+            "aoi_metrics": {
+              "area_ha": 33.3349910606465,
+              "crop_mask_area_ha": null,
+              "crop_mask_coverage_pct": null,
+              "crop_mask_geometry_count": null,
+              "masked_area_pct": 0.0,
+              "usable_area_ha": 33.3349910606465
+            },
+            "baseline_supported_period_count": 0,
+            "confidence": 0.8753333333333333,
+            "critical_periods": [
+              {
+                "end": "2022-08-31",
+                "severity": "high",
+                "start": "2022-05-13"
+              }
+            ],
+            "detected": false,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "label": "Raw AOI mean",
+            "ndmi_periods": [
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-02",
+                "ndmi_anomaly_z": 0.8517189025878906,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.08330198330753019,
+                "ndmi_mean": 0.09371163696050644,
+                "period": "2022-06-25/2022-07-04",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 3341
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-14",
+                "ndmi_anomaly_z": -0.021800300106406212,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.06799471608795157,
+                "ndmi_mean": 0.03956693410873413,
+                "period": "2022-07-05/2022-07-14",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 3341
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-24",
+                "ndmi_anomaly_z": -0.4914948642253876,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.04785515839095742,
+                "ndmi_mean": 0.010453122667968273,
+                "period": "2022-07-15/2022-07-24",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 3341
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-03",
+                "ndmi_anomaly_z": -0.9543290138244629,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.024723446544292472,
+                "ndmi_mean": -0.018235446885228157,
+                "period": "2022-07-25/2022-08-03",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 3341
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-11",
+                "ndmi_anomaly_z": -1.0885876417160034,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.006775147358163085,
+                "ndmi_mean": -0.026557408273220062,
+                "period": "2022-08-04/2022-08-13",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 3341
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-18",
+                "ndmi_anomaly_z": -1.114382028579712,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": -0.005450844575236711,
+                "ndmi_mean": -0.028156258165836334,
+                "period": "2022-08-14/2022-08-23",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2633
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-31",
+                "ndmi_anomaly_z": -1.2608946561813354,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": -0.01657627138100645,
+                "ndmi_mean": -0.037237778306007385,
+                "period": "2022-08-24/2022-08-31",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 3341
+              }
+            ],
+            "quality_flag_counts": {},
+            "region": "bordeaux",
+            "request_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+            "status": "completed",
+            "target_period_count": 7,
+            "validation_assessment": {
+              "classification": "rejected",
+              "inputs": {
+                "baseline_supported_period_count": 0,
+                "confidence": 0.8753333333333333,
+                "critical_period_count": 1,
+                "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+                "mean_cloud_pct": 0.0,
+                "min_valid_pixel_count": 2633,
+                "preflight_reasons": [],
+                "quality_flag_counts": {},
+                "rejected_period_count": 0,
+                "response_status": "completed",
+                "target_period_count": 7,
+                "trigger_candidate": true
+              },
+              "reasons": [
+                "no_baseline_support"
+              ],
+              "thresholds": {
+                "max_mean_cloud_pct": 70.0,
+                "max_rejected_period_fraction": 0.5,
+                "min_baseline_supported_periods": 1,
+                "min_confidence": 0.35,
+                "min_valid_pixels": 20
+              }
+            },
+            "variant": "raw_aoi"
+          },
+          {
+            "aggregate_metrics": {
+              "mean_cloud_pct": 0.0,
+              "median_valid_pixel_count": 2989,
+              "min_ndmi_ema": -0.016242539050475787,
+              "min_ndmi_mean": -0.035826873034238815,
+              "quality_flag_counts": {
+                "high_cloud_fraction": 1,
+                "low_clear_fraction": 2
+              },
+              "total_non_crop_pixels": 0
+            },
+            "aoi_metrics": {
+              "area_ha": 33.3349910606465,
+              "crop_mask_area_ha": null,
+              "crop_mask_coverage_pct": null,
+              "crop_mask_geometry_count": null,
+              "masked_area_pct": 10.521264912345652,
+              "usable_area_ha": 29.82772834264914
+            },
+            "baseline_supported_period_count": 0,
+            "confidence": 0.873875,
+            "critical_periods": [
+              {
+                "end": "2022-08-31",
+                "severity": "high",
+                "start": "2022-05-13"
+              }
+            ],
+            "detected": false,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "label": "AOI mean with 10 m negative buffer",
+            "ndmi_periods": [
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-02",
+                "ndmi_anomaly_z": 0.9100549817085266,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.08064194188277704,
+                "ndmi_mean": 0.09307004511356354,
+                "period": "2022-06-25/2022-07-04",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2989
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-14",
+                "ndmi_anomaly_z": -0.00841878168284893,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.06587878945216048,
+                "ndmi_mean": 0.038461506366729736,
+                "period": "2022-07-05/2022-07-14",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2989
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-24",
+                "ndmi_anomaly_z": -0.4885302782058716,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.04629185554294716,
+                "ndmi_mean": 0.009916121140122414,
+                "period": "2022-07-15/2022-07-24",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2989
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-03",
+                "ndmi_anomaly_z": -0.9748043417930603,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.02344122269616331,
+                "ndmi_mean": -0.01899566687643528,
+                "period": "2022-07-25/2022-08-03",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2989
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-11",
+                "ndmi_anomaly_z": -1.0964311361312866,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.006057320897904768,
+                "ndmi_mean": -0.026227068156003952,
+                "period": "2022-08-04/2022-08-13",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2989
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-18",
+                "ndmi_anomaly_z": -1.1182918548583984,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": -0.005697128443834158,
+                "ndmi_mean": -0.027526820078492165,
+                "period": "2022-08-14/2022-08-23",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2357
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-31",
+                "ndmi_anomaly_z": -1.2578924894332886,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": -0.016242539050475787,
+                "ndmi_mean": -0.035826873034238815,
+                "period": "2022-08-24/2022-08-31",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2989
+              }
+            ],
+            "quality_flag_counts": {},
+            "region": "bordeaux",
+            "request_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+            "status": "completed",
+            "target_period_count": 7,
+            "validation_assessment": {
+              "classification": "rejected",
+              "inputs": {
+                "baseline_supported_period_count": 0,
+                "confidence": 0.873875,
+                "critical_period_count": 1,
+                "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+                "mean_cloud_pct": 0.0,
+                "min_valid_pixel_count": 2357,
+                "preflight_reasons": [],
+                "quality_flag_counts": {},
+                "rejected_period_count": 0,
+                "response_status": "completed",
+                "target_period_count": 7,
+                "trigger_candidate": true
+              },
+              "reasons": [
+                "no_baseline_support"
+              ],
+              "thresholds": {
+                "max_mean_cloud_pct": 70.0,
+                "max_rejected_period_fraction": 0.5,
+                "min_baseline_supported_periods": 1,
+                "min_confidence": 0.35,
+                "min_valid_pixels": 20
+              }
+            },
+            "variant": "buffered_aoi"
+          },
+          {
+            "aggregate_metrics": {
+              "mean_cloud_pct": 0.0,
+              "median_valid_pixel_count": 2606,
+              "min_ndmi_ema": -0.01465705039624663,
+              "min_ndmi_mean": -0.033193133771419525,
+              "quality_flag_counts": {
+                "high_cloud_fraction": 1,
+                "low_clear_fraction": 3
+              },
+              "total_non_crop_pixels": 4596
+            },
+            "aoi_metrics": {
+              "area_ha": 33.3349910606465,
+              "crop_mask_area_ha": 26.06,
+              "crop_mask_coverage_pct": 87.18634994981599,
+              "crop_mask_geometry_count": 1,
+              "masked_area_pct": 10.521264912345652,
+              "usable_area_ha": 29.82772834264914
+            },
+            "baseline_supported_period_count": 0,
+            "confidence": 0.8185416666666666,
+            "critical_periods": [
+              {
+                "end": "2022-08-31",
+                "severity": "high",
+                "start": "2022-05-13"
+              }
+            ],
+            "detected": false,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "label": "External crop mask + buffer",
+            "ndmi_periods": [
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-02",
+                "ndmi_anomaly_z": 0.9420655369758606,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.07974204857374309,
+                "ndmi_mean": 0.09328413754701614,
+                "period": "2022-06-25/2022-07-04",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2606
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-14",
+                "ndmi_anomaly_z": -0.0009478980791755021,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.06539317448185186,
+                "ndmi_mean": 0.03874526545405388,
+                "period": "2022-07-05/2022-07-14",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2606
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-07-24",
+                "ndmi_anomaly_z": -0.4815117418766022,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.04633876815386211,
+                "ndmi_mean": 0.010952013544738293,
+                "period": "2022-07-15/2022-07-24",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2606
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-03",
+                "ndmi_anomaly_z": -0.9828121066093445,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.02380601496960657,
+                "ndmi_mean": -0.018040526658296585,
+                "period": "2022-07-25/2022-08-03",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2606
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-11",
+                "ndmi_anomaly_z": -1.1109859943389893,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": 0.0065652119537478616,
+                "ndmi_mean": -0.025453422218561172,
+                "period": "2022-08-04/2022-08-13",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2606
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-18",
+                "ndmi_anomaly_z": -1.112703800201416,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": -0.004676082424999689,
+                "ndmi_mean": -0.025552771985530853,
+                "period": "2022-08-14/2022-08-23",
+                "quality": "poor",
+                "quality_flags": [
+                  "low_clear_fraction"
+                ],
+                "valid_pixel_count": 2060
+              },
+              {
+                "cloud_pct": 0.0,
+                "date": "2022-08-31",
+                "ndmi_anomaly_z": -1.244810700416565,
+                "ndmi_baseline_count": null,
+                "ndmi_baseline_percentile": null,
+                "ndmi_ema": -0.01465705039624663,
+                "ndmi_mean": -0.033193133771419525,
+                "period": "2022-08-24/2022-08-31",
+                "quality": "good",
+                "quality_flags": [],
+                "valid_pixel_count": 2606
+              }
+            ],
+            "quality_flag_counts": {
+              "low_clear_fraction": 1
+            },
+            "region": "bordeaux",
+            "request_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+            "status": "completed",
+            "target_period_count": 7,
+            "validation_assessment": {
+              "classification": "rejected",
+              "inputs": {
+                "baseline_supported_period_count": 0,
+                "confidence": 0.8185416666666666,
+                "critical_period_count": 1,
+                "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+                "mean_cloud_pct": 0.0,
+                "min_valid_pixel_count": 2060,
+                "preflight_reasons": [],
+                "quality_flag_counts": {
+                  "low_clear_fraction": 1
+                },
+                "rejected_period_count": 0,
+                "response_status": "completed",
+                "target_period_count": 7,
+                "trigger_candidate": true
+              },
+              "reasons": [
+                "no_baseline_support"
+              ],
+              "thresholds": {
+                "max_mean_cloud_pct": 70.0,
+                "max_rejected_period_fraction": 0.5,
+                "min_baseline_supported_periods": 1,
+                "min_confidence": 0.35,
+                "min_valid_pixels": 20
+              }
+            },
+            "variant": "vector_crop_mask"
+          }
+        ]
+      },
+      "key_metrics": {
+        "buffered_median_valid_pixel_count": 2989,
+        "buffered_valid_pixel_delta_pct": -10.535767734211314,
+        "crop_mask_coverage_pct": 87.18634994981599,
+        "crop_mask_median_valid_pixel_count": 2606,
+        "crop_mask_min_ndmi_ema_delta": 0.001919220984759818,
+        "crop_mask_non_crop_pixel_delta": 4596,
+        "crop_mask_valid_pixel_delta_pct": -21.999401376833283,
+        "raw_median_valid_pixel_count": 3341
+      },
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 2989,
+          "area_ha": 33.3349910606465,
+          "crop_mask_area_ha": 26.06,
+          "crop_mask_coverage_pct": 87.18634994981599,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 2606,
+          "grid_height": 68,
+          "grid_width": 75,
+          "has_crop_mask": true,
+          "masked_area_pct": 10.521264912345652,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32630",
+          "resolution_m": 10,
+          "usable_area_ha": 29.82772834264914
+        },
+        "reasons": [],
+        "region": "bordeaux",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "bordeaux",
+      "status": "success"
+    }
+  ],
+  "artifacts": {
+    "charts": [
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "ndmi",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__raw_aoi__ndmi.svg",
+        "region": "bordeaux",
+        "variant": "raw_aoi"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "valid_pixels",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__raw_aoi__valid_pixels.svg",
+        "region": "bordeaux",
+        "variant": "raw_aoi"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "cloud_pct",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__raw_aoi__cloud_pct.svg",
+        "region": "bordeaux",
+        "variant": "raw_aoi"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "ndmi",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__buffered_aoi__ndmi.svg",
+        "region": "bordeaux",
+        "variant": "buffered_aoi"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "valid_pixels",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__buffered_aoi__valid_pixels.svg",
+        "region": "bordeaux",
+        "variant": "buffered_aoi"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "cloud_pct",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__buffered_aoi__cloud_pct.svg",
+        "region": "bordeaux",
+        "variant": "buffered_aoi"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "ndmi",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__vector_crop_mask__ndmi.svg",
+        "region": "bordeaux",
+        "variant": "vector_crop_mask"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "valid_pixels",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__vector_crop_mask__valid_pixels.svg",
+        "region": "bordeaux",
+        "variant": "vector_crop_mask"
+      },
+      {
+        "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+        "metric": "cloud_pct",
+        "path": "reports/charts/rpg-2023-first-real-mask-benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__vector_crop_mask__cloud_pct.svg",
+        "region": "bordeaux",
+        "variant": "vector_crop_mask"
+      }
+    ]
+  },
+  "manifest": {
+    "aoi_count": 1,
+    "date_range": {
+      "end": "2022-08-31",
+      "start": "2019-06-01"
+    },
+    "name": "rpg-2023-first-real-benchmark-aoi",
+    "resolution_m": 10,
+    "version": "orbitrisk.aoi_batch.v1"
+  },
+  "run": {
+    "baseline_start": "2019-06-01",
+    "buffer_m": null,
+    "cache_enabled": true,
+    "collection": "sentinel-2-l2a",
+    "end": "2022-08-31",
+    "max_items": 80,
+    "provider": "planetary-computer"
+  },
+  "summary": {
+    "aoi_count": 1,
+    "failed_count": 0,
+    "rejected_count": 0,
+    "skipped_count": 0,
+    "success_count": 1
+  }
+}

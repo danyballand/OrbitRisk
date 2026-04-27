@@ -27,6 +27,8 @@ OrbitRisk now has a working technical spine:
 - optional external vector crop mask for RPG-style masking,
 - public RPG 2023 vineyard candidate pack with 10 accepted AOIs across Bordeaux and
   Languedoc,
+- first real RPG mask benchmark showing `vector_crop_mask` as `improved` on
+  `FR_RPG23_BORDEAUX_RIGHT_BANK_01`,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -51,7 +53,7 @@ Close, but not done.
 The technical POC needs:
 
 - live July-August 2022 validation outputs for the RPG 2023 Bordeaux/Languedoc AOI batch,
-- observed raw-vs-buffer-vs-crop-mask benchmark outputs,
+- full-batch observed raw-vs-buffer-vs-crop-mask benchmark outputs across all 10 RPG AOIs,
 - observed accepted/rejected/ambiguous AOI classifications on real validation AOIs,
 - charts for NDMI, valid pixels, and cloud percentage.
 

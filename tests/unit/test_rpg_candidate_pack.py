@@ -29,3 +29,17 @@ def test_rpg_candidate_pack_has_real_vineyard_aois_and_crop_masks() -> None:
     assert crop_mask["properties"]["source_layer"] == "RPG.2023:parcelles_graphiques"
     assert crop_mask["properties"]["rpg_code_group"] == "21"
     assert crop_mask["properties"]["geometry_role"] == "crop_mask"
+
+
+def test_first_real_benchmark_manifest_points_to_rpg_crop_mask() -> None:
+    manifest_path = Path("examples/rpg_2023_first_real_benchmark_manifest.json")
+
+    manifest = load_aoi_batch_manifest(manifest_path)
+    report = validate_aoi_manifest(manifest, manifest_path=manifest_path)
+
+    assert manifest.name == "rpg-2023-first-real-benchmark-aoi"
+    assert len(manifest.aois) == 1
+    assert manifest.aois[0].aoi_id == "FR_RPG23_BORDEAUX_RIGHT_BANK_01"
+    assert manifest.aois[0].crop_mask_geojson_path is not None
+    assert report["summary"]["accepted_count"] == 1
+    assert report["summary"]["has_external_crop_mask_count"] == 1

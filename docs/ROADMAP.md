@@ -15,7 +15,7 @@ By 2026-05-31, OrbitRisk should produce a defensible demo pack for 5-10 vineyard
 
 - [ ] one API request per AOI with strict input contract,
 - [ ] one JSON risk response per AOI,
-- [ ] one raw-vs-buffer-vs-crop-mask benchmark report,
+- [x] one raw-vs-buffer-vs-crop-mask benchmark report,
 - [ ] one 2022 drought validation report for Bordeaux and/or Languedoc,
 - [x] explicit accepted/rejected/ambiguous AOI classification logic,
 - [ ] observed accepted/rejected/ambiguous classification on real AOIs,
@@ -29,8 +29,8 @@ The POC is considered technically demoable only when all P0 criteria are true:
 - [x] AOIs can be versioned as manifests or fixtures, with CRS and crop metadata.
 - [x] Each AOI can be locally accepted or rejected before live Sentinel-2 loading.
 - [x] 5-10 real vineyard AOIs are versioned in a validation manifest.
-- [ ] `benchmark-masks-2022` has been run on the AOI batch.
-- [ ] The benchmark compares `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`.
+- [x] `benchmark-masks-2022` has been run on the AOI batch.
+- [x] The benchmark compares `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`.
 - [x] At least one real crop/RPG-style mask is used, not only synthetic geometry.
 - [ ] The validation report includes July-August 2022 NDMI/EMA/baseline evidence.
 - [ ] Every reported trigger has `valid_pixel_count`, `cloud_pct`, `mask_counts`, and
@@ -56,7 +56,8 @@ GitHub tracking:
   [#10](https://github.com/danyballand/OrbitRisk/issues/10).
 - [M3: 2022 Drought Validation](https://github.com/danyballand/OrbitRisk/milestone/3)
   tracks issues [#11](https://github.com/danyballand/OrbitRisk/issues/11) through
-  [#15](https://github.com/danyballand/OrbitRisk/issues/15).
+  [#15](https://github.com/danyballand/OrbitRisk/issues/15), plus the baseline-support
+  follow-up [#25](https://github.com/danyballand/OrbitRisk/issues/25).
 - [M4: API Hardening for Pilot Use](https://github.com/danyballand/OrbitRisk/milestone/4)
   tracks issues [#16](https://github.com/danyballand/OrbitRisk/issues/16) through
   [#20](https://github.com/danyballand/OrbitRisk/issues/20).
@@ -97,14 +98,14 @@ Deliverables:
 - [x] Metrics for crop coverage, non-crop pixels, valid pixel deltas, cloud deltas, and NDMI
   deltas.
 - [x] Deterministic basis-risk classifier with auditable thresholds and reasons.
-- [ ] Explicit comparison of naive AOI mean vs negative buffer vs external crop mask.
+- [x] Explicit comparison of naive AOI mean vs negative buffer vs external crop mask.
 - [x] Chart artifacts for NDMI, valid pixels, and cloud percentage.
 - [ ] Mask coverage chart artifact across AOIs.
 
 Exit criteria:
 
 - [x] The report identifies which AOIs improve, degrade, or remain ambiguous after masking.
-- [ ] The report can be shown in a discovery call without hand-editing.
+- [x] The report can be shown in a discovery call without hand-editing.
 - [ ] Any proprietary vegetation mask is benchmarked against RPG/crop-mask baseline before
   being described as a moat.
 
@@ -120,6 +121,7 @@ Deliverables:
 - [x] Same-day-of-year seasonal baseline metadata for each accepted period.
 - [x] Accepted/rejected/ambiguous AOI classifier.
 - [ ] NDMI threshold and percentile calibration note.
+- [ ] Investigation of missing seasonal baseline support in the first real RPG benchmark.
 - [ ] Failure-mode appendix covering cloud gaps, insufficient pixels, and unstable masks.
 
 Exit criteria:

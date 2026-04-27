@@ -103,6 +103,16 @@ orbitrisk benchmark-masks-batch-2022 examples/aoi_batch_manifest.json \
   --output-md reports/batch-mask-benchmark.md
 ```
 
+Run the first real RPG crop-mask benchmark:
+
+```bash
+orbitrisk benchmark-masks-batch-2022 examples/rpg_2023_first_real_benchmark_manifest.json \
+  --max-items 80 \
+  --output-json reports/rpg-2023-first-real-mask-benchmark.json \
+  --output-md reports/rpg-2023-first-real-mask-benchmark.md \
+  --charts-dir reports/charts/rpg-2023-first-real-mask-benchmark
+```
+
 Validation responses are cached under `data/cache` by default. Use `--no-cache` when you
 need to force a fresh Planetary Computer run.
 

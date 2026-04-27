@@ -149,6 +149,21 @@ The batch report includes:
 - variant rollups for `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`;
 - comparison rollups for buffer-vs-raw and crop-mask-vs-raw.
 
+First real RPG benchmark command:
+
+```bash
+orbitrisk benchmark-masks-batch-2022 examples/rpg_2023_first_real_benchmark_manifest.json \
+  --max-items 80 \
+  --output-json reports/rpg-2023-first-real-mask-benchmark.json \
+  --output-md reports/rpg-2023-first-real-mask-benchmark.md \
+  --charts-dir reports/charts/rpg-2023-first-real-mask-benchmark
+```
+
+The first real run is summarized in `docs/FIRST_REAL_MASK_BENCHMARK.md`. It shows
+`vector_crop_mask` as `improved` for basis-risk contamination removal on
+`FR_RPG23_BORDEAUX_RIGHT_BANK_01`, while explicitly rejecting drought-event proof because
+seasonal baseline support was missing.
+
 When `--charts-dir` is provided, the runner writes SVG chart artifacts for every
 completed AOI/variant pair:
 
