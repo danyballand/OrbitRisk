@@ -19,4 +19,4 @@ def simple_vegetation_mask(
         if ndwi is None:
             raise ValueError("ndwi is required when max_ndwi is set")
         mask &= np.isfinite(ndwi) & (ndwi <= max_ndwi)
-    return mask
+    return np.asarray(mask, dtype=bool)

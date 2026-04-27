@@ -7,6 +7,14 @@ IndexName = Literal["ndvi", "ndwi", "ndmi", "ndre"]
 SpatialStat = Literal["mean", "median", "p10", "p90", "std"]
 
 
+def default_indices() -> list[IndexName]:
+    return ["ndvi", "ndmi", "ndwi"]
+
+
+def default_spatial_stats() -> list[SpatialStat]:
+    return ["mean", "median", "p10", "p90", "std"]
+
+
 class GeoJSONFeature(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -38,9 +46,7 @@ class DateRange(BaseModel):
 
 class AggregationOptions(BaseModel):
     temporal: str = Field(default="P10D", pattern=r"^P\d+D$")
-    spatial_stats: list[SpatialStat] = Field(
-        default_factory=lambda: ["mean", "median", "p10", "p90", "std"]
-    )
+    spatial_stats: list[SpatialStat] = Field(default_factory=default_spatial_stats)
 
 
 class MaskingOptions(BaseModel):
@@ -78,7 +84,7 @@ class RiskRequest(BaseModel):
     aoi: GeoJSONFeature
     crs: str = "EPSG:4326"
     date_range: DateRange
-    indices: list[IndexName] = Field(default_factory=lambda: ["ndvi", "ndmi", "ndwi"])
+    indices: list[IndexName] = Field(default_factory=default_indices)
     aggregation: AggregationOptions = Field(default_factory=AggregationOptions)
     masking: MaskingOptions = Field(default_factory=MaskingOptions)
     time_series: TimeSeriesOptions = Field(default_factory=TimeSeriesOptions)

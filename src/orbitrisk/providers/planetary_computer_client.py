@@ -46,7 +46,7 @@ class PlanetaryComputerProvider:
         return odc.stac.load(
             items,
             bands=list(query.bands),
-            resolution=(-query.resolution_m, query.resolution_m),
+            resolution=query.resolution_m,
             bbox=query.bbox_wgs84,
             crs=query.output_crs,
             chunks={},

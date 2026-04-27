@@ -15,10 +15,11 @@ def rasterize_geometry_mask(
     all_touched: bool = False,
 ) -> np.ndarray:
     """Return True for pixels inside the provided geometries."""
-    return ~geometry_mask(
+    mask = ~geometry_mask(
         [mapping(geometry) for geometry in geometries],
         out_shape=out_shape,
         transform=transform,
         invert=False,
         all_touched=all_touched,
     )
+    return np.asarray(mask, dtype=bool)

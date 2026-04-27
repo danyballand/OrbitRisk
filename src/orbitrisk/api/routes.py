@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 from fastapi import APIRouter
 
+from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import (
     AoiMetrics,
@@ -26,6 +27,11 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
     dry run with Sentinel Hub observations does not change the external API.
     """
     sample_dates = _sample_period_dates(payload.date_range.start, payload.date_range.end, limit=6)
+    prepared_aoi = prepare_aoi(
+        payload.aoi.model_dump(),
+        source_crs=payload.crs,
+        negative_buffer_m=payload.masking.negative_buffer_m,
+    )
     ndmi_values = [0.29, 0.25, 0.21, 0.17, 0.13, 0.11][: len(sample_dates)]
     ndmi_ema = ema(ndmi_values, alpha=payload.time_series.smoothing.alpha)
 
@@ -85,10 +91,14 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
         source=SourceMetadata(
             provider="sentinel-hub",
             collection="sentinel-2-l2a",
-            processing_crs="auto-utm",
+            processing_crs=prepared_aoi.processing_crs.to_string(),
             resolution_m=payload.resolution_m,
         ),
-        aoi_metrics=AoiMetrics(area_ha=None, usable_area_ha=None, masked_area_pct=None),
+        aoi_metrics=AoiMetrics(
+            area_ha=prepared_aoi.area_ha,
+            usable_area_ha=prepared_aoi.usable_area_ha,
+            masked_area_pct=prepared_aoi.masked_area_pct,
+        ),
         series=observations,
         risk_signal=RiskSignal(
             water_stress_score=78 if trigger.triggered else 34,

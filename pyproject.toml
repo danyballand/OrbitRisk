@@ -56,3 +56,14 @@ python_version = "3.11"
 warn_unused_configs = true
 strict = true
 packages = ["orbitrisk"]
+disable_error_code = ["import-untyped"]
+
+[[tool.mypy.overrides]]
+module = [
+  "affine",
+  "odc.*",
+  "planetary_computer",
+  "rasterio.*",
+  "shapely.*",
+]
+ignore_missing_imports = true
