@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from orbitrisk.batch.basis_risk import BasisRiskInputs, classify_basis_risk
 from orbitrisk.batch.manifest import AoiBatchManifest, load_aoi_batch_manifest
 from orbitrisk.batch.quality import render_aoi_validation_markdown, validate_aoi_manifest
 from orbitrisk.batch.requests import (
@@ -709,6 +710,9 @@ def _enrich_batch_aoi_result(result: dict[str, Any]) -> dict[str, Any]:
     vector = _benchmark_variant(benchmark, "vector_crop_mask")
     vector_comparison = _benchmark_comparison(benchmark, "vector_crop_mask")
     buffered_comparison = _benchmark_comparison(benchmark, "buffered_aoi")
+    min_valid_pixels = _optional_int(
+        _nested_get(result, "quality_gate", "metrics", "min_valid_pixels")
+    )
     return {
         **result,
         "key_metrics": {
@@ -741,44 +745,41 @@ def _enrich_batch_aoi_result(result: dict[str, Any]) -> dict[str, Any]:
                 "median_valid_pixel_delta_pct"
             ),
         },
-        "basis_risk_assessment": _basis_risk_assessment(vector, vector_comparison),
+        "basis_risk_assessment": _basis_risk_assessment(
+            vector,
+            vector_comparison,
+            min_valid_pixels=min_valid_pixels,
+        ),
     }
 
 
 def _basis_risk_assessment(
     vector_variant: dict[str, Any],
     vector_comparison: dict[str, Any],
+    *,
+    min_valid_pixels: int | None,
 ) -> dict[str, Any]:
-    if not vector_variant or vector_variant.get("status") == "skipped":
-        return {
-            "classification": "not_run",
-            "reasons": ["missing_crop_mask"],
-        }
-
-    non_crop_delta = vector_comparison.get("non_crop_pixel_delta")
-    valid_delta_pct = vector_comparison.get("median_valid_pixel_delta_pct")
-    crop_coverage = _nested_get(vector_variant, "aoi_metrics", "crop_mask_coverage_pct")
-    reasons: list[str] = []
-
-    if crop_coverage is None or float(crop_coverage) <= 0:
-        reasons.append("empty_crop_mask_coverage")
-    if valid_delta_pct is not None and float(valid_delta_pct) < -75:
-        reasons.append("excessive_valid_pixel_loss")
-    if non_crop_delta is not None and int(non_crop_delta) > 0:
-        reasons.append("non_crop_pixels_removed")
-
-    if "empty_crop_mask_coverage" in reasons or "excessive_valid_pixel_loss" in reasons:
-        classification = "degraded"
-    elif "non_crop_pixels_removed" in reasons:
-        classification = "improved"
-    else:
-        classification = "ambiguous"
-        reasons.append("no_measurable_non_crop_delta")
-
-    return {
-        "classification": classification,
-        "reasons": reasons,
-    }
+    return classify_basis_risk(
+        BasisRiskInputs(
+            vector_status=vector_variant.get("status") if vector_variant else None,
+            crop_mask_coverage_pct=_optional_float(
+                _nested_get(vector_variant, "aoi_metrics", "crop_mask_coverage_pct")
+            ),
+            crop_mask_median_valid_pixel_count=_optional_int(
+                _nested_get(
+                    vector_variant,
+                    "aggregate_metrics",
+                    "median_valid_pixel_count",
+                )
+            ),
+            min_valid_pixels=min_valid_pixels,
+            non_crop_pixel_delta=_optional_int(vector_comparison.get("non_crop_pixel_delta")),
+            valid_pixel_delta_pct=_optional_float(
+                vector_comparison.get("median_valid_pixel_delta_pct")
+            ),
+            min_ndmi_ema_delta=_optional_float(vector_comparison.get("min_ndmi_ema_delta")),
+        )
+    )
 
 
 def _batch_aggregate_metrics(aoi_results: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1214,6 +1215,18 @@ def _nested_get(document: dict[str, Any], *keys: str) -> Any:
             return None
         current = current.get(key)
     return current
+
+
+def _optional_float(value: Any) -> float | None:
+    if value is None:
+        return None
+    return float(value)
+
+
+def _optional_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    return int(value)
 
 
 def _mean_optional(values: list[Any]) -> float | None:

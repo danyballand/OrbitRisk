@@ -18,6 +18,7 @@ OrbitRisk now has a working technical spine:
 - drought-2022 validation summary runner,
 - mask benchmark runner for raw AOI vs buffer vs external crop mask,
 - batch mask benchmark runner for AOI manifests,
+- deterministic basis-risk classifier for crop-mask benchmark outputs,
 - AOI batch manifest validation without network calls,
 - local JSON response cache,
 - JSON and Markdown validation exports,

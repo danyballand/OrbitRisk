@@ -121,3 +121,25 @@ The batch report includes:
   NDMI EMA delta;
 - variant rollups for `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`;
 - comparison rollups for buffer-vs-raw and crop-mask-vs-raw.
+
+## Basis-Risk Classifier
+
+The batch classifier is deterministic and intentionally conservative. A crop mask is
+classified as `improved` only when it removes measurable non-crop pixels while preserving
+enough valid Sentinel-2 support and without materially rewriting the NDMI signal.
+
+Default thresholds:
+
+- `min_crop_coverage_pct`: `5.0`
+- `min_non_crop_pixel_delta`: `1`
+- `max_valid_pixel_loss_pct`: `75.0`
+- `max_abs_ndmi_ema_delta`: `0.15`
+
+Classification rules:
+
+- `not_run`: vector crop mask was missing or skipped.
+- `degraded`: empty/low crop-mask coverage, insufficient crop-mask valid pixels versus
+  `min_valid_pixels`, or more than 75% median valid-pixel loss.
+- `ambiguous`: no measurable non-crop removal, or absolute NDMI EMA shift above `0.15`
+  that requires human review.
+- `improved`: non-crop pixels were removed and no degraded/ambiguous rule fired.

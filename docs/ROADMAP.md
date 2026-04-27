@@ -95,6 +95,7 @@ Deliverables:
 - [x] JSON and Markdown aggregate reports across AOIs.
 - [x] Metrics for crop coverage, non-crop pixels, valid pixel deltas, cloud deltas, and NDMI
   deltas.
+- [x] Deterministic basis-risk classifier with auditable thresholds and reasons.
 - [ ] Explicit comparison of naive AOI mean vs negative buffer vs external crop mask.
 - [ ] Chart artifacts for NDMI, valid pixels, cloud percentage, and mask coverage.
 

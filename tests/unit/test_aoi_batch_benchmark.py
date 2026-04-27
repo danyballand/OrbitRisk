@@ -65,6 +65,12 @@ def test_run_mask_benchmark_batch_handles_success_and_rejected_aoi(tmp_path: Pat
     )
     assert report["aois"][0]["benchmark"]["completed_variant_count"] == 3
     assert report["aois"][0]["basis_risk_assessment"]["classification"] == "improved"
+    assert (
+        report["aois"][0]["basis_risk_assessment"]["thresholds"][
+            "max_valid_pixel_loss_pct"
+        ]
+        == 75.0
+    )
     assert report["aois"][0]["key_metrics"]["crop_mask_non_crop_pixel_delta"] == 100
     assert report["aois"][1]["status"] == "rejected"
     assert "insufficient_pixels" in report["aois"][1]["reasons"]
