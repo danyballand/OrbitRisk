@@ -1,0 +1,83 @@
+{
+  "version": "orbitrisk.aoi_batch.v1",
+  "name": "synthetic-vineyard-demo-pack",
+  "date_range": {
+    "start": "2021-01-01",
+    "end": "2022-08-31"
+  },
+  "masking": {
+    "negative_buffer_m": 10,
+    "min_valid_pixels": 20
+  },
+  "aois": [
+    {
+      "aoi_id": "FR_SYNTH_VINEYARD_001",
+      "region": "bordeaux",
+      "crop": "vineyard",
+      "crs": "EPSG:4326",
+      "aoi": {
+        "type": "Feature",
+        "properties": {
+          "asset_id": "FR_SYNTH_VINEYARD_001",
+          "crop": "vineyard"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [4.82, 45.73],
+              [4.83, 45.73],
+              [4.83, 45.74],
+              [4.82, 45.74],
+              [4.82, 45.73]
+            ]
+          ]
+        }
+      },
+      "crop_mask": {
+        "type": "Feature",
+        "properties": {
+          "source": "synthetic-rpg",
+          "crop": "vineyard"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [4.82, 45.73],
+              [4.825, 45.73],
+              [4.825, 45.74],
+              [4.82, 45.74],
+              [4.82, 45.73]
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_SYNTH_TOO_SMALL",
+      "region": "bordeaux",
+      "crop": "vineyard",
+      "crs": "EPSG:4326",
+      "aoi": {
+        "type": "Feature",
+        "properties": {
+          "asset_id": "FR_SYNTH_TOO_SMALL",
+          "crop": "vineyard"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [4.82, 45.73],
+              [4.82001, 45.73],
+              [4.82001, 45.73001],
+              [4.82, 45.73001],
+              [4.82, 45.73]
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

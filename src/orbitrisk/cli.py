@@ -6,6 +6,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from orbitrisk.batch.manifest import load_aoi_batch_manifest
+from orbitrisk.batch.quality import render_aoi_validation_markdown, validate_aoi_manifest
 from orbitrisk.config import get_settings
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
@@ -29,6 +31,13 @@ def main(argv: list[str] | None = None) -> int:
     smoke.add_argument("--max-items", type=int, default=2)
     smoke.add_argument("--max-cloud-cover-pct", type=float, default=80.0)
     smoke.add_argument("--temporal", default=None, help="Aggregation period, e.g. P10D or P1M")
+    validate_batch = subparsers.add_parser(
+        "validate-aoi-batch",
+        help="Validate an AOI batch manifest without loading Sentinel scenes",
+    )
+    validate_batch.add_argument("manifest_json", type=Path)
+    validate_batch.add_argument("--output-json", type=Path, default=None)
+    validate_batch.add_argument("--output-md", type=Path, default=None)
     validate = subparsers.add_parser("validate-2022", help="Run a drought-2022 validation")
     validate.add_argument("request_json", type=Path)
     validate.add_argument("--region", default="unknown")
@@ -63,6 +72,10 @@ def main(argv: list[str] | None = None) -> int:
         result = run_planetary_computer_smoke(args)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
+    if args.command == "validate-aoi-batch":
+        result = run_aoi_batch_validation(args)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
     if args.command == "validate-2022":
         result = run_2022_validation(args)
         print(json.dumps(result, indent=2, sort_keys=True))
@@ -72,6 +85,18 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     return 1
+
+
+def run_aoi_batch_validation(args: argparse.Namespace) -> dict[str, Any]:
+    manifest = load_aoi_batch_manifest(args.manifest_json)
+    report = validate_aoi_manifest(manifest, manifest_path=args.manifest_json)
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(report, indent=2, sort_keys=True))
+    if args.output_md is not None:
+        args.output_md.parent.mkdir(parents=True, exist_ok=True)
+        args.output_md.write_text(render_aoi_validation_markdown(report))
+    return report
 
 
 def run_planetary_computer_smoke(args: argparse.Namespace) -> dict[str, Any]:

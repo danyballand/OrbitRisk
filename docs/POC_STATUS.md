@@ -17,6 +17,7 @@ OrbitRisk now has a working technical spine:
 - seasonal baseline metadata,
 - drought-2022 validation summary runner,
 - mask benchmark runner for raw AOI vs buffer vs external crop mask,
+- AOI batch manifest validation without network calls,
 - local JSON response cache,
 - JSON and Markdown validation exports,
 - optional external vector crop mask for RPG-style masking,
@@ -47,6 +48,9 @@ The technical POC needs:
 - observed raw-vs-buffer-vs-crop-mask benchmark outputs,
 - explicit accepted/rejected/ambiguous AOI classification,
 - charts for NDMI, valid pixels, and cloud percentage.
+
+The local AOI validation layer now rejects invalid geometries, empty negative buffers,
+and insufficient Sentinel-2 pixel support before any live raster provider call.
 
 Estimate: the engineering POC is roughly 55-65% complete. A rough demo is close; an
 actuary-grade POC still needs real AOI batches, observed benchmark outputs, and a

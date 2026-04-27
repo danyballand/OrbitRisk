@@ -56,6 +56,14 @@ orbitrisk smoke-pc tests/fixtures/sample_request.json --start 2022-07-01 --end 2
 
 Use `--temporal P10D` or `--temporal P1M` to inspect the composited actuarial series.
 
+Validate an AOI batch locally before live Sentinel-2 runs:
+
+```bash
+orbitrisk validate-aoi-batch examples/aoi_batch_manifest.json \
+  --output-json reports/aoi-batch-validation.json \
+  --output-md reports/aoi-batch-validation.md
+```
+
 Run a first drought-2022 validation summary:
 
 ```bash
