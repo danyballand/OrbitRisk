@@ -72,3 +72,26 @@ Results are cached under `data/cache` by default. Use `--no-cache` to force a fr
 `--crop-mask-geojson` accepts a Polygon, MultiPolygon, Feature, or FeatureCollection and
 is intended for RPG IGN or other parcel/crop masks. The vector mask is reprojected onto
 the fixed Sentinel grid and affects `valid_pixel_count` and `mask_counts.non_crop`.
+
+## Mask Benchmark Runner
+
+The benchmark runner executes three comparable variants:
+
+- `raw_aoi`: no negative buffer, no crop mask.
+- `buffered_aoi`: AOI mean with the configured or supplied negative buffer.
+- `vector_crop_mask`: external crop mask plus buffer. If no crop mask is provided, this
+  variant is marked as skipped rather than silently degraded.
+
+```bash
+orbitrisk benchmark-masks-2022 tests/fixtures/sample_request.json \
+  --region bordeaux \
+  --max-items 80 \
+  --crop-mask-geojson data/rpg/vineyard-mask.geojson \
+  --crop-mask-crs EPSG:4326 \
+  --output-json reports/bordeaux-mask-benchmark.json \
+  --output-md reports/bordeaux-mask-benchmark.md
+```
+
+The output reports per-variant detection status, confidence, baseline support, median
+valid pixels, cloud percentage, minimum NDMI mean/EMA, crop-mask coverage, and deltas
+against the raw AOI baseline.

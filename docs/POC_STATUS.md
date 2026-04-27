@@ -16,6 +16,7 @@ OrbitRisk now has a working technical spine:
 - live API endpoint backed by Planetary Computer,
 - seasonal baseline metadata,
 - drought-2022 validation summary runner,
+- mask benchmark runner for raw AOI vs buffer vs external crop mask,
 - local JSON response cache,
 - JSON and Markdown validation exports,
 - optional external vector crop mask for RPG-style masking,
@@ -42,12 +43,14 @@ Close, but not done.
 
 The technical POC needs:
 
-- clear rejected-observation reasons,
-- baseline seasonal anomaly scoring,
-- a Bordeaux/Languedoc July-August 2022 validation run.
+- a 5-10 AOI Bordeaux/Languedoc July-August 2022 validation batch,
+- observed raw-vs-buffer-vs-crop-mask benchmark outputs,
+- explicit accepted/rejected/ambiguous AOI classification,
+- charts for NDMI, valid pixels, and cloud percentage.
 
-Estimate: the engineering POC is roughly 40-50% complete. A rough demo is close; an
-actuary-grade POC still needs the validation and compositing layers.
+Estimate: the engineering POC is roughly 55-65% complete. A rough demo is close; an
+actuary-grade POC still needs real AOI batches, observed benchmark outputs, and a
+clear accepted/rejected/ambiguous AOI review loop.
 
 ## Distance to a Sellable MGA POC
 
@@ -57,7 +60,7 @@ The sellable POC needs:
 
 - 5-10 credible vineyard AOIs,
 - 2022 drought validation report,
-- naive mean vs RPG + buffer vs OrbitRisk mask comparison,
+- naive mean vs buffer vs RPG/crop-mask comparison on real AOIs,
 - one design partner conversation validating the JSON contract,
 - a crisp explanation of basis-risk reduction and confidence metadata.
 

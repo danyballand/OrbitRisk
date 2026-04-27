@@ -62,6 +62,17 @@ orbitrisk validate-2022 tests/fixtures/sample_request.json \
   --output-md reports/bordeaux-2022.md
 ```
 
+Compare raw AOI, negative-buffer, and external crop-mask variants:
+
+```bash
+orbitrisk benchmark-masks-2022 tests/fixtures/sample_request.json \
+  --region bordeaux \
+  --max-items 80 \
+  --crop-mask-geojson data/rpg/vineyard-mask.geojson \
+  --output-json reports/bordeaux-mask-benchmark.json \
+  --output-md reports/bordeaux-mask-benchmark.md
+```
+
 Validation responses are cached under `data/cache` by default. Use `--no-cache` when you
 need to force a fresh Planetary Computer run.
 

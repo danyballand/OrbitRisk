@@ -1,5 +1,7 @@
 import argparse
+import copy
 import json
+import statistics
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -39,6 +41,22 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--output-md", type=Path, default=None)
     validate.add_argument("--crop-mask-geojson", type=Path, default=None)
     validate.add_argument("--crop-mask-crs", default="EPSG:4326")
+    benchmark = subparsers.add_parser(
+        "benchmark-masks-2022",
+        help="Compare raw AOI, buffered AOI, and vector crop-mask drought signals",
+    )
+    benchmark.add_argument("request_json", type=Path)
+    benchmark.add_argument("--region", default="unknown")
+    benchmark.add_argument("--baseline-start", type=date.fromisoformat, default=date(2019, 6, 1))
+    benchmark.add_argument("--end", type=date.fromisoformat, default=date(2022, 8, 31))
+    benchmark.add_argument("--max-items", type=int, default=80)
+    benchmark.add_argument("--buffer-m", type=float, default=None)
+    benchmark.add_argument("--cache", action=argparse.BooleanOptionalAction, default=True)
+    benchmark.add_argument("--cache-dir", type=Path, default=None)
+    benchmark.add_argument("--output-json", type=Path, default=None)
+    benchmark.add_argument("--output-md", type=Path, default=None)
+    benchmark.add_argument("--crop-mask-geojson", type=Path, default=None)
+    benchmark.add_argument("--crop-mask-crs", default="EPSG:4326")
 
     args = parser.parse_args(argv)
     if args.command == "smoke-pc":
@@ -47,6 +65,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "validate-2022":
         result = run_2022_validation(args)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "benchmark-masks-2022":
+        result = run_mask_benchmark_2022(args)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     return 1
@@ -133,20 +155,11 @@ def run_planetary_computer_smoke(args: argparse.Namespace) -> dict[str, Any]:
 
 def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
     payload = json.loads(args.request_json.read_text())
-    payload["date_range"] = {
-        "start": args.baseline_start.isoformat(),
-        "end": args.end.isoformat(),
-    }
-    payload["aggregation"] = {
-        "temporal": payload.get("aggregation", {}).get("temporal", "P10D"),
-        "spatial_stats": payload.get("aggregation", {}).get(
-            "spatial_stats",
-            ["mean", "median", "p10", "p90", "std"],
-        ),
-    }
-    request = RiskRequest.model_validate(payload)
+    request = RiskRequest.model_validate(
+        _validation_payload(payload, baseline_start=args.baseline_start, end=args.end)
+    )
     crop_mask_geojson = (
-        json.loads(args.crop_mask_geojson.read_text())
+        _read_crop_mask_document(args.crop_mask_geojson)
         if args.crop_mask_geojson is not None
         else None
     )
@@ -177,6 +190,119 @@ def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
         args.output_md.parent.mkdir(parents=True, exist_ok=True)
         args.output_md.write_text(render_validation_markdown(summary))
     return summary
+
+
+def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
+    payload = json.loads(args.request_json.read_text())
+    base_masking = payload.get("masking", {})
+    buffered_m = (
+        args.buffer_m
+        if args.buffer_m is not None
+        else base_masking.get("negative_buffer_m", 10.0)
+    )
+    crop_mask_geojson = _benchmark_crop_mask(payload, args.crop_mask_geojson)
+    crop_mask_crs = str(
+        args.crop_mask_crs
+        if args.crop_mask_geojson is not None
+        else payload.get("crop_mask_crs", args.crop_mask_crs)
+    )
+    settings = get_settings()
+    provider_name = "planetary-computer"
+    collection = settings.planetary_computer_collection
+    engine = RiskEngine(
+        PlanetaryComputerProvider(settings),
+        provider_name=provider_name,
+        collection=collection,
+    )
+
+    variants: list[tuple[str, str, RiskResponse | None]] = []
+    for variant, label, negative_buffer_m, crop_mask in [
+        ("raw_aoi", "Raw AOI mean", 0.0, None),
+        ("buffered_aoi", f"AOI mean with {buffered_m:g} m negative buffer", buffered_m, None),
+        ("vector_crop_mask", "External crop mask + buffer", buffered_m, crop_mask_geojson),
+    ]:
+        if variant == "vector_crop_mask" and crop_mask is None:
+            variants.append((variant, label, None))
+            continue
+        request = RiskRequest.model_validate(
+            _validation_payload(
+                payload,
+                baseline_start=args.baseline_start,
+                end=args.end,
+                negative_buffer_m=negative_buffer_m,
+                include_crop_mask=False,
+            )
+        )
+        response = _quote_with_cache(
+            engine,
+            request,
+            provider_name=provider_name,
+            collection=collection,
+            max_items=args.max_items,
+            enabled=args.cache,
+            cache_dir=args.cache_dir or settings.cache_dir,
+            crop_mask_geojson=crop_mask,
+            crop_mask_crs=crop_mask_crs,
+        )
+        variants.append((variant, label, response))
+
+    summary = summarize_mask_benchmark(variants, region=args.region)
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
+    if args.output_md is not None:
+        args.output_md.parent.mkdir(parents=True, exist_ok=True)
+        args.output_md.write_text(render_mask_benchmark_markdown(summary))
+    return summary
+
+
+def _validation_payload(
+    payload: dict[str, Any],
+    *,
+    baseline_start: date,
+    end: date,
+    negative_buffer_m: float | None = None,
+    include_crop_mask: bool = True,
+) -> dict[str, Any]:
+    prepared = copy.deepcopy(payload)
+    prepared["date_range"] = {
+        "start": baseline_start.isoformat(),
+        "end": end.isoformat(),
+    }
+    prepared["aggregation"] = {
+        "temporal": prepared.get("aggregation", {}).get("temporal", "P10D"),
+        "spatial_stats": prepared.get("aggregation", {}).get(
+            "spatial_stats",
+            ["mean", "median", "p10", "p90", "std"],
+        ),
+    }
+    if negative_buffer_m is not None:
+        masking = dict(prepared.get("masking", {}))
+        masking["negative_buffer_m"] = negative_buffer_m
+        prepared["masking"] = masking
+    if not include_crop_mask:
+        prepared.pop("crop_mask", None)
+        prepared.pop("crop_mask_crs", None)
+    return prepared
+
+
+def _benchmark_crop_mask(
+    payload: dict[str, Any],
+    crop_mask_path: Path | None,
+) -> dict[str, Any] | None:
+    if crop_mask_path is not None:
+        return _read_crop_mask_document(crop_mask_path)
+    embedded_crop_mask = payload.get("crop_mask")
+    if isinstance(embedded_crop_mask, dict):
+        return embedded_crop_mask
+    return None
+
+
+def _read_crop_mask_document(crop_mask_path: Path) -> dict[str, Any]:
+    document: Any = json.loads(crop_mask_path.read_text())
+    if not isinstance(document, dict):
+        raise ValueError("Crop mask GeoJSON root must be an object")
+    return document
 
 
 def _quote_with_cache(
@@ -265,6 +391,159 @@ def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[st
     }
 
 
+def summarize_mask_benchmark(
+    variants: list[tuple[str, str, RiskResponse | None]],
+    *,
+    region: str,
+) -> dict[str, Any]:
+    variant_summaries = [
+        _summarize_benchmark_variant(variant, label, response, region=region)
+        for variant, label, response in variants
+    ]
+    completed = [
+        summary for summary in variant_summaries if summary["status"] != "skipped"
+    ]
+    raw = next(
+        (summary for summary in completed if summary["variant"] == "raw_aoi"),
+        completed[0] if completed else None,
+    )
+    comparisons = [
+        _compare_benchmark_variants(raw, summary)
+        for summary in completed
+        if raw is not None and summary["variant"] != raw["variant"]
+    ]
+    return {
+        "region": region,
+        "variant_count": len(variant_summaries),
+        "completed_variant_count": len(completed),
+        "variants": variant_summaries,
+        "comparisons": comparisons,
+    }
+
+
+def _summarize_benchmark_variant(
+    variant: str,
+    label: str,
+    response: RiskResponse | None,
+    *,
+    region: str,
+) -> dict[str, Any]:
+    if response is None:
+        return {
+            "variant": variant,
+            "label": label,
+            "status": "skipped",
+            "skip_reason": "crop_mask_geojson_not_provided",
+        }
+
+    summary = summarize_2022_validation(response, region=region)
+    ndmi_periods = summary["ndmi_periods"]
+    valid_counts = [
+        int(period["valid_pixel_count"])
+        for period in ndmi_periods
+        if period["valid_pixel_count"] is not None
+    ]
+    cloud_values = [
+        float(period["cloud_pct"]) for period in ndmi_periods if period["cloud_pct"] is not None
+    ]
+    ndmi_mean_values = _period_float_values(ndmi_periods, "ndmi_mean")
+    ndmi_ema_values = _period_float_values(ndmi_periods, "ndmi_ema")
+    flag_counts = _quality_flag_counts(response)
+    summary.update(
+        {
+            "variant": variant,
+            "label": label,
+            "aoi_metrics": response.aoi_metrics.model_dump(mode="json"),
+            "aggregate_metrics": {
+                "median_valid_pixel_count": _median_int(valid_counts),
+                "mean_cloud_pct": _mean_float(cloud_values),
+                "min_ndmi_mean": _min_float(ndmi_mean_values),
+                "min_ndmi_ema": _min_float(ndmi_ema_values),
+                "total_non_crop_pixels": sum(
+                    observation.mask_counts.non_crop for observation in response.series
+                ),
+                "quality_flag_counts": flag_counts,
+            },
+        }
+    )
+    return summary
+
+
+def _period_float_values(periods: list[dict[str, Any]], key: str) -> list[float]:
+    return [float(period[key]) for period in periods if period.get(key) is not None]
+
+
+def _median_int(values: list[int]) -> int | None:
+    if not values:
+        return None
+    return int(statistics.median(values))
+
+
+def _mean_float(values: list[float]) -> float | None:
+    if not values:
+        return None
+    return statistics.fmean(values)
+
+
+def _min_float(values: list[float]) -> float | None:
+    if not values:
+        return None
+    return min(values)
+
+
+def _quality_flag_counts(response: RiskResponse) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for observation in response.series:
+        for flag in observation.quality_flags:
+            counts[flag] = counts.get(flag, 0) + 1
+    return counts
+
+
+def _compare_benchmark_variants(
+    raw: dict[str, Any],
+    candidate: dict[str, Any],
+) -> dict[str, Any]:
+    raw_metrics = raw["aggregate_metrics"]
+    candidate_metrics = candidate["aggregate_metrics"]
+    return {
+        "baseline_variant": raw["variant"],
+        "candidate_variant": candidate["variant"],
+        "median_valid_pixel_delta_pct": _pct_delta(
+            raw_metrics["median_valid_pixel_count"],
+            candidate_metrics["median_valid_pixel_count"],
+        ),
+        "mean_cloud_delta_pct_points": _numeric_delta(
+            raw_metrics["mean_cloud_pct"],
+            candidate_metrics["mean_cloud_pct"],
+        ),
+        "min_ndmi_mean_delta": _numeric_delta(
+            raw_metrics["min_ndmi_mean"],
+            candidate_metrics["min_ndmi_mean"],
+        ),
+        "min_ndmi_ema_delta": _numeric_delta(
+            raw_metrics["min_ndmi_ema"],
+            candidate_metrics["min_ndmi_ema"],
+        ),
+        "confidence_delta": _numeric_delta(raw["confidence"], candidate["confidence"]),
+        "non_crop_pixel_delta": (
+            candidate_metrics["total_non_crop_pixels"]
+            - raw_metrics["total_non_crop_pixels"]
+        ),
+    }
+
+
+def _numeric_delta(baseline: float | int | None, candidate: float | int | None) -> float | None:
+    if baseline is None or candidate is None:
+        return None
+    return float(candidate) - float(baseline)
+
+
+def _pct_delta(baseline: float | int | None, candidate: float | int | None) -> float | None:
+    if baseline is None or candidate is None or float(baseline) == 0:
+        return None
+    return (float(candidate) - float(baseline)) / float(baseline) * 100
+
+
 def render_validation_markdown(summary: dict[str, Any]) -> str:
     lines = [
         f"# OrbitRisk 2022 Drought Validation: {summary['region']}",
@@ -307,6 +586,76 @@ def render_validation_markdown(summary: dict[str, Any]) -> str:
             lines.append(f"- {period['start']} to {period['end']}: {period['severity']}")
     else:
         lines.append("- None")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_mask_benchmark_markdown(summary: dict[str, Any]) -> str:
+    lines = [
+        f"# OrbitRisk 2022 Mask Benchmark: {summary['region']}",
+        "",
+        "- Completed variants: `{completed}` / `{total}`".format(
+            completed=summary["completed_variant_count"],
+            total=summary["variant_count"],
+        ),
+        "",
+        "## Variant Summary",
+        "",
+        "| Variant | Status | Detected | Confidence | Target periods | Baseline periods | "
+        "Median valid px | Mean cloud % | Min NDMI mean | Min NDMI EMA | Crop coverage % | "
+        "Non-crop px |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for variant in summary["variants"]:
+        if variant["status"] == "skipped":
+            lines.append(
+                f"| {variant['label']} | skipped |  |  |  |  |  |  |  |  |  |  |"
+            )
+            continue
+        metrics = variant["aggregate_metrics"]
+        aoi_metrics = variant["aoi_metrics"]
+        lines.append(
+            "| {label} | {status} | {detected} | {confidence:.2f} | {target} | "
+            "{baseline} | {valid} | {cloud} | {mean} | {ema} | {coverage} | {non_crop} |".format(
+                label=variant["label"],
+                status=variant["status"],
+                detected=variant["detected"],
+                confidence=variant["confidence"],
+                target=variant["target_period_count"],
+                baseline=variant["baseline_supported_period_count"],
+                valid=metrics["median_valid_pixel_count"] or "",
+                cloud=_format_optional(metrics["mean_cloud_pct"]),
+                mean=_format_optional(metrics["min_ndmi_mean"]),
+                ema=_format_optional(metrics["min_ndmi_ema"]),
+                coverage=_format_optional(aoi_metrics["crop_mask_coverage_pct"]),
+                non_crop=metrics["total_non_crop_pixels"],
+            )
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Comparison vs Raw AOI",
+            "",
+            "| Candidate | Valid px delta % | Cloud delta pp | Min NDMI mean delta | "
+            "Min NDMI EMA delta | Confidence delta | Non-crop px delta |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for comparison in summary["comparisons"]:
+        lines.append(
+            "| {candidate} | {valid} | {cloud} | {mean} | {ema} | {confidence} | "
+            "{non_crop} |".format(
+                candidate=comparison["candidate_variant"],
+                valid=_format_optional(comparison["median_valid_pixel_delta_pct"]),
+                cloud=_format_optional(comparison["mean_cloud_delta_pct_points"]),
+                mean=_format_optional(comparison["min_ndmi_mean_delta"]),
+                ema=_format_optional(comparison["min_ndmi_ema_delta"]),
+                confidence=_format_optional(comparison["confidence_delta"]),
+                non_crop=comparison["non_crop_pixel_delta"],
+            )
+        )
+
     lines.append("")
     return "\n".join(lines)
 
