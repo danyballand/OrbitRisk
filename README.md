@@ -43,6 +43,12 @@ Run tests:
 pytest
 ```
 
+Run a tiny real-data smoke test through Planetary Computer:
+
+```bash
+orbitrisk smoke-pc tests/fixtures/sample_request.json --start 2022-07-01 --end 2022-07-10 --max-items 1
+```
+
 ## Environment
 
 Copy `.env.example` to `.env` and fill the Sentinel Hub credentials when ready.

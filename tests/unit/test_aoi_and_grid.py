@@ -32,5 +32,10 @@ def test_grid_from_geometry_rasterizes_analysis_area() -> None:
 
     assert grid.shape[0] > 0
     assert grid.shape[1] > 0
+    west, south, east, north = grid.bounds
+    assert west < east
+    assert south < north
+    assert 600_000 < west < 700_000
+    assert 5_000_000 < south < 5_100_000
     assert mask.dtype == np.bool_
     assert 0 < int(mask.sum()) < mask.size

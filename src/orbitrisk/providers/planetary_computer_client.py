@@ -30,19 +30,31 @@ class PlanetaryComputerProvider:
             datetime=f"{query.date_start.isoformat()}/{query.date_end.isoformat()}",
             query=_cloud_cover_query(query.max_cloud_cover_pct),
         )
-        return list(search.items())
+        items: list[Any] = []
+        for item in search.items():
+            items.append(item)
+            if query.max_items is not None and len(items) >= query.max_items:
+                break
+        return items
 
     def sign_items(self, items: list[Any]) -> list[Any]:
         import planetary_computer
 
         return [planetary_computer.sign(item) for item in items]
 
-    def load_datacube(self, query: ObservationQuery) -> Any:
+    def load_datacube(self, query: ObservationQuery, *, geobox: Any | None = None) -> Any:
         import odc.stac
 
         items = self.sign_items(self.search_items(query))
         if not items:
             raise ValueError("No Sentinel-2 items found for query")
+        if geobox is not None:
+            return odc.stac.load(
+                items,
+                bands=list(query.bands),
+                geobox=geobox,
+                chunks={},
+            )
         return odc.stac.load(
             items,
             bands=list(query.bands),

@@ -11,3 +11,4 @@ class ObservationQuery:
     resolution_m: int
     bands: tuple[str, ...]
     max_cloud_cover_pct: float | None = None
+    max_items: int | None = None

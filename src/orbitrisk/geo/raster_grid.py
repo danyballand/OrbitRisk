@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from math import ceil
+from typing import Any
 
 import numpy as np
 from affine import Affine
@@ -24,7 +25,7 @@ class RasterGrid:
 
     @property
     def bounds(self) -> tuple[float, float, float, float]:
-        south, west, north, east = array_bounds(self.height, self.width, self.transform)
+        west, south, east, north = array_bounds(self.height, self.width, self.transform)
         return west, south, east, north
 
     def mask(self, geometry: BaseGeometry, *, all_touched: bool = False) -> np.ndarray:
@@ -34,6 +35,11 @@ class RasterGrid:
             transform=self.transform,
             all_touched=all_touched,
         )
+
+    def to_odc_geobox(self) -> Any:
+        from odc.geo.geobox import GeoBox
+
+        return GeoBox(self.shape, self.transform, self.crs.to_string())
 
 
 def grid_from_geometry(
