@@ -8,11 +8,20 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_prefix="", extra="ignore")
 
     orbitrisk_env: str = Field(default="local", alias="ORBITRISK_ENV")
+    data_provider: str = Field(default="planetary-computer", alias="ORBITRISK_DATA_PROVIDER")
     sentinelhub_client_id: str | None = Field(default=None, alias="SENTINELHUB_CLIENT_ID")
     sentinelhub_client_secret: str | None = Field(default=None, alias="SENTINELHUB_CLIENT_SECRET")
     sentinelhub_base_url: str = Field(
         default="https://services.sentinel-hub.com",
         alias="SENTINELHUB_BASE_URL",
+    )
+    planetary_computer_stac_url: str = Field(
+        default="https://planetarycomputer.microsoft.com/api/stac/v1",
+        alias="PLANETARY_COMPUTER_STAC_URL",
+    )
+    planetary_computer_collection: str = Field(
+        default="sentinel-2-l2a",
+        alias="PLANETARY_COMPUTER_COLLECTION",
     )
     default_resolution_m: int = Field(default=10, alias="ORBITRISK_DEFAULT_RESOLUTION_M")
     min_valid_pixels: int = Field(default=20, alias="ORBITRISK_MIN_VALID_PIXELS")

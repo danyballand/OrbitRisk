@@ -12,7 +12,7 @@ returns an auditable JSON time series for actuarial workflows.
 - A geospatial processing skeleton built around fixed raster grids and explicit CRS handling.
 - NumPy implementations for NDVI, NDWI, NDMI, quality masking, robust spatial aggregation,
   EMA smoothing, anomaly scoring, and trigger detection.
-- A Sentinel Hub provider boundary ready for Process API / Statistical API integration.
+- Provider boundaries for Planetary Computer/STAC development and Sentinel Hub production.
 
 ## What this POC is not
 
@@ -50,6 +50,10 @@ Copy `.env.example` to `.env` and fill the Sentinel Hub credentials when ready.
 ```bash
 cp .env.example .env
 ```
+
+The default POC provider is Planetary Computer/STAC to avoid burning Sentinel Hub
+processing units during development. Sentinel Hub remains the intended production/demo
+provider once the numerical pipeline is validated.
 
 ## API Shape
 

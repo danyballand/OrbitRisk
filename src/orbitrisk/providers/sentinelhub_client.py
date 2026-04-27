@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from orbitrisk.config import Settings
+if TYPE_CHECKING:
+    from orbitrisk.config import Settings
 
 
 @dataclass(frozen=True)
@@ -21,7 +22,7 @@ class SentinelHubProvider:
     testable without network credentials.
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: "Settings") -> None:
         self.settings = settings
 
     def enabled(self) -> bool:

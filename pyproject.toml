@@ -19,6 +19,11 @@ dependencies = [
   "shapely>=2.0",
   "pyproj>=3.6",
   "rasterio>=1.3",
+  "xarray>=2024.6",
+  "rioxarray>=0.15",
+  "pystac-client>=0.8",
+  "planetary-computer>=1.0",
+  "odc-stac>=0.3",
   "sentinelhub>=3.10",
   "structlog>=24.1",
 ]
