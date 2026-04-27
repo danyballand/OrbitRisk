@@ -1,8 +1,11 @@
 from datetime import date, timedelta
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
+from orbitrisk.config import get_settings
 from orbitrisk.geo.aoi import prepare_aoi
+from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvider
+from orbitrisk.risk_engine import RiskEngine
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import (
     AoiMetrics,
@@ -108,6 +111,21 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
             critical_periods=trigger.periods,
         ),
     )
+
+
+@router.post("/risk/quote/live", response_model=RiskResponse)
+def quote_risk_live(
+    payload: RiskRequest,
+    max_items: int = Query(default=25, ge=1, le=500),
+) -> RiskResponse:
+    settings = get_settings()
+    provider = PlanetaryComputerProvider(settings)
+    engine = RiskEngine(
+        provider,
+        provider_name="planetary-computer",
+        collection=settings.planetary_computer_collection,
+    )
+    return engine.quote(payload, max_items=max_items)
 
 
 def _sample_period_dates(start: date, end: date, limit: int) -> list[date]:

@@ -71,6 +71,12 @@ Primary endpoint:
 POST /v1/risk/quote
 ```
 
-For the first POC pass, the endpoint validates the actuarial contract and returns a
-deterministic dry-run response. The provider and processing modules are separated so the
-dry run can be replaced by real Sentinel Hub observations without changing the public API.
+The default endpoint validates the actuarial contract and returns a deterministic dry-run
+response. A live Planetary Computer-backed endpoint is also available:
+
+```text
+POST /v1/risk/quote/live?max_items=25
+```
+
+`max_items` protects development calls from accidentally loading hundreds of Sentinel-2
+scenes. Increase it intentionally for multi-year validation runs.

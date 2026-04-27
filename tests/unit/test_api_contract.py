@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import numpy as np
+import xarray as xr
 from fastapi.testclient import TestClient
 
 from orbitrisk.api.main import app
@@ -21,3 +23,51 @@ def test_quote_endpoint_returns_auditable_aoi_metadata() -> None:
     assert body["aoi_metrics"]["area_ha"] > body["aoi_metrics"]["usable_area_ha"]
     assert body["series"][0]["mask_counts"]["valid"] > 0
     assert "trigger_candidate" in body["risk_signal"]
+
+
+def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
+    calls = {}
+
+    class FakeProvider:
+        def __init__(self, settings) -> None:
+            calls["settings"] = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            calls["query"] = query
+            calls["geobox"] = geobox
+            return _dataset(tuple(geobox.shape))
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", FakeProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+
+    response = client.post("/v1/risk/quote/live?max_items=3", json=payload)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert calls["query"].max_items == 3
+    assert calls["geobox"] is not None
+    assert body["source"]["provider"] == "planetary-computer"
+    assert body["series"][0]["indices"]["ndmi"]["ema"] is not None
+
+
+def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:
+    height, width = grid_shape
+    shape = (2, height, width)
+    coords = {
+        "time": np.array(["2022-07-01", "2022-07-11"], dtype="datetime64[D]"),
+        "y": np.arange(height),
+        "x": np.arange(width),
+    }
+    return xr.Dataset(
+        {
+            "B03": (("time", "y", "x"), np.full(shape, 0.20, dtype=np.float32)),
+            "B04": (("time", "y", "x"), np.full(shape, 0.20, dtype=np.float32)),
+            "B05": (("time", "y", "x"), np.full(shape, 0.30, dtype=np.float32)),
+            "B08": (("time", "y", "x"), np.full(shape, 0.60, dtype=np.float32)),
+            "B11": (("time", "y", "x"), np.full(shape, 0.30, dtype=np.float32)),
+            "SCL": (("time", "y", "x"), np.full(shape, 4, dtype=np.uint8)),
+        },
+        coords=coords,
+    )

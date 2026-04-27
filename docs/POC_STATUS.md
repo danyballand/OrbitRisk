@@ -13,6 +13,7 @@ OrbitRisk now has a working technical spine:
 - Planetary Computer/STAC provider,
 - xarray datacube summarization,
 - P10D/monthly observation compositing,
+- live API endpoint backed by Planetary Computer,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -21,14 +22,21 @@ The first real smoke test runs against Planetary Computer Sentinel-2 L2A and ret
 auditable observations with `valid_pixel_count`, `cloud_pct`, `quality`, `mask_counts`,
 and index stats.
 
+The live API smoke path also works:
+
+```text
+POST /v1/risk/quote/live?max_items=10
+```
+
+For the July 2022 sample fixture, it returns three P10D composited observations and a
+water-stress trigger.
+
 ## Distance to a Technical POC
 
 Close, but not done.
 
 The technical POC needs:
 
-- period compositing: choose the best observation per P10D/monthly bucket,
-- API route backed by the real provider instead of dry-run values,
 - persistence/caching for raw and summarized observations,
 - clear rejected-observation reasons,
 - baseline seasonal anomaly scoring,

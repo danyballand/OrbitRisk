@@ -5,6 +5,15 @@
 The contract is designed for actuarial systems: deterministic inputs, explicit quality
 metadata, and no hidden assumptions about masking.
 
+The live POC endpoint uses the same request/response contract:
+
+```text
+POST /v1/risk/quote/live?max_items=25
+```
+
+The live endpoint currently uses Planetary Computer/STAC and returns composited periods
+according to `aggregation.temporal`.
+
 ### Request
 
 ```json
