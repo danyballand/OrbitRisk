@@ -7,12 +7,11 @@ from pydantic import ValidationError
 from orbitrisk.batch.manifest import (
     AoiBatchManifest,
     AoiManifestEntry,
-    resolve_geojson_document,
 )
+from orbitrisk.batch.requests import resolve_aoi_feature, resolve_crop_mask_document
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.masking.vector_mask import crop_mask_from_geojson
-from orbitrisk.schemas.request import GeoJSONFeature
 
 AoiValidationStatus = Literal["accepted", "rejected"]
 
@@ -83,8 +82,8 @@ def validate_aoi_entry(
     resolution_m = entry.resolution_m or manifest.resolution_m
 
     try:
-        aoi_feature = _resolve_aoi_feature(entry, base_dir=base_dir)
-        crop_mask = _resolve_crop_mask(entry, base_dir=base_dir)
+        aoi_feature = resolve_aoi_feature(entry, base_dir=base_dir)
+        crop_mask = resolve_crop_mask_document(entry, base_dir=base_dir)
         prepared_raw = prepare_aoi(
             aoi_feature.model_dump(mode="json"),
             source_crs=entry.crs,
@@ -188,28 +187,6 @@ def render_aoi_validation_markdown(report: dict[str, Any]) -> str:
         )
     lines.append("")
     return "\n".join(lines)
-
-
-def _resolve_aoi_feature(entry: AoiManifestEntry, *, base_dir: Path) -> GeoJSONFeature:
-    if entry.aoi is not None:
-        return entry.aoi
-    if entry.aoi_geojson_path is None:
-        raise ValueError("AOI geometry source is missing")
-    return GeoJSONFeature.model_validate(
-        resolve_geojson_document(base_dir, entry.aoi_geojson_path)
-    )
-
-
-def _resolve_crop_mask(
-    entry: AoiManifestEntry,
-    *,
-    base_dir: Path,
-) -> dict[str, Any] | None:
-    if entry.crop_mask is not None:
-        return entry.crop_mask.model_dump(mode="json")
-    if entry.crop_mask_geojson_path is None:
-        return None
-    return resolve_geojson_document(base_dir, entry.crop_mask_geojson_path)
 
 
 def _negative_buffer_is_empty(geometry: Any, negative_buffer_m: float) -> bool:

@@ -95,3 +95,20 @@ orbitrisk benchmark-masks-2022 tests/fixtures/sample_request.json \
 The output reports per-variant detection status, confidence, baseline support, median
 valid pixels, cloud percentage, minimum NDMI mean/EMA, crop-mask coverage, and deltas
 against the raw AOI baseline.
+
+## Batch Mask Benchmark Runner
+
+Use the batch runner once AOIs are listed in an AOI manifest:
+
+```bash
+orbitrisk benchmark-masks-batch-2022 examples/aoi_batch_manifest.json \
+  --max-items 80 \
+  --output-json reports/batch-mask-benchmark.json \
+  --output-md reports/batch-mask-benchmark.md
+```
+
+The batch runner validates the manifest first, rejects AOIs that fail local geometry or
+pixel-support checks, skips accepted AOIs without crop masks by default, and isolates
+provider failures so one AOI does not crash the full run. Use
+`--include-without-crop-mask` to run partial raw/buffer benchmarks for AOIs that do not
+yet have crop masks.

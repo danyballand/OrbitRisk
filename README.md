@@ -86,6 +86,15 @@ orbitrisk benchmark-masks-2022 tests/fixtures/sample_request.json \
   --output-md reports/bordeaux-mask-benchmark.md
 ```
 
+Run the same mask benchmark across every accepted AOI in a manifest:
+
+```bash
+orbitrisk benchmark-masks-batch-2022 examples/aoi_batch_manifest.json \
+  --max-items 80 \
+  --output-json reports/batch-mask-benchmark.json \
+  --output-md reports/batch-mask-benchmark.md
+```
+
 Validation responses are cached under `data/cache` by default. Use `--no-cache` when you
 need to force a fresh Planetary Computer run.
 

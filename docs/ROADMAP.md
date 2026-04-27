@@ -91,7 +91,7 @@ Goal: turn the masking moat into measurable evidence.
 
 Deliverables:
 
-- [ ] Batch wrapper for `benchmark-masks-2022`.
+- [x] Batch wrapper for `benchmark-masks-2022`.
 - [ ] JSON and Markdown aggregate reports across AOIs.
 - [ ] Metrics for crop coverage, non-crop pixels, valid pixel deltas, cloud deltas, and NDMI
   deltas.

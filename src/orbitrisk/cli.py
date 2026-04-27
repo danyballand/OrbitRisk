@@ -6,8 +6,12 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from orbitrisk.batch.manifest import load_aoi_batch_manifest
+from orbitrisk.batch.manifest import AoiBatchManifest, load_aoi_batch_manifest
 from orbitrisk.batch.quality import render_aoi_validation_markdown, validate_aoi_manifest
+from orbitrisk.batch.requests import (
+    resolve_crop_mask_document,
+    risk_request_payload_from_manifest_entry,
+)
 from orbitrisk.config import get_settings
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
@@ -66,6 +70,28 @@ def main(argv: list[str] | None = None) -> int:
     benchmark.add_argument("--output-md", type=Path, default=None)
     benchmark.add_argument("--crop-mask-geojson", type=Path, default=None)
     benchmark.add_argument("--crop-mask-crs", default="EPSG:4326")
+    benchmark_batch = subparsers.add_parser(
+        "benchmark-masks-batch-2022",
+        help="Run mask benchmarks for every accepted AOI in a batch manifest",
+    )
+    benchmark_batch.add_argument("manifest_json", type=Path)
+    benchmark_batch.add_argument(
+        "--baseline-start",
+        type=date.fromisoformat,
+        default=date(2019, 6, 1),
+    )
+    benchmark_batch.add_argument("--end", type=date.fromisoformat, default=date(2022, 8, 31))
+    benchmark_batch.add_argument("--max-items", type=int, default=80)
+    benchmark_batch.add_argument("--buffer-m", type=float, default=None)
+    benchmark_batch.add_argument("--cache", action=argparse.BooleanOptionalAction, default=True)
+    benchmark_batch.add_argument("--cache-dir", type=Path, default=None)
+    benchmark_batch.add_argument("--output-json", type=Path, default=None)
+    benchmark_batch.add_argument("--output-md", type=Path, default=None)
+    benchmark_batch.add_argument(
+        "--include-without-crop-mask",
+        action="store_true",
+        help="Run partial raw/buffer benchmarks for AOIs missing crop masks",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "smoke-pc":
@@ -82,6 +108,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "benchmark-masks-2022":
         result = run_mask_benchmark_2022(args)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "benchmark-masks-batch-2022":
+        result = run_mask_benchmark_batch_2022(args)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     return 1
@@ -219,12 +249,6 @@ def run_2022_validation(args: argparse.Namespace) -> dict[str, Any]:
 
 def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
     payload = json.loads(args.request_json.read_text())
-    base_masking = payload.get("masking", {})
-    buffered_m = (
-        args.buffer_m
-        if args.buffer_m is not None
-        else base_masking.get("negative_buffer_m", 10.0)
-    )
     crop_mask_geojson = _benchmark_crop_mask(payload, args.crop_mask_geojson)
     crop_mask_crs = str(
         args.crop_mask_crs
@@ -239,6 +263,85 @@ def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
         provider_name=provider_name,
         collection=collection,
     )
+    summary = _run_mask_benchmark_payload(
+        payload,
+        region=args.region,
+        baseline_start=args.baseline_start,
+        end=args.end,
+        max_items=args.max_items,
+        buffer_m=args.buffer_m,
+        cache_enabled=args.cache,
+        cache_dir=args.cache_dir or settings.cache_dir,
+        crop_mask_geojson=crop_mask_geojson,
+        crop_mask_crs=crop_mask_crs,
+        engine=engine,
+        provider_name=provider_name,
+        collection=collection,
+    )
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
+    if args.output_md is not None:
+        args.output_md.parent.mkdir(parents=True, exist_ok=True)
+        args.output_md.write_text(render_mask_benchmark_markdown(summary))
+    return summary
+
+
+def run_mask_benchmark_batch_2022(args: argparse.Namespace) -> dict[str, Any]:
+    manifest = load_aoi_batch_manifest(args.manifest_json)
+    settings = get_settings()
+    provider_name = "planetary-computer"
+    collection = settings.planetary_computer_collection
+    engine = RiskEngine(
+        PlanetaryComputerProvider(settings),
+        provider_name=provider_name,
+        collection=collection,
+    )
+    summary = _run_mask_benchmark_batch(
+        manifest,
+        manifest_path=args.manifest_json,
+        baseline_start=args.baseline_start,
+        end=args.end,
+        max_items=args.max_items,
+        buffer_m=args.buffer_m,
+        cache_enabled=args.cache,
+        cache_dir=args.cache_dir or settings.cache_dir,
+        include_without_crop_mask=args.include_without_crop_mask,
+        engine=engine,
+        provider_name=provider_name,
+        collection=collection,
+    )
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
+    if args.output_md is not None:
+        args.output_md.parent.mkdir(parents=True, exist_ok=True)
+        args.output_md.write_text(render_mask_benchmark_batch_markdown(summary))
+    return summary
+
+
+def _run_mask_benchmark_payload(
+    payload: dict[str, Any],
+    *,
+    region: str,
+    baseline_start: date,
+    end: date,
+    max_items: int,
+    buffer_m: float | None,
+    cache_enabled: bool,
+    cache_dir: Path,
+    crop_mask_geojson: dict[str, Any] | None,
+    crop_mask_crs: str,
+    engine: RiskEngine,
+    provider_name: str,
+    collection: str,
+) -> dict[str, Any]:
+    base_masking = payload.get("masking", {})
+    buffered_m = (
+        buffer_m
+        if buffer_m is not None
+        else base_masking.get("negative_buffer_m", 10.0)
+    )
 
     variants: list[tuple[str, str, RiskResponse | None]] = []
     for variant, label, negative_buffer_m, crop_mask in [
@@ -252,8 +355,8 @@ def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
         request = RiskRequest.model_validate(
             _validation_payload(
                 payload,
-                baseline_start=args.baseline_start,
-                end=args.end,
+                baseline_start=baseline_start,
+                end=end,
                 negative_buffer_m=negative_buffer_m,
                 include_crop_mask=False,
             )
@@ -263,22 +366,120 @@ def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
             request,
             provider_name=provider_name,
             collection=collection,
-            max_items=args.max_items,
-            enabled=args.cache,
-            cache_dir=args.cache_dir or settings.cache_dir,
+            max_items=max_items,
+            enabled=cache_enabled,
+            cache_dir=cache_dir,
             crop_mask_geojson=crop_mask,
             crop_mask_crs=crop_mask_crs,
         )
         variants.append((variant, label, response))
 
-    summary = summarize_mask_benchmark(variants, region=args.region)
-    if args.output_json is not None:
-        args.output_json.parent.mkdir(parents=True, exist_ok=True)
-        args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
-    if args.output_md is not None:
-        args.output_md.parent.mkdir(parents=True, exist_ok=True)
-        args.output_md.write_text(render_mask_benchmark_markdown(summary))
-    return summary
+    return summarize_mask_benchmark(variants, region=region)
+
+
+def _run_mask_benchmark_batch(
+    manifest: AoiBatchManifest,
+    *,
+    manifest_path: Path,
+    baseline_start: date,
+    end: date,
+    max_items: int,
+    buffer_m: float | None,
+    cache_enabled: bool,
+    cache_dir: Path,
+    include_without_crop_mask: bool,
+    engine: RiskEngine,
+    provider_name: str,
+    collection: str,
+) -> dict[str, Any]:
+    base_dir = manifest_path.parent
+    quality_report = validate_aoi_manifest(manifest, manifest_path=manifest_path)
+    quality_by_aoi_id = {result["aoi_id"]: result for result in quality_report["aois"]}
+    aoi_results: list[dict[str, Any]] = []
+
+    for entry in manifest.aois:
+        quality = quality_by_aoi_id[entry.aoi_id]
+        if quality["status"] == "rejected":
+            aoi_results.append(
+                {
+                    "aoi_id": entry.aoi_id,
+                    "region": entry.region,
+                    "status": "rejected",
+                    "reasons": quality["reasons"],
+                    "quality_gate": quality,
+                }
+            )
+            continue
+
+        try:
+            crop_mask = resolve_crop_mask_document(entry, base_dir=base_dir)
+            if crop_mask is None and not include_without_crop_mask:
+                aoi_results.append(
+                    {
+                        "aoi_id": entry.aoi_id,
+                        "region": entry.region,
+                        "status": "skipped",
+                        "reasons": ["missing_crop_mask"],
+                        "quality_gate": quality,
+                    }
+                )
+                continue
+
+            payload = risk_request_payload_from_manifest_entry(
+                manifest,
+                entry,
+                base_dir=base_dir,
+                date_start=baseline_start,
+                date_end=end,
+                include_crop_mask=False,
+            )
+            benchmark = _run_mask_benchmark_payload(
+                payload,
+                region=entry.region,
+                baseline_start=baseline_start,
+                end=end,
+                max_items=max_items,
+                buffer_m=buffer_m,
+                cache_enabled=cache_enabled,
+                cache_dir=cache_dir,
+                crop_mask_geojson=crop_mask,
+                crop_mask_crs=entry.crop_mask_crs,
+                engine=engine,
+                provider_name=provider_name,
+                collection=collection,
+            )
+            aoi_results.append(
+                {
+                    "aoi_id": entry.aoi_id,
+                    "region": entry.region,
+                    "status": "success",
+                    "quality_gate": quality,
+                    "benchmark": benchmark,
+                }
+            )
+        except Exception as exc:
+            aoi_results.append(
+                {
+                    "aoi_id": entry.aoi_id,
+                    "region": entry.region,
+                    "status": "failed",
+                    "reasons": ["benchmark_failed"],
+                    "error": str(exc),
+                    "quality_gate": quality,
+                }
+            )
+
+    return summarize_mask_benchmark_batch(
+        manifest,
+        aoi_results,
+        baseline_start=baseline_start,
+        end=end,
+        buffer_m=buffer_m,
+        max_items=max_items,
+        cache_enabled=cache_enabled,
+        provider_name=provider_name,
+        collection=collection,
+    )
 
 
 def _validation_payload(
@@ -444,6 +645,50 @@ def summarize_mask_benchmark(
         "variants": variant_summaries,
         "comparisons": comparisons,
     }
+
+
+def summarize_mask_benchmark_batch(
+    manifest: AoiBatchManifest,
+    aoi_results: list[dict[str, Any]],
+    *,
+    baseline_start: date,
+    end: date,
+    buffer_m: float | None,
+    max_items: int,
+    cache_enabled: bool,
+    provider_name: str,
+    collection: str,
+) -> dict[str, Any]:
+    return {
+        "manifest": {
+            "name": manifest.name,
+            "version": manifest.version,
+            "aoi_count": len(manifest.aois),
+            "date_range": manifest.date_range.model_dump(mode="json"),
+            "resolution_m": manifest.resolution_m,
+        },
+        "run": {
+            "baseline_start": baseline_start.isoformat(),
+            "end": end.isoformat(),
+            "buffer_m": buffer_m,
+            "max_items": max_items,
+            "cache_enabled": cache_enabled,
+            "provider": provider_name,
+            "collection": collection,
+        },
+        "summary": {
+            "success_count": _count_aoi_status(aoi_results, "success"),
+            "skipped_count": _count_aoi_status(aoi_results, "skipped"),
+            "rejected_count": _count_aoi_status(aoi_results, "rejected"),
+            "failed_count": _count_aoi_status(aoi_results, "failed"),
+            "aoi_count": len(aoi_results),
+        },
+        "aois": aoi_results,
+    }
+
+
+def _count_aoi_status(aoi_results: list[dict[str, Any]], status: str) -> int:
+    return sum(1 for result in aoi_results if result["status"] == status)
 
 
 def _summarize_benchmark_variant(
@@ -683,6 +928,51 @@ def render_mask_benchmark_markdown(summary: dict[str, Any]) -> str:
 
     lines.append("")
     return "\n".join(lines)
+
+
+def render_mask_benchmark_batch_markdown(summary: dict[str, Any]) -> str:
+    manifest = summary["manifest"]
+    counts = summary["summary"]
+    lines = [
+        f"# OrbitRisk 2022 Batch Mask Benchmark: {manifest['name']}",
+        "",
+        f"- AOIs: `{counts['aoi_count']}`",
+        f"- Success: `{counts['success_count']}`",
+        f"- Skipped: `{counts['skipped_count']}`",
+        f"- Rejected: `{counts['rejected_count']}`",
+        f"- Failed: `{counts['failed_count']}`",
+        "",
+        "| AOI | Region | Status | Completed variants | Detected | Confidence | "
+        "Crop coverage % | Reasons |",
+        "| --- | --- | --- | ---: | --- | ---: | ---: | --- |",
+    ]
+    for result in summary["aois"]:
+        benchmark = result.get("benchmark", {})
+        vector_variant = _benchmark_variant(benchmark, "vector_crop_mask")
+        lines.append(
+            "| {aoi_id} | {region} | {status} | {variants} | {detected} | {confidence} | "
+            "{coverage} | {reasons} |".format(
+                aoi_id=result["aoi_id"],
+                region=result["region"],
+                status=result["status"],
+                variants=benchmark.get("completed_variant_count", ""),
+                detected=vector_variant.get("detected", ""),
+                confidence=_format_optional(vector_variant.get("confidence")),
+                coverage=_format_optional(
+                    vector_variant.get("aoi_metrics", {}).get("crop_mask_coverage_pct")
+                ),
+                reasons=", ".join(result.get("reasons", [])),
+            )
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _benchmark_variant(benchmark: dict[str, Any], variant_name: str) -> dict[str, Any]:
+    for variant in benchmark.get("variants", []):
+        if isinstance(variant, dict) and variant.get("variant") == variant_name:
+            return variant
+    return {}
 
 
 def _format_optional(value: Any) -> str:
