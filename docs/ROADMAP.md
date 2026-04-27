@@ -97,7 +97,8 @@ Deliverables:
   deltas.
 - [x] Deterministic basis-risk classifier with auditable thresholds and reasons.
 - [ ] Explicit comparison of naive AOI mean vs negative buffer vs external crop mask.
-- [ ] Chart artifacts for NDMI, valid pixels, cloud percentage, and mask coverage.
+- [x] Chart artifacts for NDMI, valid pixels, and cloud percentage.
+- [ ] Mask coverage chart artifact across AOIs.
 
 Exit criteria:
 

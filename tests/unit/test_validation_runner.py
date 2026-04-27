@@ -9,6 +9,7 @@ from orbitrisk.cli import (
     summarize_2022_validation,
     summarize_mask_benchmark,
 )
+from orbitrisk.reporting.charts import write_mask_benchmark_charts
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import (
     AoiMetrics,
@@ -193,6 +194,39 @@ def test_render_mask_benchmark_markdown_includes_comparison_table() -> None:
     assert "# OrbitRisk 2022 Mask Benchmark: bordeaux" in rendered
     assert "Comparison vs Raw AOI" in rendered
     assert "AOI mean with 10 m negative buffer" in rendered
+
+
+def test_write_mask_benchmark_charts_generates_svg_artifacts(tmp_path: Path) -> None:
+    summary = summarize_mask_benchmark(
+        [
+            ("raw_aoi", "Raw AOI mean", _response(trigger=True, baseline_count=3)),
+            (
+                "buffered_aoi",
+                "AOI mean with 10 m negative buffer",
+                _response(trigger=True, baseline_count=3, valid_pixel_count=450),
+            ),
+            ("vector_crop_mask", "External crop mask + buffer", None),
+        ],
+        region="bordeaux",
+    )
+
+    artifacts = write_mask_benchmark_charts(
+        summary,
+        tmp_path / "charts",
+        aoi_id="bordeaux-aoi-1",
+    )
+    summary["artifacts"] = {"charts": artifacts}
+    rendered = render_mask_benchmark_markdown(summary)
+
+    assert len(artifacts) == 6
+    assert {artifact["metric"] for artifact in artifacts} == {
+        "ndmi",
+        "valid_pixels",
+        "cloud_pct",
+    }
+    assert (tmp_path / "charts" / "bordeaux-aoi-1__raw_aoi__ndmi.svg").exists()
+    assert "<svg" in (tmp_path / "charts" / "bordeaux-aoi-1__raw_aoi__ndmi.svg").read_text()
+    assert "## Chart Artifacts" in rendered
 
 
 def _response(

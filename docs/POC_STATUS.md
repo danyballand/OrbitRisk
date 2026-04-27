@@ -19,6 +19,7 @@ OrbitRisk now has a working technical spine:
 - mask benchmark runner for raw AOI vs buffer vs external crop mask,
 - batch mask benchmark runner for AOI manifests,
 - deterministic basis-risk classifier for crop-mask benchmark outputs,
+- optional SVG chart artifacts for NDMI, valid pixels, and cloud percentage,
 - AOI batch manifest validation without network calls,
 - local JSON response cache,
 - JSON and Markdown validation exports,

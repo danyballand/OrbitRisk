@@ -3,6 +3,7 @@ from pathlib import Path
 
 from orbitrisk.batch.manifest import AoiBatchManifest
 from orbitrisk.cli import _run_mask_benchmark_batch, render_mask_benchmark_batch_markdown
+from orbitrisk.reporting.charts import write_mask_benchmark_batch_charts
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import (
     AoiMetrics,
@@ -198,6 +199,60 @@ def test_render_mask_benchmark_batch_markdown_includes_status_table(tmp_path: Pa
     assert "## Basis-Risk Summary" in rendered
     assert "## Variant Rollup" in rendered
     assert "| valid-with-mask | bordeaux | success | 3 |" in rendered
+
+
+def test_write_mask_benchmark_batch_charts_generates_per_aoi_variant_svgs(
+    tmp_path: Path,
+) -> None:
+    manifest = AoiBatchManifest.model_validate(
+        {
+            "name": "batch-charts",
+            "date_range": {"start": "2021-01-01", "end": "2022-08-31"},
+            "aois": [
+                {
+                    "aoi_id": "valid-with-mask",
+                    "region": "bordeaux",
+                    "aoi": _feature(),
+                    "crop_mask": _left_half_crop_mask(),
+                },
+                {
+                    "aoi_id": "too-small",
+                    "region": "bordeaux",
+                    "aoi": _tiny_feature(),
+                },
+            ],
+        }
+    )
+    report = _run_mask_benchmark_batch(
+        manifest,
+        manifest_path=tmp_path / "manifest.json",
+        baseline_start=date(2019, 6, 1),
+        end=date(2022, 8, 31),
+        max_items=5,
+        buffer_m=None,
+        cache_enabled=False,
+        cache_dir=tmp_path,
+        include_without_crop_mask=False,
+        engine=FakeEngine(),
+        provider_name="fake",
+        collection="sentinel-2-l2a",
+    )
+
+    artifacts = write_mask_benchmark_batch_charts(report, tmp_path / "charts")
+    report["artifacts"] = {"charts": artifacts}
+    rendered = render_mask_benchmark_batch_markdown(report)
+
+    assert len(artifacts) == 9
+    chart_names = {
+        artifact_path.name
+        for artifact_path in (tmp_path / "charts" / "valid-with-mask").glob("*.svg")
+    }
+    assert {
+        "valid-with-mask__raw_aoi__valid_pixels.svg",
+        "valid-with-mask__buffered_aoi__cloud_pct.svg",
+        "valid-with-mask__vector_crop_mask__ndmi.svg",
+    }.issubset(chart_names)
+    assert "## Chart Artifacts" in rendered
 
 
 class FakeEngine:

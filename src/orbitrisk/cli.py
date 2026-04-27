@@ -18,6 +18,10 @@ from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.processing.datacube import summarize_datacube
 from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvider
+from orbitrisk.reporting.charts import (
+    write_mask_benchmark_batch_charts,
+    write_mask_benchmark_charts,
+)
 from orbitrisk.risk_engine import RiskEngine
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import RiskResponse
@@ -69,6 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     benchmark.add_argument("--cache-dir", type=Path, default=None)
     benchmark.add_argument("--output-json", type=Path, default=None)
     benchmark.add_argument("--output-md", type=Path, default=None)
+    benchmark.add_argument("--charts-dir", type=Path, default=None)
     benchmark.add_argument("--crop-mask-geojson", type=Path, default=None)
     benchmark.add_argument("--crop-mask-crs", default="EPSG:4326")
     benchmark_batch = subparsers.add_parser(
@@ -88,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
     benchmark_batch.add_argument("--cache-dir", type=Path, default=None)
     benchmark_batch.add_argument("--output-json", type=Path, default=None)
     benchmark_batch.add_argument("--output-md", type=Path, default=None)
+    benchmark_batch.add_argument("--charts-dir", type=Path, default=None)
     benchmark_batch.add_argument(
         "--include-without-crop-mask",
         action="store_true",
@@ -279,6 +285,15 @@ def run_mask_benchmark_2022(args: argparse.Namespace) -> dict[str, Any]:
         provider_name=provider_name,
         collection=collection,
     )
+    if args.charts_dir is not None:
+        _attach_chart_artifacts(
+            summary,
+            write_mask_benchmark_charts(
+                summary,
+                args.charts_dir,
+                aoi_id=str(payload.get("request_id") or args.region),
+            ),
+        )
     if args.output_json is not None:
         args.output_json.parent.mkdir(parents=True, exist_ok=True)
         args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
@@ -312,6 +327,11 @@ def run_mask_benchmark_batch_2022(args: argparse.Namespace) -> dict[str, Any]:
         provider_name=provider_name,
         collection=collection,
     )
+    if args.charts_dir is not None:
+        _attach_chart_artifacts(
+            summary,
+            write_mask_benchmark_batch_charts(summary, args.charts_dir),
+        )
     if args.output_json is not None:
         args.output_json.parent.mkdir(parents=True, exist_ok=True)
         args.output_json.write_text(json.dumps(summary, indent=2, sort_keys=True))
@@ -1109,6 +1129,7 @@ def render_mask_benchmark_markdown(summary: dict[str, Any]) -> str:
             )
         )
 
+    _append_chart_artifact_section(lines, summary)
     lines.append("")
     return "\n".join(lines)
 
@@ -1187,6 +1208,7 @@ def render_mask_benchmark_batch_markdown(summary: dict[str, Any]) -> str:
                 non_crop=rollup["total_non_crop_pixels"],
             )
         )
+    _append_chart_artifact_section(lines, summary)
     lines.append("")
     return "\n".join(lines)
 
@@ -1206,6 +1228,45 @@ def _benchmark_comparison(benchmark: dict[str, Any], candidate_variant: str) -> 
         ):
             return comparison
     return {}
+
+
+def _attach_chart_artifacts(
+    summary: dict[str, Any],
+    charts: list[dict[str, str]],
+) -> None:
+    artifacts = summary.get("artifacts")
+    if not isinstance(artifacts, dict):
+        artifacts = {}
+        summary["artifacts"] = artifacts
+    artifacts["charts"] = charts
+
+
+def _append_chart_artifact_section(lines: list[str], summary: dict[str, Any]) -> None:
+    artifacts = summary.get("artifacts", {})
+    charts = artifacts.get("charts", []) if isinstance(artifacts, dict) else []
+    if not isinstance(charts, list) or not charts:
+        return
+
+    lines.extend(
+        [
+            "",
+            "## Chart Artifacts",
+            "",
+            "| AOI | Variant | Metric | Path |",
+            "| --- | --- | --- | --- |",
+        ]
+    )
+    for chart in charts:
+        if not isinstance(chart, dict):
+            continue
+        lines.append(
+            "| {aoi} | {variant} | {metric} | `{path}` |".format(
+                aoi=chart.get("aoi_id", ""),
+                variant=chart.get("variant", ""),
+                metric=chart.get("metric", ""),
+                path=chart.get("path", ""),
+            )
+        )
 
 
 def _nested_get(document: dict[str, Any], *keys: str) -> Any:

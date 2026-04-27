@@ -88,6 +88,7 @@ orbitrisk benchmark-masks-2022 tests/fixtures/sample_request.json \
   --max-items 80 \
   --crop-mask-geojson data/rpg/vineyard-mask.geojson \
   --crop-mask-crs EPSG:4326 \
+  --charts-dir reports/charts/bordeaux-mask-benchmark \
   --output-json reports/bordeaux-mask-benchmark.json \
   --output-md reports/bordeaux-mask-benchmark.md
 ```
@@ -103,6 +104,7 @@ Use the batch runner once AOIs are listed in an AOI manifest:
 ```bash
 orbitrisk benchmark-masks-batch-2022 examples/aoi_batch_manifest.json \
   --max-items 80 \
+  --charts-dir reports/charts/batch-mask-benchmark \
   --output-json reports/batch-mask-benchmark.json \
   --output-md reports/batch-mask-benchmark.md
 ```
@@ -121,6 +123,15 @@ The batch report includes:
   NDMI EMA delta;
 - variant rollups for `raw_aoi`, `buffered_aoi`, and `vector_crop_mask`;
 - comparison rollups for buffer-vs-raw and crop-mask-vs-raw.
+
+When `--charts-dir` is provided, the runner writes SVG chart artifacts for every
+completed AOI/variant pair:
+
+- NDMI mean and EMA;
+- valid pixel count;
+- cloud percentage.
+
+Chart generation is disabled by default for fast CI and dry benchmark runs.
 
 ## Basis-Risk Classifier
 
