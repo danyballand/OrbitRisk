@@ -8,6 +8,9 @@ RiskErrorCode = Literal[
     "cloud_only_scenes",
     "insufficient_pixels",
     "provider_failure",
+    "missing_api_key",
+    "invalid_api_key",
+    "rate_limited",
 ]
 
 

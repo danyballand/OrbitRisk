@@ -140,7 +140,7 @@ Deliverables:
 
 - [x] Async job submission and polling endpoints for multi-year requests.
 - [x] Artifact storage abstraction for reports and cached responses.
-- [ ] API key auth and basic rate limiting.
+- [x] API key auth and basic rate limiting.
 - [x] Algorithm/version provenance in every response.
 - [ ] OpenAPI examples for dry-run, live quote, and crop-mask quote.
 - [x] Error model for invalid geometry, no scenes, cloud-only scenes, and insufficient pixels.

@@ -5,10 +5,13 @@ import numpy as np
 import xarray as xr
 from fastapi.testclient import TestClient
 
+from orbitrisk.api.auth import api_rate_limiter
 from orbitrisk.api.main import app
 from orbitrisk.api.routes import quote_job_store
+from orbitrisk.config import get_settings
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "sample_request.json"
+AUTH_HEADERS = {"X-API-Key": "dev-orbitrisk-key"}
 
 
 def test_quote_endpoint_returns_auditable_aoi_metadata() -> None:
@@ -32,6 +35,15 @@ def test_quote_endpoint_returns_auditable_aoi_metadata() -> None:
     assert body["provenance"]["mask_mode"] == "negative_buffer"
 
 
+def test_health_endpoint_stays_unauthenticated() -> None:
+    client = TestClient(app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     calls = {}
 
@@ -49,7 +61,11 @@ def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     payload = json.loads(FIXTURE.read_text())
     payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
 
-    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+    response = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert response.status_code == 200
     body = response.json()
@@ -83,7 +99,11 @@ def test_live_quote_endpoint_accepts_feature_collection_crop_mask(monkeypatch) -
     }
     payload["crop_mask_crs"] = "EPSG:4326"
 
-    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+    response = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert response.status_code == 200
     body = response.json()
@@ -108,7 +128,11 @@ def test_live_quote_endpoint_returns_invalid_geometry_error() -> None:
         ]
     ]
 
-    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+    response = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert response.status_code == 422
     error = response.json()["detail"]["error"]
@@ -130,7 +154,11 @@ def test_live_quote_endpoint_returns_no_scenes_error(monkeypatch) -> None:
     payload = json.loads(FIXTURE.read_text())
     payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
 
-    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+    response = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert response.status_code == 404
     error = response.json()["detail"]["error"]
@@ -151,13 +179,78 @@ def test_live_quote_endpoint_returns_provider_failure_error(monkeypatch) -> None
     payload = json.loads(FIXTURE.read_text())
     payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
 
-    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+    response = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert response.status_code == 502
     error = response.json()["detail"]["error"]
     assert error["code"] == "provider_failure"
     assert error["request_id"] == payload["request_id"]
     assert error["retryable"]
+
+
+def test_live_quote_endpoint_requires_api_key() -> None:
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+
+    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+
+    assert response.status_code == 401
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "missing_api_key"
+
+
+def test_live_quote_endpoint_rejects_invalid_api_key() -> None:
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+
+    response = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers={"X-API-Key": "wrong"},
+        json=payload,
+    )
+
+    assert response.status_code == 403
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "invalid_api_key"
+
+
+def test_live_quote_endpoint_rate_limits_per_key(monkeypatch) -> None:
+    api_rate_limiter.clear()
+    monkeypatch.setenv("ORBITRISK_RATE_LIMIT_PER_MINUTE", "1")
+    get_settings.cache_clear()
+
+    class FakeProvider:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            return _dataset(tuple(geobox.shape))
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", FakeProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+
+    first = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
+    second = client.post(
+        "/v1/risk/quote/live?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 429
+    assert second.json()["detail"]["error"]["code"] == "rate_limited"
+    get_settings.cache_clear()
+    api_rate_limiter.clear()
 
 
 def test_quote_job_endpoints_complete_successfully(monkeypatch) -> None:
@@ -175,7 +268,11 @@ def test_quote_job_endpoints_complete_successfully(monkeypatch) -> None:
     payload = json.loads(FIXTURE.read_text())
     payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
 
-    submitted = client.post("/v1/risk/quote/jobs?max_items=3&use_cache=false", json=payload)
+    submitted = client.post(
+        "/v1/risk/quote/jobs?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert submitted.status_code == 202
     submitted_body = submitted.json()
@@ -184,13 +281,13 @@ def test_quote_job_endpoints_complete_successfully(monkeypatch) -> None:
     assert submitted_body["status_url"].startswith("/v1/risk/quote/jobs/")
     assert submitted_body["result_url"].endswith("/result")
 
-    status_response = client.get(submitted_body["status_url"])
+    status_response = client.get(submitted_body["status_url"], headers=AUTH_HEADERS)
     assert status_response.status_code == 200
     status_body = status_response.json()
     assert status_body["status"] == "completed"
     assert status_body["result_url"] == submitted_body["result_url"]
 
-    result_response = client.get(submitted_body["result_url"])
+    result_response = client.get(submitted_body["result_url"], headers=AUTH_HEADERS)
     assert result_response.status_code == 200
     result_body = result_response.json()
     assert result_body["request_id"] == payload["request_id"]
@@ -212,18 +309,22 @@ def test_quote_job_endpoints_capture_failed_job(monkeypatch) -> None:
     payload = json.loads(FIXTURE.read_text())
     payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
 
-    submitted = client.post("/v1/risk/quote/jobs?max_items=3&use_cache=false", json=payload)
+    submitted = client.post(
+        "/v1/risk/quote/jobs?max_items=3&use_cache=false",
+        headers=AUTH_HEADERS,
+        json=payload,
+    )
 
     assert submitted.status_code == 202
     submitted_body = submitted.json()
-    status_response = client.get(submitted_body["status_url"])
+    status_response = client.get(submitted_body["status_url"], headers=AUTH_HEADERS)
     assert status_response.status_code == 200
     status_body = status_response.json()
     assert status_body["status"] == "failed"
     assert "synthetic provider failure" in status_body["error"]
     assert status_body["result_url"] is None
 
-    result_response = client.get(submitted_body["result_url"])
+    result_response = client.get(submitted_body["result_url"], headers=AUTH_HEADERS)
     assert result_response.status_code == 409
     assert result_response.json()["detail"]["status"] == "failed"
 

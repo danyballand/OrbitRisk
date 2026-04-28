@@ -23,6 +23,8 @@ GET /v1/risk/quote/jobs/{job_id}/result
 ```
 
 The synchronous live endpoint remains available for small requests and smoke tests.
+All live endpoints require `X-API-Key`. The unauthenticated dry-run contract endpoint
+and `/health` remain open.
 
 ### Request
 
@@ -201,6 +203,7 @@ Submit a job:
 
 ```http
 POST /v1/risk/quote/jobs?max_items=80&use_cache=true
+X-API-Key: dev-orbitrisk-key
 Content-Type: application/json
 ```
 
@@ -270,6 +273,9 @@ Defined error codes:
 | `cloud_only_scenes` | 422 | true | Scenes exist, but all observations are cloud blocked. |
 | `insufficient_pixels` | 422 | false | All observations are below `min_valid_pixels`. |
 | `provider_failure` | 502 | true | Unexpected provider or processing failure. |
+| `missing_api_key` | 401 | false | Missing `X-API-Key` header on a live endpoint. |
+| `invalid_api_key` | 403 | false | API key is not in `ORBITRISK_API_KEYS`. |
+| `rate_limited` | 429 | true | API key exceeded `ORBITRISK_RATE_LIMIT_PER_MINUTE`. |
 
 ## Quality Rules
 

@@ -27,10 +27,16 @@ class Settings(BaseSettings):
     default_resolution_m: int = Field(default=10, alias="ORBITRISK_DEFAULT_RESOLUTION_M")
     min_valid_pixels: int = Field(default=20, alias="ORBITRISK_MIN_VALID_PIXELS")
     cache_dir: Path = Field(default=Path("data/cache"), alias="ORBITRISK_CACHE_DIR")
+    api_keys: str = Field(default="dev-orbitrisk-key", alias="ORBITRISK_API_KEYS")
+    rate_limit_per_minute: int = Field(default=60, alias="ORBITRISK_RATE_LIMIT_PER_MINUTE")
 
     @property
     def sentinelhub_enabled(self) -> bool:
         return bool(self.sentinelhub_client_id and self.sentinelhub_client_secret)
+
+    @property
+    def api_key_set(self) -> set[str]:
+        return {key.strip() for key in self.api_keys.split(",") if key.strip()}
 
 
 @lru_cache

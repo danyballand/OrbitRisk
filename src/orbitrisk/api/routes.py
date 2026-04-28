@@ -1,7 +1,8 @@
 from datetime import date, timedelta
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 
+from orbitrisk.api.auth import require_api_key
 from orbitrisk.api.errors import live_quote_exception, validate_live_quote_response
 from orbitrisk.config import get_settings
 from orbitrisk.geo.aoi import prepare_aoi
@@ -127,6 +128,7 @@ def quote_risk_live(
     payload: RiskRequest,
     max_items: int = Query(default=25, ge=1, le=500),
     use_cache: bool = Query(default=True),
+    _api_key: str = Depends(require_api_key),
 ) -> RiskResponse:
     return _quote_live(payload, max_items=max_items, use_cache=use_cache)
 
@@ -141,6 +143,7 @@ def submit_quote_job(
     background_tasks: BackgroundTasks,
     max_items: int = Query(default=80, ge=1, le=1000),
     use_cache: bool = Query(default=True),
+    _api_key: str = Depends(require_api_key),
 ) -> QuoteJobSubmitResponse:
     record = quote_job_store.create(payload.request_id)
     background_tasks.add_task(
@@ -160,12 +163,18 @@ def submit_quote_job(
 
 
 @router.get("/risk/quote/jobs/{job_id}", response_model=QuoteJobStatusResponse)
-def get_quote_job_status(job_id: str) -> QuoteJobStatusResponse:
+def get_quote_job_status(
+    job_id: str,
+    _api_key: str = Depends(require_api_key),
+) -> QuoteJobStatusResponse:
     return _job_status_response(_get_job_or_404(job_id))
 
 
 @router.get("/risk/quote/jobs/{job_id}/result", response_model=RiskResponse)
-def get_quote_job_result(job_id: str) -> RiskResponse:
+def get_quote_job_result(
+    job_id: str,
+    _api_key: str = Depends(require_api_key),
+) -> RiskResponse:
     record = _get_job_or_404(job_id)
     if record.status == "failed":
         raise HTTPException(

@@ -48,6 +48,8 @@ OrbitRisk now has a working technical spine:
   cache key, mask mode, and crop-mask hash when used,
 - structured live quote error responses for invalid geometry, no scenes, cloud-only
   scenes, insufficient pixels, and provider failures,
+- API key protection and in-memory per-key rate limiting for live quote and async job
+  endpoints,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

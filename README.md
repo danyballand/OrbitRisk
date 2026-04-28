@@ -166,7 +166,8 @@ POST /v1/risk/quote/live?max_items=25
 ```
 
 `max_items` protects development calls from accidentally loading hundreds of Sentinel-2
-scenes. Increase it intentionally for multi-year validation runs.
+scenes. Increase it intentionally for multi-year validation runs. Live endpoints require
+`X-API-Key`; configure allowed keys with `ORBITRISK_API_KEYS`.
 
 For longer pilot-style requests, submit and poll an async quote job:
 
