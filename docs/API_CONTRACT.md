@@ -26,6 +26,9 @@ The synchronous live endpoint remains available for small requests and smoke tes
 All live endpoints require `X-API-Key`. The unauthenticated dry-run contract endpoint
 and `/health` remain open.
 
+The generated OpenAPI schema includes request examples for the unauthenticated dry-run
+flow, the live Sentinel-2 quote flow, and the crop-mask quote flow.
+
 ### Request
 
 ```json

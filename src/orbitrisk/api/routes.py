@@ -1,6 +1,7 @@
 from datetime import date, timedelta
+from typing import Annotated, Any
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Query, status
 
 from orbitrisk.api.auth import require_api_key
 from orbitrisk.api.errors import live_quote_exception, validate_live_quote_response
@@ -28,9 +29,113 @@ from orbitrisk.timeseries.triggers import detect_water_stress_trigger
 router = APIRouter(prefix="/v1")
 quote_job_store = InMemoryQuoteJobStore()
 
+RISK_REQUEST_OPENAPI_EXAMPLES: dict[str, dict[str, Any]] = {
+    "dry_run": {
+        "summary": "Dry-run vineyard quote",
+        "description": "Minimal contract-validation request without live provider cost.",
+        "value": {
+            "request_id": "quote_dry_run_001",
+            "aoi": {
+                "type": "Feature",
+                "properties": {"asset_id": "FR_VINEYARD_DEMO"},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [4.82, 45.73],
+                            [4.83, 45.73],
+                            [4.83, 45.74],
+                            [4.82, 45.74],
+                            [4.82, 45.73],
+                        ]
+                    ],
+                },
+            },
+            "date_range": {"start": "2022-07-01", "end": "2022-08-31"},
+        },
+    },
+    "live_quote": {
+        "summary": "Live Sentinel-2 quote",
+        "description": "Planetary Computer-backed live quote for a short date range.",
+        "value": {
+            "request_id": "quote_live_001",
+            "aoi": {
+                "type": "Feature",
+                "properties": {"asset_id": "FR_VINEYARD_LIVE"},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [4.82, 45.73],
+                            [4.83, 45.73],
+                            [4.83, 45.74],
+                            [4.82, 45.74],
+                            [4.82, 45.73],
+                        ]
+                    ],
+                },
+            },
+            "date_range": {"start": "2022-07-01", "end": "2022-07-31"},
+            "aggregation": {"temporal": "P10D"},
+            "trigger": {"ndmi_ema_threshold": 0.15, "min_consecutive_periods": 2},
+        },
+    },
+    "crop_mask_quote": {
+        "summary": "Live quote with crop mask",
+        "description": "External RPG-style vector crop mask for basis-risk reduction.",
+        "value": {
+            "request_id": "quote_crop_mask_001",
+            "aoi": {
+                "type": "Feature",
+                "properties": {"asset_id": "FR_VINEYARD_MASKED"},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [4.82, 45.73],
+                            [4.83, 45.73],
+                            [4.83, 45.74],
+                            [4.82, 45.74],
+                            [4.82, 45.73],
+                        ]
+                    ],
+                },
+            },
+            "crop_mask": {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {"source": "RPG_IGN", "crop": "vineyard"},
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [4.821, 45.731],
+                                    [4.829, 45.731],
+                                    [4.829, 45.739],
+                                    [4.821, 45.739],
+                                    [4.821, 45.731],
+                                ]
+                            ],
+                        },
+                    }
+                ],
+            },
+            "crop_mask_crs": "EPSG:4326",
+            "date_range": {"start": "2022-07-01", "end": "2022-08-31"},
+        },
+    },
+}
+
 
 @router.post("/risk/quote", response_model=RiskResponse)
-def quote_risk(payload: RiskRequest) -> RiskResponse:
+def quote_risk(
+    payload: Annotated[
+        RiskRequest,
+        Body(openapi_examples=RISK_REQUEST_OPENAPI_EXAMPLES),
+    ],
+) -> RiskResponse:
     """Validate the public contract and return a deterministic dry-run signal.
 
     The endpoint is intentionally wired through response objects now, so replacing this
@@ -125,7 +230,10 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
 
 @router.post("/risk/quote/live", response_model=RiskResponse)
 def quote_risk_live(
-    payload: RiskRequest,
+    payload: Annotated[
+        RiskRequest,
+        Body(openapi_examples=RISK_REQUEST_OPENAPI_EXAMPLES),
+    ],
     max_items: int = Query(default=25, ge=1, le=500),
     use_cache: bool = Query(default=True),
     _api_key: str = Depends(require_api_key),
@@ -139,7 +247,10 @@ def quote_risk_live(
     status_code=status.HTTP_202_ACCEPTED,
 )
 def submit_quote_job(
-    payload: RiskRequest,
+    payload: Annotated[
+        RiskRequest,
+        Body(openapi_examples=RISK_REQUEST_OPENAPI_EXAMPLES),
+    ],
     background_tasks: BackgroundTasks,
     max_items: int = Query(default=80, ge=1, le=1000),
     use_cache: bool = Query(default=True),

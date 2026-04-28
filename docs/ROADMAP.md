@@ -142,7 +142,7 @@ Deliverables:
 - [x] Artifact storage abstraction for reports and cached responses.
 - [x] API key auth and basic rate limiting.
 - [x] Algorithm/version provenance in every response.
-- [ ] OpenAPI examples for dry-run, live quote, and crop-mask quote.
+- [x] OpenAPI examples for dry-run, live quote, and crop-mask quote.
 - [x] Error model for invalid geometry, no scenes, cloud-only scenes, and insufficient pixels.
 
 Exit criteria:

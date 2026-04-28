@@ -44,6 +44,22 @@ def test_health_endpoint_stays_unauthenticated() -> None:
     assert response.json() == {"status": "ok"}
 
 
+def test_openapi_contract_exposes_request_examples() -> None:
+    client = TestClient(app)
+
+    schema = client.get("/openapi.json").json()
+    quote_examples = _openapi_request_examples(schema, "/v1/risk/quote")
+    live_examples = _openapi_request_examples(schema, "/v1/risk/quote/live")
+    job_examples = _openapi_request_examples(schema, "/v1/risk/quote/jobs")
+
+    assert set(quote_examples) == {"dry_run", "live_quote", "crop_mask_quote"}
+    assert set(live_examples) == set(quote_examples)
+    assert set(job_examples) == set(quote_examples)
+    assert quote_examples["dry_run"]["value"]["request_id"] == "quote_dry_run_001"
+    assert quote_examples["live_quote"]["value"]["trigger"]["ndmi_ema_threshold"] == 0.15
+    assert quote_examples["crop_mask_quote"]["value"]["crop_mask_crs"] == "EPSG:4326"
+
+
 def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     calls = {}
 
@@ -327,6 +343,12 @@ def test_quote_job_endpoints_capture_failed_job(monkeypatch) -> None:
     result_response = client.get(submitted_body["result_url"], headers=AUTH_HEADERS)
     assert result_response.status_code == 409
     assert result_response.json()["detail"]["status"] == "failed"
+
+
+def _openapi_request_examples(schema: dict, path: str) -> dict:
+    return schema["paths"][path]["post"]["requestBody"]["content"]["application/json"][
+        "examples"
+    ]
 
 
 def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:
