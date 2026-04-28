@@ -95,6 +95,71 @@ def test_live_quote_endpoint_accepts_feature_collection_crop_mask(monkeypatch) -
     assert body["provenance"]["crop_mask_hash"]
 
 
+def test_live_quote_endpoint_returns_invalid_geometry_error() -> None:
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["aoi"]["geometry"]["coordinates"] = [
+        [
+            [4.82, 45.73],
+            [4.83, 45.74],
+            [4.83, 45.73],
+            [4.82, 45.74],
+            [4.82, 45.73],
+        ]
+    ]
+
+    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+
+    assert response.status_code == 422
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "invalid_geometry"
+    assert error["request_id"] == payload["request_id"]
+    assert not error["retryable"]
+
+
+def test_live_quote_endpoint_returns_no_scenes_error(monkeypatch) -> None:
+    class EmptyProvider:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            raise ValueError("No Sentinel-2 items found for query")
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", EmptyProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+
+    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+
+    assert response.status_code == 404
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "no_scenes"
+    assert error["request_id"] == payload["request_id"]
+
+
+def test_live_quote_endpoint_returns_provider_failure_error(monkeypatch) -> None:
+    class FailingProvider:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            raise RuntimeError("synthetic provider failure")
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", FailingProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+
+    response = client.post("/v1/risk/quote/live?max_items=3&use_cache=false", json=payload)
+
+    assert response.status_code == 502
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "provider_failure"
+    assert error["request_id"] == payload["request_id"]
+    assert error["retryable"]
+
+
 def test_quote_job_endpoints_complete_successfully(monkeypatch) -> None:
     quote_job_store.clear()
 

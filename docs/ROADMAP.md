@@ -143,12 +143,12 @@ Deliverables:
 - [ ] API key auth and basic rate limiting.
 - [x] Algorithm/version provenance in every response.
 - [ ] OpenAPI examples for dry-run, live quote, and crop-mask quote.
-- [ ] Error model for invalid geometry, no scenes, cloud-only scenes, and insufficient pixels.
+- [x] Error model for invalid geometry, no scenes, cloud-only scenes, and insufficient pixels.
 
 Exit criteria:
 
 - [x] Multi-year requests no longer require synchronous HTTP completion.
-- [ ] A failed quote returns a structured error that can be logged in an actuarial workflow.
+- [x] A failed quote returns a structured error that can be logged in an actuarial workflow.
 - [x] Responses contain enough provenance to reproduce or dispute a result.
 
 ### M5: MGA Demo Pack

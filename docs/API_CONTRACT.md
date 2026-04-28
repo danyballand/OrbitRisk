@@ -244,6 +244,33 @@ The current POC uses an in-memory job store. That is enough to validate the API 
 but it is not durable across process restarts. M4 artifact storage and/or a durable queue
 should replace it before a real pilot.
 
+## Error Responses
+
+Live endpoints return machine-readable error details for known failure classes:
+
+```json
+{
+  "detail": {
+    "error": {
+      "code": "invalid_geometry",
+      "message": "AOI geometry is invalid",
+      "request_id": "quote_2026_000123",
+      "retryable": false
+    }
+  }
+}
+```
+
+Defined error codes:
+
+| Code | Typical HTTP status | Retryable | Meaning |
+| --- | ---: | --- | --- |
+| `invalid_geometry` | 422 | false | AOI is not a valid Polygon/MultiPolygon after parsing. |
+| `no_scenes` | 404 | false | Provider returned no Sentinel-2 scenes for the query. |
+| `cloud_only_scenes` | 422 | true | Scenes exist, but all observations are cloud blocked. |
+| `insufficient_pixels` | 422 | false | All observations are below `min_valid_pixels`. |
+| `provider_failure` | 502 | true | Unexpected provider or processing failure. |
+
 ## Quality Rules
 
 - Reject observations below `min_valid_pixels`.

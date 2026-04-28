@@ -46,6 +46,8 @@ OrbitRisk now has a working technical spine:
   artifacts with deterministic keys and content hashes,
 - response provenance metadata with algorithm version, processing version, input hash,
   cache key, mask mode, and crop-mask hash when used,
+- structured live quote error responses for invalid geometry, no scenes, cloud-only
+  scenes, insufficient pixels, and provider failures,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

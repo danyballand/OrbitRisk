@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 
+from orbitrisk.api.errors import live_quote_exception, validate_live_quote_response
 from orbitrisk.config import get_settings
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.jobs.store import InMemoryQuoteJobStore, QuoteJobRecord
@@ -193,31 +194,37 @@ def _quote_live(
     max_items: int,
     use_cache: bool,
 ) -> RiskResponse:
-    settings = get_settings()
-    provider_name = "planetary-computer"
-    provider = PlanetaryComputerProvider(settings)
-    engine = RiskEngine(
-        provider,
-        provider_name=provider_name,
-        collection=settings.planetary_computer_collection,
-    )
-    cache = LocalRiskResponseCache(settings.cache_dir)
-    cache_key = risk_response_cache_key(
-        payload,
-        provider_name=provider_name,
-        collection=settings.planetary_computer_collection,
-        max_items=max_items,
-    )
-    if use_cache:
-        cached = cache.get(cache_key)
-        if cached is not None:
-            return attach_cache_key(cached, cache_key)
+    try:
+        settings = get_settings()
+        provider_name = "planetary-computer"
+        provider = PlanetaryComputerProvider(settings)
+        engine = RiskEngine(
+            provider,
+            provider_name=provider_name,
+            collection=settings.planetary_computer_collection,
+        )
+        cache = LocalRiskResponseCache(settings.cache_dir)
+        cache_key = risk_response_cache_key(
+            payload,
+            provider_name=provider_name,
+            collection=settings.planetary_computer_collection,
+            max_items=max_items,
+        )
+        if use_cache:
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return attach_cache_key(cached, cache_key)
 
-    response = engine.quote(payload, max_items=max_items)
-    response = attach_cache_key(response, cache_key)
-    if use_cache:
-        cache.set(cache_key, response)
-    return response
+        response = engine.quote(payload, max_items=max_items)
+        validate_live_quote_response(response, payload)
+        response = attach_cache_key(response, cache_key)
+        if use_cache:
+            cache.set(cache_key, response)
+        return response
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise live_quote_exception(exc, request_id=payload.request_id) from exc
 
 
 def _run_quote_job(
