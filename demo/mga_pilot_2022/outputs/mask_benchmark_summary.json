@@ -1,0 +1,69 @@
+{
+  "aoi_id": "FR_RPG23_BORDEAUX_RIGHT_BANK_01",
+  "basis_risk_classification": "improved",
+  "basis_risk_reasons": [
+    "non_crop_pixels_removed"
+  ],
+  "comparisons": [
+    {
+      "baseline_variant": "raw_aoi",
+      "candidate_variant": "buffered_aoi",
+      "confidence_delta": -0.0008256410256409774,
+      "mean_cloud_delta_pct_points": 0.0,
+      "median_valid_pixel_delta_pct": -10.535767734211314,
+      "min_ndmi_ema_delta": 0.0003911092446709022,
+      "min_ndmi_mean_delta": 0.00141090527176857,
+      "non_crop_pixel_delta": 0
+    },
+    {
+      "baseline_variant": "raw_aoi",
+      "candidate_variant": "vector_crop_mask",
+      "confidence_delta": -0.001758974358974319,
+      "mean_cloud_delta_pct_points": 0.0,
+      "median_valid_pixel_delta_pct": -21.999401376833283,
+      "min_ndmi_ema_delta": 0.002158140512764124,
+      "min_ndmi_mean_delta": 0.00404464453458786,
+      "non_crop_pixel_delta": 14937
+    }
+  ],
+  "completed_variant_count": 3,
+  "variant_count": 3,
+  "variants": [
+    {
+      "confidence": 0.5623589743589743,
+      "crop_mask_coverage_pct": null,
+      "detected": true,
+      "label": "Raw AOI mean",
+      "mean_cloud_pct": 0.0,
+      "median_valid_pixel_count": 3341,
+      "min_ndmi_ema": 0.0003252705350310567,
+      "status": "partial",
+      "total_non_crop_pixels": 0,
+      "variant": "raw_aoi"
+    },
+    {
+      "confidence": 0.5615333333333333,
+      "crop_mask_coverage_pct": null,
+      "detected": true,
+      "label": "AOI mean with 10 m negative buffer",
+      "mean_cloud_pct": 0.0,
+      "median_valid_pixel_count": 2989,
+      "min_ndmi_ema": 0.0007163797797019589,
+      "status": "partial",
+      "total_non_crop_pixels": 0,
+      "variant": "buffered_aoi"
+    },
+    {
+      "confidence": 0.5606,
+      "crop_mask_coverage_pct": 87.18634994981599,
+      "detected": true,
+      "label": "External crop mask + buffer",
+      "mean_cloud_pct": 0.0,
+      "median_valid_pixel_count": 2606,
+      "min_ndmi_ema": 0.0024834110477951806,
+      "status": "partial",
+      "total_non_crop_pixels": 14937,
+      "variant": "vector_crop_mask"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "aoi_id": "FR_RPG23_BEZIERS_01",
+  "classification": "ambiguous",
+  "confidence": 0.7066368421052631,
+  "critical_periods": [
+    {
+      "end": "2019-08-11",
+      "severity": "high",
+      "start": "2019-06-02"
+    },
+    {
+      "end": "2022-07-16",
+      "severity": "high",
+      "start": "2021-06-21"
+    }
+  ],
+  "detected": true,
+  "ndmi_periods": [
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-07-01",
+      "ndmi_baseline_count": 11,
+      "ndmi_baseline_percentile": 0.6363636363636364,
+      "ndmi_ema": 0.1331696057079447,
+      "ndmi_mean": 0.13090506196022034,
+      "period": "2022-06-25/2022-07-04",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 4465
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-07-16",
+      "ndmi_baseline_count": 13,
+      "ndmi_baseline_percentile": 0.6923076923076923,
+      "ndmi_ema": 0.13617185984480762,
+      "ndmi_mean": 0.14174747467041016,
+      "period": "2022-07-15/2022-07-24",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 4465
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-07-26",
+      "ndmi_baseline_count": 12,
+      "ndmi_baseline_percentile": 0.8333333333333334,
+      "ndmi_ema": 0.15017678119121441,
+      "ndmi_mean": 0.17618592083454132,
+      "period": "2022-07-25/2022-08-03",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 4465
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-08-05",
+      "ndmi_baseline_count": 12,
+      "ndmi_baseline_percentile": 0.75,
+      "ndmi_ema": 0.15596667409237217,
+      "ndmi_mean": 0.16671933233737946,
+      "period": "2022-08-04/2022-08-13",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 4465
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-08-20",
+      "ndmi_baseline_count": 11,
+      "ndmi_baseline_percentile": 0.7272727272727273,
+      "ndmi_ema": 0.16522352856588757,
+      "ndmi_mean": 0.18241482973098755,
+      "period": "2022-08-14/2022-08-23",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 4465
+    },
+    {
+      "cloud_pct": 95.05438128462959,
+      "date": "2022-08-30",
+      "ndmi_baseline_count": 8,
+      "ndmi_baseline_percentile": 1.0,
+      "ndmi_ema": 0.17888177931731003,
+      "ndmi_mean": 0.2042471021413803,
+      "period": "2022-08-24/2022-08-31",
+      "quality": "poor",
+      "quality_flags": [
+        "low_clear_fraction",
+        "high_cloud_fraction"
+      ],
+      "valid_pixel_count": 127
+    }
+  ],
+  "quality": {
+    "baseline_supported_period_count": 6,
+    "mean_cloud_pct": 15.842396880771597,
+    "min_baseline_percentile": 0.6363636363636364,
+    "min_valid_pixel_count": 127,
+    "quality_flag_counts": {
+      "high_cloud_fraction": 1,
+      "low_clear_fraction": 1
+    },
+    "target_period_count": 6
+  },
+  "reasons": [
+    "seasonal_percentile_not_low",
+    "quality_warnings_require_review"
+  ],
+  "region": "languedoc",
+  "trigger": "ndmi_ema_below_0.15_for_2_periods"
+}

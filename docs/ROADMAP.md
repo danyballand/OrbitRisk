@@ -35,7 +35,7 @@ The POC is considered technically demoable only when all P0 criteria are true:
 - [x] The validation report includes July-August 2022 NDMI/EMA/baseline evidence.
 - [ ] Every reported trigger has `valid_pixel_count`, `cloud_pct`, `mask_counts`, and
   `quality_flags`.
-- [ ] The demo can be reproduced from documented CLI commands.
+- [x] The demo can be reproduced from documented CLI commands.
 
 ## Non-Goals Before First MGA Demo
 
@@ -159,16 +159,16 @@ Goal: package the technical work into a buyer-facing proof.
 
 Deliverables:
 
-- [ ] One reproducible demo folder with requests, outputs, and reports.
+- [x] One reproducible demo folder with requests, outputs, and reports.
 - [ ] Short technical memo explaining basis-risk reduction and current limitations.
-- [ ] Contract-ready JSON examples for actuaries.
+- [x] Contract-ready JSON examples for actuaries.
 - [ ] Design-partner discovery summary with objections and API changes.
 - [ ] Go/no-go note for CatBoost, Sentinel Hub production path, and pilot deployment.
 
 Exit criteria:
 
-- [ ] A 30-minute MGA demo can be run without live coding.
-- [ ] The strongest result and the worst failure case are both documented.
+- [x] A 30-minute MGA demo can be run without live coding.
+- [x] The strongest result and the worst failure case are both documented.
 - [ ] The next build step is driven by customer feedback, not by speculative ML.
 
 ## GitHub Issue Labels

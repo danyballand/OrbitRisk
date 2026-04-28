@@ -1,0 +1,88 @@
+{
+  "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_02",
+  "classification": "accepted",
+  "confidence": 0.7456552631578948,
+  "critical_periods": [
+    {
+      "end": "2022-08-15",
+      "severity": "high",
+      "start": "2019-06-02"
+    }
+  ],
+  "detected": true,
+  "ndmi_periods": [
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-07-01",
+      "ndmi_baseline_count": 13,
+      "ndmi_baseline_percentile": 0.5384615384615384,
+      "ndmi_ema": 0.02760561885130738,
+      "ndmi_mean": 0.008192037232220173,
+      "period": "2022-06-25/2022-07-04",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 1193
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-07-16",
+      "ndmi_baseline_count": 11,
+      "ndmi_baseline_percentile": 0.09090909090909091,
+      "ndmi_ema": 0.009895177092154995,
+      "ndmi_mean": -0.022995643317699432,
+      "period": "2022-07-15/2022-07-24",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 1193
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-07-26",
+      "ndmi_baseline_count": 11,
+      "ndmi_baseline_percentile": 0.36363636363636365,
+      "ndmi_ema": -8.02862692374836e-05,
+      "ndmi_mean": -0.018606146797537804,
+      "period": "2022-07-25/2022-08-03",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 1193
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-08-05",
+      "ndmi_baseline_count": 10,
+      "ndmi_baseline_percentile": 0.0,
+      "ndmi_ema": -0.015010448891075874,
+      "ndmi_mean": -0.042737893760204315,
+      "period": "2022-08-04/2022-08-13",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 1193
+    },
+    {
+      "cloud_pct": 0.0,
+      "date": "2022-08-15",
+      "ndmi_baseline_count": 10,
+      "ndmi_baseline_percentile": 0.2,
+      "ndmi_ema": -0.021264528670707418,
+      "ndmi_mean": -0.03287924826145172,
+      "period": "2022-08-14/2022-08-23",
+      "quality": "good",
+      "quality_flags": [],
+      "valid_pixel_count": 1193
+    }
+  ],
+  "quality": {
+    "baseline_supported_period_count": 5,
+    "mean_cloud_pct": 0.0,
+    "min_baseline_percentile": 0.0,
+    "min_valid_pixel_count": 1193,
+    "quality_flag_counts": {},
+    "target_period_count": 6
+  },
+  "reasons": [
+    "clear_drought_trigger"
+  ],
+  "region": "languedoc",
+  "trigger": "ndmi_ema_below_0.15_for_2_periods"
+}

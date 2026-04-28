@@ -1,0 +1,33 @@
+{
+  "baseline_start": "2019-06-01",
+  "demo": "mga_pilot_2022",
+  "end": "2022-08-31",
+  "files": [
+    "MANIFEST.json",
+    "README.md",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__buffered_aoi__cloud_pct.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__buffered_aoi__ndmi.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__buffered_aoi__valid_pixels.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__raw_aoi__cloud_pct.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__raw_aoi__ndmi.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__raw_aoi__valid_pixels.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__vector_crop_mask__cloud_pct.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__vector_crop_mask__ndmi.svg",
+    "charts/mask_benchmark/FR_RPG23_BORDEAUX_RIGHT_BANK_01/FR_RPG23_BORDEAUX_RIGHT_BANK_01__vector_crop_mask__valid_pixels.svg",
+    "outputs/mask_benchmark_summary.json",
+    "outputs/strongest_success_summary.json",
+    "outputs/worst_failure_summary.json",
+    "reports/2022_drought_validation_report.md",
+    "reports/mask_benchmark_report.md",
+    "requests/strongest_success_request.json",
+    "requests/worst_failure_request.json"
+  ],
+  "source_benchmark_json": "reports/rpg-2023-first-real-mask-benchmark.json",
+  "source_manifest": "examples/rpg_2023_vineyard_candidate_manifest.json",
+  "source_validation_reports": [
+    "reports/bordeaux-2022-batch-validation.json",
+    "reports/languedoc-2022-batch-validation.json"
+  ],
+  "strongest_success_aoi": "FR_RPG23_PIC_SAINT_LOUP_02",
+  "worst_failure_aoi": "FR_RPG23_BEZIERS_01"
+}

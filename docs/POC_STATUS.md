@@ -51,6 +51,8 @@ OrbitRisk now has a working technical spine:
 - API key protection and in-memory per-key rate limiting for live quote and async job
   endpoints,
 - OpenAPI request examples for dry-run, live quote, and crop-mask quote flows,
+- reproducible MGA demo pack with requests, compact JSON summaries, validation reports,
+  mask benchmark report, and chart artifacts,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -88,9 +90,9 @@ The technical POC needs:
 The local AOI validation layer now rejects invalid geometries, empty negative buffers,
 and insufficient Sentinel-2 pixel support before any live raster provider call.
 
-Estimate: the engineering POC is roughly 90% complete. A rough demo is close; an
-actuary-grade POC still needs broader observed benchmark outputs, mask coverage charts,
-and a design-partner review loop.
+Estimate: the engineering POC is roughly 92% complete. A rough demo can now run without
+live coding; an actuary-grade POC still needs broader observed benchmark outputs, mask
+coverage charts, and a design-partner review loop.
 
 ## Distance to a Sellable MGA POC
 

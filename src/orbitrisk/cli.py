@@ -14,6 +14,7 @@ from orbitrisk.batch.requests import (
     risk_request_payload_from_manifest_entry,
 )
 from orbitrisk.config import get_settings
+from orbitrisk.demo.pack import build_mga_demo_pack
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.processing.datacube import summarize_datacube
@@ -125,6 +126,43 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Run partial raw/buffer benchmarks for AOIs missing crop masks",
     )
+    demo_pack = subparsers.add_parser(
+        "build-mga-demo-pack",
+        help="Build the offline MGA demo folder from tracked validation artifacts",
+    )
+    demo_pack.add_argument("--output-dir", type=Path, default=Path("demo/mga_pilot_2022"))
+    demo_pack.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path("examples/rpg_2023_vineyard_candidate_manifest.json"),
+    )
+    demo_pack.add_argument(
+        "--validation-json",
+        type=Path,
+        action="append",
+        default=None,
+        help="Validation batch JSON. Pass multiple times to override defaults.",
+    )
+    demo_pack.add_argument(
+        "--benchmark-json",
+        type=Path,
+        default=Path("reports/rpg-2023-first-real-mask-benchmark.json"),
+    )
+    demo_pack.add_argument(
+        "--validation-memo",
+        type=Path,
+        default=Path("docs/2022_DROUGHT_VALIDATION_REPORT.md"),
+    )
+    demo_pack.add_argument(
+        "--benchmark-report",
+        type=Path,
+        default=Path("reports/rpg-2023-first-real-mask-benchmark.md"),
+    )
+    demo_pack.add_argument(
+        "--benchmark-charts-dir",
+        type=Path,
+        default=Path("reports/charts/rpg-2023-first-real-mask-benchmark"),
+    )
 
     args = parser.parse_args(argv)
     if args.command == "smoke-pc":
@@ -151,6 +189,10 @@ def main(argv: list[str] | None = None) -> int:
         result = run_mask_benchmark_batch_2022(args)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
+    if args.command == "build-mga-demo-pack":
+        result = run_mga_demo_pack(args)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
     return 1
 
 
@@ -164,6 +206,22 @@ def run_aoi_batch_validation(args: argparse.Namespace) -> dict[str, Any]:
         args.output_md.parent.mkdir(parents=True, exist_ok=True)
         args.output_md.write_text(render_aoi_validation_markdown(report))
     return report
+
+
+def run_mga_demo_pack(args: argparse.Namespace) -> dict[str, Any]:
+    return build_mga_demo_pack(
+        output_dir=args.output_dir,
+        manifest_path=args.manifest,
+        validation_report_paths=args.validation_json
+        or [
+            Path("reports/bordeaux-2022-batch-validation.json"),
+            Path("reports/languedoc-2022-batch-validation.json"),
+        ],
+        benchmark_json_path=args.benchmark_json,
+        validation_memo_path=args.validation_memo,
+        benchmark_report_path=args.benchmark_report,
+        benchmark_charts_dir=args.benchmark_charts_dir,
+    )
 
 
 def run_planetary_computer_smoke(args: argparse.Namespace) -> dict[str, Any]:

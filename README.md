@@ -35,6 +35,10 @@ summarizes the July-August 2022 Bordeaux/Languedoc runs, strongest accepted AOI,
 ambiguous failure case, basis-risk mask benchmark excerpt, methodology, limitations, and
 reproducibility commands.
 
+The current M5 buyer-facing demo bundle is
+[demo/mga_pilot_2022](demo/mga_pilot_2022). It contains compact API requests, response
+summaries, validation reports, benchmark evidence, and charts for a 30-minute MGA demo.
+
 ## Quickstart
 
 ```bash
@@ -137,6 +141,12 @@ orbitrisk benchmark-masks-batch-2022 examples/rpg_2023_first_real_benchmark_mani
 
 Validation responses are cached under `data/cache` by default. Use `--no-cache` when you
 need to force a fresh Planetary Computer run.
+
+Build the offline MGA demo pack from tracked reports:
+
+```bash
+orbitrisk build-mga-demo-pack --output-dir demo/mga_pilot_2022
+```
 
 ## Environment
 
