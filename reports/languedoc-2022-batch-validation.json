@@ -1,0 +1,838 @@
+{
+  "aggregate": {
+    "crop_mask_used_count": 5,
+    "total_baseline_supported_periods": 29,
+    "total_target_periods": 30,
+    "trigger_count": 5,
+    "validation_classification_counts": {
+      "accepted": 2,
+      "ambiguous": 3,
+      "not_run": 0,
+      "rejected": 0
+    }
+  },
+  "aois": [
+    {
+      "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_01",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 1859,
+          "area_ha": 20.44125309191406,
+          "crop_mask_area_ha": 16.27,
+          "crop_mask_coverage_pct": 87.52017213555675,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 1627,
+          "grid_height": 61,
+          "grid_width": 59,
+          "has_crop_mask": true,
+          "masked_area_pct": 9.160732621982937,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32631",
+          "resolution_m": 10,
+          "usable_area_ha": 18.568684551580994
+        },
+        "reasons": [],
+        "region": "languedoc",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "languedoc",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 6,
+        "confidence": 0.7118421052631579,
+        "critical_periods": [
+          {
+            "end": "2022-08-30",
+            "severity": "high",
+            "start": "2019-06-02"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-01",
+            "ndmi_anomaly_z": -0.880026814794439,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.3,
+            "ndmi_ema": 0.017202809406861204,
+            "ndmi_mean": 0.013316594995558262,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1627
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-16",
+            "ndmi_anomaly_z": -1.0153356663484499,
+            "ndmi_baseline_count": 9,
+            "ndmi_baseline_percentile": 0.1111111111111111,
+            "ndmi_ema": 0.006028088617875129,
+            "ndmi_mean": -0.014724964275956154,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1627
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-26",
+            "ndmi_anomaly_z": -0.5496772632677503,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.4,
+            "ndmi_ema": 0.001785304689839549,
+            "ndmi_mean": -0.006094151176512241,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1627
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-05",
+            "ndmi_anomaly_z": -1.4207554401091333,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.1,
+            "ndmi_ema": -0.01018456555517237,
+            "ndmi_mean": -0.03241432458162308,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1627
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-15",
+            "ndmi_anomaly_z": -0.8211532391702578,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.3,
+            "ndmi_ema": -0.009893779267843747,
+            "ndmi_mean": -0.009353747591376305,
+            "period": "2022-08-14/2022-08-23",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1627
+          },
+          {
+            "cloud_pct": 2.63582571274879,
+            "date": "2022-08-30",
+            "ndmi_anomaly_z": 0.2612730201169115,
+            "ndmi_baseline_count": 7,
+            "ndmi_baseline_percentile": 0.7142857142857143,
+            "ndmi_ema": 0.002325912296539027,
+            "ndmi_mean": 0.025019625201821327,
+            "period": "2022-08-24/2022-08-31",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1563
+          }
+        ],
+        "quality_flag_counts": {},
+        "region": "languedoc",
+        "request_id": "FR_RPG23_PIC_SAINT_LOUP_01",
+        "status": "partial",
+        "target_period_count": 6,
+        "validation_assessment": {
+          "classification": "accepted",
+          "inputs": {
+            "baseline_supported_period_count": 6,
+            "confidence": 0.7118421052631579,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 0.43930428545813166,
+            "min_valid_pixel_count": 1563,
+            "preflight_reasons": [],
+            "quality_flag_counts": {},
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 6,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "clear_drought_trigger"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_02",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_PIC_SAINT_LOUP_02",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 1462,
+          "area_ha": 16.363067141651783,
+          "crop_mask_area_ha": 11.93,
+          "crop_mask_coverage_pct": 81.60054719562243,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 1193,
+          "grid_height": 57,
+          "grid_width": 48,
+          "has_crop_mask": true,
+          "masked_area_pct": 10.430103312105278,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32631",
+          "resolution_m": 10,
+          "usable_area_ha": 14.65638233374835
+        },
+        "reasons": [],
+        "region": "languedoc",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "languedoc",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 5,
+        "confidence": 0.7456552631578948,
+        "critical_periods": [
+          {
+            "end": "2022-08-15",
+            "severity": "high",
+            "start": "2019-06-02"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-01",
+            "ndmi_anomaly_z": -0.12371131471978972,
+            "ndmi_baseline_count": 13,
+            "ndmi_baseline_percentile": 0.5384615384615384,
+            "ndmi_ema": 0.02760561885130738,
+            "ndmi_mean": 0.008192037232220173,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1193
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-16",
+            "ndmi_anomaly_z": -0.8800327379332172,
+            "ndmi_baseline_count": 11,
+            "ndmi_baseline_percentile": 0.09090909090909091,
+            "ndmi_ema": 0.009895177092154995,
+            "ndmi_mean": -0.022995643317699432,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1193
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-26",
+            "ndmi_anomaly_z": -0.6125982366620086,
+            "ndmi_baseline_count": 11,
+            "ndmi_baseline_percentile": 0.36363636363636365,
+            "ndmi_ema": -8.02862692374836e-05,
+            "ndmi_mean": -0.018606146797537804,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1193
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-05",
+            "ndmi_anomaly_z": -1.3030299443300335,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.0,
+            "ndmi_ema": -0.015010448891075874,
+            "ndmi_mean": -0.042737893760204315,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1193
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-15",
+            "ndmi_anomaly_z": -1.0266330402386536,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.2,
+            "ndmi_ema": -0.021264528670707418,
+            "ndmi_mean": -0.03287924826145172,
+            "period": "2022-08-14/2022-08-23",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 1193
+          }
+        ],
+        "quality_flag_counts": {},
+        "region": "languedoc",
+        "request_id": "FR_RPG23_PIC_SAINT_LOUP_02",
+        "status": "partial",
+        "target_period_count": 6,
+        "validation_assessment": {
+          "classification": "accepted",
+          "inputs": {
+            "baseline_supported_period_count": 5,
+            "confidence": 0.7456552631578948,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 0.0,
+            "min_valid_pixel_count": 1193,
+            "preflight_reasons": [],
+            "quality_flag_counts": {},
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 6,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "clear_drought_trigger"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_MINERVOIS_01",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_MINERVOIS_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 3646,
+          "area_ha": 39.18348340941661,
+          "crop_mask_area_ha": 33.8,
+          "crop_mask_coverage_pct": 92.70433351618212,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 3380,
+          "grid_height": 84,
+          "grid_width": 100,
+          "has_crop_mask": true,
+          "masked_area_pct": 7.022667450227582,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32631",
+          "resolution_m": 10,
+          "usable_area_ha": 36.431757674158185
+        },
+        "reasons": [],
+        "region": "languedoc",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "languedoc",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 6,
+        "confidence": 0.6278128205128205,
+        "critical_periods": [
+          {
+            "end": "2022-08-30",
+            "severity": "high",
+            "start": "2019-06-02"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-01",
+            "ndmi_anomaly_z": 0.25193237758438036,
+            "ndmi_baseline_count": 9,
+            "ndmi_baseline_percentile": 0.5555555555555556,
+            "ndmi_ema": 0.007534717377026614,
+            "ndmi_mean": 0.020915562286973,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3380
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-16",
+            "ndmi_anomaly_z": -0.5123584014960325,
+            "ndmi_baseline_count": 9,
+            "ndmi_baseline_percentile": 0.3333333333333333,
+            "ndmi_ema": 0.003208177342849303,
+            "ndmi_mean": -0.004826825577765703,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3380
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-26",
+            "ndmi_anomaly_z": -0.23552485053485925,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.5,
+            "ndmi_ema": 1.6331113583608736e-05,
+            "ndmi_mean": -0.0059113833121955395,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3380
+          },
+          {
+            "cloud_pct": 95.18779342723005,
+            "date": "2022-08-13",
+            "ndmi_anomaly_z": -0.11419758941518958,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.6,
+            "ndmi_ema": 0.0010794571110016571,
+            "ndmi_mean": 0.0030538339633494616,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "poor",
+            "quality_flags": [
+              "low_clear_fraction",
+              "high_cloud_fraction"
+            ],
+            "valid_pixel_count": 121
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-20",
+            "ndmi_anomaly_z": -0.541211312442092,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 0.4,
+            "ndmi_ema": -0.004620217801311194,
+            "ndmi_mean": -0.015205328352749348,
+            "period": "2022-08-14/2022-08-23",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3380
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-30",
+            "ndmi_anomaly_z": -0.6155324916352273,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 0.25,
+            "ndmi_ema": -0.009145840078608272,
+            "ndmi_mean": -0.017550567165017128,
+            "period": "2022-08-24/2022-08-31",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3380
+          }
+        ],
+        "quality_flag_counts": {
+          "high_cloud_fraction": 1,
+          "low_clear_fraction": 1
+        },
+        "region": "languedoc",
+        "request_id": "FR_RPG23_MINERVOIS_01",
+        "status": "partial",
+        "target_period_count": 6,
+        "validation_assessment": {
+          "classification": "ambiguous",
+          "inputs": {
+            "baseline_supported_period_count": 6,
+            "confidence": 0.6278128205128205,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 15.864632237871675,
+            "min_valid_pixel_count": 121,
+            "preflight_reasons": [],
+            "quality_flag_counts": {
+              "high_cloud_fraction": 1,
+              "low_clear_fraction": 1
+            },
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 6,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "quality_warnings_require_review"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_MINERVOIS_02",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_MINERVOIS_02",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 3545,
+          "area_ha": 39.48926031132232,
+          "crop_mask_area_ha": 30.87,
+          "crop_mask_coverage_pct": 87.08039492242595,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 3087,
+          "grid_height": 86,
+          "grid_width": 98,
+          "has_crop_mask": true,
+          "masked_area_pct": 10.130629498377564,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32631",
+          "resolution_m": 10,
+          "usable_area_ha": 35.488749657532395
+        },
+        "reasons": [],
+        "region": "languedoc",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "languedoc",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 6,
+        "confidence": 0.7538461538461538,
+        "critical_periods": [
+          {
+            "end": "2022-08-30",
+            "severity": "high",
+            "start": "2019-06-02"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-01",
+            "ndmi_anomaly_z": 1.6734922514542883,
+            "ndmi_baseline_count": 10,
+            "ndmi_baseline_percentile": 1.0,
+            "ndmi_ema": -0.03155168231656285,
+            "ndmi_mean": -0.00917414017021656,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3087
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-16",
+            "ndmi_anomaly_z": 1.2770498396373449,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.9166666666666666,
+            "ndmi_ema": -0.029203511121268927,
+            "ndmi_mean": -0.024842621758580208,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3087
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-26",
+            "ndmi_anomaly_z": 0.7151197040787224,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.75,
+            "ndmi_ema": -0.03076804330950708,
+            "ndmi_mean": -0.03367360308766365,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3087
+          },
+          {
+            "cloud_pct": 57.489421720733425,
+            "date": "2022-08-05",
+            "ndmi_anomaly_z": 0.3285319448380445,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.6666666666666666,
+            "ndmi_ema": -0.030899588590152315,
+            "ndmi_mean": -0.03114388696849346,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "poor",
+            "quality_flags": [
+              "low_clear_fraction",
+              "high_cloud_fraction"
+            ],
+            "valid_pixel_count": 1274
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-20",
+            "ndmi_anomaly_z": 0.10522161916117269,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.6666666666666666,
+            "ndmi_ema": -0.031014731525318535,
+            "ndmi_mean": -0.03122856840491295,
+            "period": "2022-08-14/2022-08-23",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3087
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-30",
+            "ndmi_anomaly_z": -0.11477838582562092,
+            "ndmi_baseline_count": 9,
+            "ndmi_baseline_percentile": 0.5555555555555556,
+            "ndmi_ema": -0.032096394299774234,
+            "ndmi_mean": -0.034105196595191956,
+            "period": "2022-08-24/2022-08-31",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 3087
+          }
+        ],
+        "quality_flag_counts": {
+          "high_cloud_fraction": 1,
+          "low_clear_fraction": 1
+        },
+        "region": "languedoc",
+        "request_id": "FR_RPG23_MINERVOIS_02",
+        "status": "partial",
+        "target_period_count": 6,
+        "validation_assessment": {
+          "classification": "ambiguous",
+          "inputs": {
+            "baseline_supported_period_count": 6,
+            "confidence": 0.7538461538461538,
+            "critical_period_count": 1,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 9.581570286788905,
+            "min_valid_pixel_count": 1274,
+            "preflight_reasons": [],
+            "quality_flag_counts": {
+              "high_cloud_fraction": 1,
+              "low_clear_fraction": 1
+            },
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 6,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "quality_warnings_require_review"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    },
+    {
+      "aoi_id": "FR_RPG23_BEZIERS_01",
+      "crop_mask_used": true,
+      "quality_gate": {
+        "aoi_id": "FR_RPG23_BEZIERS_01",
+        "crop": "vineyard",
+        "metrics": {
+          "aoi_pixel_count": 4873,
+          "area_ha": 52.887832913675034,
+          "crop_mask_area_ha": 44.65,
+          "crop_mask_coverage_pct": 91.62733429099119,
+          "crop_mask_geometry_count": 1,
+          "crop_mask_pixel_count": 4465,
+          "grid_height": 135,
+          "grid_width": 96,
+          "has_crop_mask": true,
+          "masked_area_pct": 7.940529787223571,
+          "min_valid_pixels": 20,
+          "negative_buffer_empty": false,
+          "negative_buffer_m": 10.0,
+          "processing_crs": "EPSG:32631",
+          "resolution_m": 10,
+          "usable_area_ha": 48.688258787347635
+        },
+        "reasons": [],
+        "region": "languedoc",
+        "status": "accepted",
+        "warnings": []
+      },
+      "region": "languedoc",
+      "status": "success",
+      "validation": {
+        "baseline_supported_period_count": 6,
+        "confidence": 0.7066368421052631,
+        "critical_periods": [
+          {
+            "end": "2019-08-11",
+            "severity": "high",
+            "start": "2019-06-02"
+          },
+          {
+            "end": "2022-07-16",
+            "severity": "high",
+            "start": "2021-06-21"
+          }
+        ],
+        "detected": true,
+        "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+        "ndmi_periods": [
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-01",
+            "ndmi_anomaly_z": 0.3668184420176093,
+            "ndmi_baseline_count": 11,
+            "ndmi_baseline_percentile": 0.6363636363636364,
+            "ndmi_ema": 0.1331696057079447,
+            "ndmi_mean": 0.13090506196022034,
+            "period": "2022-06-25/2022-07-04",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4465
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-16",
+            "ndmi_anomaly_z": 0.5813718941622181,
+            "ndmi_baseline_count": 13,
+            "ndmi_baseline_percentile": 0.6923076923076923,
+            "ndmi_ema": 0.13617185984480762,
+            "ndmi_mean": 0.14174747467041016,
+            "period": "2022-07-15/2022-07-24",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4465
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-07-26",
+            "ndmi_anomaly_z": 0.8743671726779253,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.8333333333333334,
+            "ndmi_ema": 0.15017678119121441,
+            "ndmi_mean": 0.17618592083454132,
+            "period": "2022-07-25/2022-08-03",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4465
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-05",
+            "ndmi_anomaly_z": 0.6189719362826883,
+            "ndmi_baseline_count": 12,
+            "ndmi_baseline_percentile": 0.75,
+            "ndmi_ema": 0.15596667409237217,
+            "ndmi_mean": 0.16671933233737946,
+            "period": "2022-08-04/2022-08-13",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4465
+          },
+          {
+            "cloud_pct": 0.0,
+            "date": "2022-08-20",
+            "ndmi_anomaly_z": 0.7083323857955133,
+            "ndmi_baseline_count": 11,
+            "ndmi_baseline_percentile": 0.7272727272727273,
+            "ndmi_ema": 0.16522352856588757,
+            "ndmi_mean": 0.18241482973098755,
+            "period": "2022-08-14/2022-08-23",
+            "quality": "good",
+            "quality_flags": [],
+            "valid_pixel_count": 4465
+          },
+          {
+            "cloud_pct": 95.05438128462959,
+            "date": "2022-08-30",
+            "ndmi_anomaly_z": 1.339571418509977,
+            "ndmi_baseline_count": 8,
+            "ndmi_baseline_percentile": 1.0,
+            "ndmi_ema": 0.17888177931731003,
+            "ndmi_mean": 0.2042471021413803,
+            "period": "2022-08-24/2022-08-31",
+            "quality": "poor",
+            "quality_flags": [
+              "low_clear_fraction",
+              "high_cloud_fraction"
+            ],
+            "valid_pixel_count": 127
+          }
+        ],
+        "quality_flag_counts": {
+          "high_cloud_fraction": 1,
+          "low_clear_fraction": 1
+        },
+        "region": "languedoc",
+        "request_id": "FR_RPG23_BEZIERS_01",
+        "status": "partial",
+        "target_period_count": 6,
+        "validation_assessment": {
+          "classification": "ambiguous",
+          "inputs": {
+            "baseline_supported_period_count": 6,
+            "confidence": 0.7066368421052631,
+            "critical_period_count": 2,
+            "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
+            "mean_cloud_pct": 15.842396880771597,
+            "min_valid_pixel_count": 127,
+            "preflight_reasons": [],
+            "quality_flag_counts": {
+              "high_cloud_fraction": 1,
+              "low_clear_fraction": 1
+            },
+            "rejected_period_count": 0,
+            "response_status": "partial",
+            "target_period_count": 6,
+            "trigger_candidate": true
+          },
+          "reasons": [
+            "quality_warnings_require_review"
+          ],
+          "thresholds": {
+            "max_mean_cloud_pct": 70.0,
+            "max_rejected_period_fraction": 0.5,
+            "min_baseline_supported_periods": 1,
+            "min_confidence": 0.35,
+            "min_valid_pixels": 20
+          }
+        }
+      }
+    }
+  ],
+  "manifest": {
+    "name": "rpg-2023-vineyard-candidate-pack-languedoc",
+    "version": "orbitrisk.aoi_batch.v1"
+  },
+  "run": {
+    "baseline_start": "2019-06-01",
+    "cache_enabled": true,
+    "collection": "sentinel-2-l2a",
+    "end": "2022-08-31",
+    "max_items": 40,
+    "provider": "planetary-computer"
+  },
+  "summary": {
+    "aoi_count": 5,
+    "failed_count": 0,
+    "rejected_count": 0,
+    "success_count": 5
+  }
+}

@@ -94,6 +94,10 @@ The first Bordeaux batch is summarized in `docs/BORDEAUX_2022_BATCH_VALIDATION.m
 five live AOIs completed, four were `accepted`, and one was `ambiguous` because cloud
 quality warnings require manual review.
 
+The first Languedoc batch is summarized in `docs/LANGUEDOC_2022_BATCH_VALIDATION.md`:
+five live AOIs completed, two were `accepted`, and three were `ambiguous` because cloud
+quality warnings or percentile/threshold calibration questions require review.
+
 ## Drought Validation Classifier
 
 The drought-event classifier is separate from the basis-risk masking classifier. It

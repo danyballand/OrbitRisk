@@ -83,7 +83,7 @@ orbitrisk validate-2022 tests/fixtures/sample_request.json \
   --output-md reports/bordeaux-2022.md
 ```
 
-Run the RPG Bordeaux drought-2022 validation batch:
+Run an RPG drought-2022 validation batch:
 
 ```bash
 orbitrisk validate-2022-batch examples/rpg_2023_vineyard_candidate_manifest.json \
@@ -92,6 +92,9 @@ orbitrisk validate-2022-batch examples/rpg_2023_vineyard_candidate_manifest.json
   --output-json reports/bordeaux-2022-batch-validation.json \
   --output-md reports/bordeaux-2022-batch-validation.md
 ```
+
+Use `--region languedoc` with `reports/languedoc-2022-batch-validation.*` for the
+Languedoc batch.
 
 Compare raw AOI, negative-buffer, and external crop-mask variants:
 

@@ -56,5 +56,5 @@ everything into a binary success claim.
 
 ## Caveat
 
-This is not yet the final M3 validation report. It still needs Languedoc coverage,
-threshold calibration, and a failure-mode appendix before it becomes customer-facing.
+This is not yet the final M3 validation report. It still needs threshold calibration and
+a failure-mode appendix before it becomes customer-facing.

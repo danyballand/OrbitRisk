@@ -32,6 +32,8 @@ OrbitRisk now has a working technical spine:
 - Bordeaux July-August 2022 batch validation on five real RPG vineyard AOIs, with four
   `accepted`, one `ambiguous`, and same-season baseline support after year-stratified
   STAC sampling,
+- Languedoc July-August 2022 batch validation on five real RPG vineyard AOIs, with two
+  `accepted`, three `ambiguous`, and explicit cloud/calibration caveats,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -55,17 +57,17 @@ Close, but not done.
 
 The technical POC needs:
 
-- live July-August 2022 validation outputs for the RPG 2023 Languedoc AOI batch,
 - full-batch observed raw-vs-buffer-vs-crop-mask benchmark outputs across all 10 RPG AOIs,
-- observed accepted/rejected/ambiguous AOI classifications on real validation AOIs,
+- observed rejected AOI or failure-case classifications for the final customer-facing
+  validation report,
 - mask coverage chart artifacts across AOIs.
 
 The local AOI validation layer now rejects invalid geometries, empty negative buffers,
 and insufficient Sentinel-2 pixel support before any live raster provider call.
 
-Estimate: the engineering POC is roughly 70-75% complete. A rough demo is close; an
-actuary-grade POC still needs real AOI batches, observed benchmark outputs, and a
-clear accepted/rejected/ambiguous AOI review loop.
+Estimate: the engineering POC is roughly 75-80% complete. A rough demo is close; an
+actuary-grade POC still needs broader observed benchmark outputs, failure-case
+classifications, and a clear accepted/rejected/ambiguous AOI review loop.
 
 ## Distance to a Sellable MGA POC
 
