@@ -9,6 +9,7 @@ class DroughtValidationThresholds:
     min_valid_pixels: int = 20
     min_baseline_supported_periods: int = 1
     min_confidence: float = 0.35
+    max_clear_signal_percentile: float = 0.25
     max_mean_cloud_pct: float = 70.0
     max_rejected_period_fraction: float = 0.5
 
@@ -26,6 +27,7 @@ class DroughtValidationInputs:
     mean_cloud_pct: float | None
     rejected_period_count: int
     quality_flag_counts: dict[str, int]
+    min_baseline_percentile: float | None = None
     preflight_reasons: tuple[str, ...] = ()
 
 
@@ -83,6 +85,11 @@ def _ambiguous_reasons(
         reasons.append("no_critical_periods")
     if inputs.confidence < thresholds.min_confidence:
         reasons.append("low_confidence")
+    if (
+        inputs.min_baseline_percentile is not None
+        and inputs.min_baseline_percentile > thresholds.max_clear_signal_percentile
+    ):
+        reasons.append("seasonal_percentile_not_low")
     if _has_quality_warnings(inputs):
         reasons.append("quality_warnings_require_review")
     return reasons

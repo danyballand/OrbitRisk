@@ -38,8 +38,19 @@ def detect_water_stress_trigger(
         periods.append(_period_for_run(run_start, len(values) - 1, dates))
 
     triggered = bool(periods)
-    reason = f"ndmi_ema_below_{threshold}_for_{min_consecutive}_periods" if triggered else None
+    reason = (
+        f"ndmi_ema_below_{_format_threshold(threshold)}_for_{min_consecutive}_periods"
+        if triggered
+        else None
+    )
     return TriggerResult(triggered=triggered, reason=reason, periods=periods)
+
+
+def _format_threshold(threshold: float) -> str:
+    formatted = f"{threshold:.6f}".rstrip("0").rstrip(".")
+    if formatted == "-0":
+        return "0"
+    return formatted
 
 
 def _period_for_run(start_idx: int, end_idx: int, dates: Sequence[date] | None) -> CriticalPeriod:

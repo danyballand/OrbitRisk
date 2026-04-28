@@ -148,6 +148,7 @@
             "critical_period_count": 1,
             "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
             "mean_cloud_pct": 0.43930428545813166,
+            "min_baseline_percentile": 0.1,
             "min_valid_pixel_count": 1563,
             "preflight_reasons": [],
             "quality_flag_counts": {},
@@ -160,6 +161,7 @@
             "clear_drought_trigger"
           ],
           "thresholds": {
+            "max_clear_signal_percentile": 0.25,
             "max_mean_cloud_pct": 70.0,
             "max_rejected_period_fraction": 0.5,
             "min_baseline_supported_periods": 1,
@@ -292,6 +294,7 @@
             "critical_period_count": 1,
             "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
             "mean_cloud_pct": 0.0,
+            "min_baseline_percentile": 0.0,
             "min_valid_pixel_count": 1193,
             "preflight_reasons": [],
             "quality_flag_counts": {},
@@ -304,6 +307,7 @@
             "clear_drought_trigger"
           ],
           "thresholds": {
+            "max_clear_signal_percentile": 0.25,
             "max_mean_cloud_pct": 70.0,
             "max_rejected_period_fraction": 0.5,
             "min_baseline_supported_periods": 1,
@@ -455,6 +459,7 @@
             "critical_period_count": 1,
             "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
             "mean_cloud_pct": 15.864632237871675,
+            "min_baseline_percentile": 0.25,
             "min_valid_pixel_count": 121,
             "preflight_reasons": [],
             "quality_flag_counts": {
@@ -470,6 +475,7 @@
             "quality_warnings_require_review"
           ],
           "thresholds": {
+            "max_clear_signal_percentile": 0.25,
             "max_mean_cloud_pct": 70.0,
             "max_rejected_period_fraction": 0.5,
             "min_baseline_supported_periods": 1,
@@ -621,6 +627,7 @@
             "critical_period_count": 1,
             "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
             "mean_cloud_pct": 9.581570286788905,
+            "min_baseline_percentile": 0.5555555555555556,
             "min_valid_pixel_count": 1274,
             "preflight_reasons": [],
             "quality_flag_counts": {
@@ -633,9 +640,11 @@
             "trigger_candidate": true
           },
           "reasons": [
+            "seasonal_percentile_not_low",
             "quality_warnings_require_review"
           ],
           "thresholds": {
+            "max_clear_signal_percentile": 0.25,
             "max_mean_cloud_pct": 70.0,
             "max_rejected_period_fraction": 0.5,
             "min_baseline_supported_periods": 1,
@@ -792,6 +801,7 @@
             "critical_period_count": 2,
             "detection_reason": "ndmi_ema_below_0.15_for_2_periods",
             "mean_cloud_pct": 15.842396880771597,
+            "min_baseline_percentile": 0.6363636363636364,
             "min_valid_pixel_count": 127,
             "preflight_reasons": [],
             "quality_flag_counts": {
@@ -804,9 +814,11 @@
             "trigger_candidate": true
           },
           "reasons": [
+            "seasonal_percentile_not_low",
             "quality_warnings_require_review"
           ],
           "thresholds": {
+            "max_clear_signal_percentile": 0.25,
             "max_mean_cloud_pct": 70.0,
             "max_rejected_period_fraction": 0.5,
             "min_baseline_supported_periods": 1,

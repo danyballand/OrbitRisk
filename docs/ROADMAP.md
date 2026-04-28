@@ -120,7 +120,7 @@ Deliverables:
 - [x] Bordeaux and/or Languedoc July-August 2022 validation run.
 - [x] Same-day-of-year seasonal baseline metadata for each accepted period.
 - [x] Accepted/rejected/ambiguous AOI classifier.
-- [ ] NDMI threshold and percentile calibration note.
+- [x] NDMI threshold and percentile calibration note.
 - [x] Investigation of missing seasonal baseline support in the first real RPG benchmark.
 - [ ] Failure-mode appendix covering cloud gaps, insufficient pixels, and unstable masks.
 

@@ -34,6 +34,9 @@ OrbitRisk now has a working technical spine:
   STAC sampling,
 - Languedoc July-August 2022 batch validation on five real RPG vineyard AOIs, with two
   `accepted`, three `ambiguous`, and explicit cloud/calibration caveats,
+- deterministic NDMI trigger calibration that keeps the absolute EMA threshold as a
+  candidate generator and requires a same-season percentile guard for clean accepted
+  validation,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -65,7 +68,7 @@ The technical POC needs:
 The local AOI validation layer now rejects invalid geometries, empty negative buffers,
 and insufficient Sentinel-2 pixel support before any live raster provider call.
 
-Estimate: the engineering POC is roughly 75-80% complete. A rough demo is close; an
+Estimate: the engineering POC is roughly 80-85% complete. A rough demo is close; an
 actuary-grade POC still needs broader observed benchmark outputs, failure-case
 classifications, and a clear accepted/rejected/ambiguous AOI review loop.
 

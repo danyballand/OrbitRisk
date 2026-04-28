@@ -34,13 +34,16 @@ baseline explicitly.
 
 ## Acceptance Criteria
 
-An AOI counts as detected when all conditions are met:
+For M3, an AOI counts as accepted validation evidence only when all conditions are met:
 
-- At least two consecutive accepted periods have NDMI EMA below the configured seasonal
-  percentile threshold.
+- The absolute NDMI EMA trigger fires: `ndmi_ema_below_0.15_for_2_periods`.
+- At least one target-period NDMI seasonal percentile is at or below `P25`.
 - `valid_pixel_count` is above the request threshold for each triggering period.
 - Cloud/shadow/snow masks do not explain the signal.
 - The result includes a clear `trigger_reason` and mask-count audit trail.
+
+The percentile guard is documented in `docs/NDMI_TRIGGER_CALIBRATION.md`. It is a v0
+calibration rule, not a supervised payout model.
 
 The validation report must list:
 
@@ -109,18 +112,21 @@ Default thresholds:
 - `min_valid_pixels`: `20`
 - `min_baseline_supported_periods`: `1`
 - `min_confidence`: `0.35`
+- `max_clear_signal_percentile`: `0.25`
 - `max_mean_cloud_pct`: `70.0`
 - `max_rejected_period_fraction`: `0.5`
 
 Classification rules:
 
 - `accepted`: clear drought trigger, baseline support, enough valid pixels, critical
-  periods, and no quality warnings requiring review.
+  periods, target-period seasonal percentile at or below `P25`, and no quality warnings
+  requiring review.
 - `rejected`: failed response, no July-August target periods, no NDMI periods, no
   seasonal baseline support, insufficient valid pixels, too many rejected periods, or
   cloud gap.
 - `ambiguous`: enough data to inspect, but weak/no drought signal, low confidence, no
-  critical periods, or quality warnings that make the trigger non-decisive.
+  critical periods, seasonal percentile not low enough, or quality warnings that make the
+  trigger non-decisive.
 
 ## Mask Benchmark Runner
 

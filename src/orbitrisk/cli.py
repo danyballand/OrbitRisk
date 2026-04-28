@@ -4,7 +4,7 @@ import json
 import statistics
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from orbitrisk.batch.basis_risk import BasisRiskInputs, classify_basis_risk
 from orbitrisk.batch.manifest import AoiBatchManifest, load_aoi_batch_manifest
@@ -782,6 +782,11 @@ def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[st
     baseline_supported = [
         period for period in ndmi_periods if period["ndmi_baseline_count"] is not None
     ]
+    baseline_percentiles: list[float] = []
+    for period in baseline_supported:
+        baseline_percentile = period["ndmi_baseline_percentile"]
+        if baseline_percentile is not None:
+            baseline_percentiles.append(cast(float, baseline_percentile))
     detected = response.risk_signal.trigger_candidate and bool(baseline_supported)
     quality_flag_counts = _period_quality_flag_counts(ndmi_periods)
     valid_counts = [
@@ -810,6 +815,9 @@ def summarize_2022_validation(response: RiskResponse, *, region: str) -> dict[st
                 1 for period in ndmi_periods if period["quality"] == "rejected"
             ),
             quality_flag_counts=quality_flag_counts,
+            min_baseline_percentile=min(baseline_percentiles)
+            if baseline_percentiles
+            else None,
         )
     )
     return {
@@ -1361,8 +1369,8 @@ def render_validation_batch_markdown(summary: dict[str, Any]) -> str:
         "## AOI Summary",
         "",
         "| AOI | Region | Status | Assessment | Detected | Confidence | Target periods | "
-        "Baseline periods | Min valid px | Mean cloud % | Reasons |",
-        "| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
+        "Baseline periods | Min baseline pctl | Min valid px | Mean cloud % | Reasons |",
+        "| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
     for result in summary["aois"]:
         validation = result.get("validation")
@@ -1372,7 +1380,8 @@ def render_validation_batch_markdown(summary: dict[str, Any]) -> str:
             reasons = ", ".join(assessment["reasons"])
             lines.append(
                 "| {aoi_id} | {region} | {status} | {assessment} | {detected} | "
-                "{confidence} | {target} | {baseline} | {valid} | {cloud} | {reasons} |".format(
+                "{confidence} | {target} | {baseline} | {pctl} | {valid} | {cloud} | "
+                "{reasons} |".format(
                     aoi_id=result["aoi_id"],
                     region=result["region"],
                     status=result["status"],
@@ -1381,6 +1390,7 @@ def render_validation_batch_markdown(summary: dict[str, Any]) -> str:
                     confidence=_format_optional(validation["confidence"]),
                     target=validation["target_period_count"],
                     baseline=validation["baseline_supported_period_count"],
+                    pctl=_format_optional(inputs["min_baseline_percentile"]),
                     valid=inputs["min_valid_pixel_count"] or "",
                     cloud=_format_optional(inputs["mean_cloud_pct"]),
                     reasons=reasons,
@@ -1389,7 +1399,7 @@ def render_validation_batch_markdown(summary: dict[str, Any]) -> str:
             continue
 
         lines.append(
-            "| {aoi_id} | {region} | {status} | not_run |  |  |  |  |  |  | {reasons} |".format(
+            "| {aoi_id} | {region} | {status} | not_run |  |  |  |  |  |  |  | {reasons} |".format(
                 aoi_id=result["aoi_id"],
                 region=result["region"],
                 status=result["status"],

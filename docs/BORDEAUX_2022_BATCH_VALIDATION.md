@@ -36,13 +36,13 @@ The Bordeaux batch completed all five RPG vineyard AOIs with crop masks enabled:
 
 AOI outcomes:
 
-| AOI | Assessment | Reason | Baseline periods | Min valid px | Mean cloud % |
-| --- | --- | --- | ---: | ---: | ---: |
-| `FR_RPG23_BORDEAUX_RIGHT_BANK_01` | accepted | clear_drought_trigger | 6 | 2606 | 0.0000 |
-| `FR_RPG23_BORDEAUX_RIGHT_BANK_02` | ambiguous | quality_warnings_require_review | 6 | 1312 | 6.1741 |
-| `FR_RPG23_MEDOC_01` | accepted | clear_drought_trigger | 4 | 7411 | 0.0000 |
-| `FR_RPG23_MEDOC_02` | accepted | clear_drought_trigger | 5 | 3009 | 0.4301 |
-| `FR_RPG23_SAUTERNES_01` | accepted | clear_drought_trigger | 5 | 4468 | 0.0000 |
+| AOI | Assessment | Reason | Baseline periods | Min baseline percentile | Min valid px | Mean cloud % |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| `FR_RPG23_BORDEAUX_RIGHT_BANK_01` | accepted | clear_drought_trigger | 6 | 0.0000 | 2606 | 0.0000 |
+| `FR_RPG23_BORDEAUX_RIGHT_BANK_02` | ambiguous | quality_warnings_require_review | 6 | 0.0000 | 1312 | 6.1741 |
+| `FR_RPG23_MEDOC_01` | accepted | clear_drought_trigger | 4 | 0.0000 | 7411 | 0.0000 |
+| `FR_RPG23_MEDOC_02` | accepted | clear_drought_trigger | 5 | 0.0000 | 3009 | 0.4301 |
+| `FR_RPG23_SAUTERNES_01` | accepted | clear_drought_trigger | 5 | 0.0000 | 4468 | 0.0000 |
 
 ## Interpretation
 
@@ -56,5 +56,6 @@ everything into a binary success claim.
 
 ## Caveat
 
-This is not yet the final M3 validation report. It still needs threshold calibration and
-a failure-mode appendix before it becomes customer-facing.
+This is not yet the final M3 validation report. Threshold calibration is now documented
+in `docs/NDMI_TRIGGER_CALIBRATION.md`; the remaining gap is the failure-mode appendix
+before this becomes customer-facing.

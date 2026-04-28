@@ -18,6 +18,7 @@ def test_drought_validation_classifier_accepts_clear_historical_trigger() -> Non
             mean_cloud_pct=5.0,
             rejected_period_count=0,
             quality_flag_counts={},
+            min_baseline_percentile=0.1,
         )
     )
 
@@ -129,3 +130,25 @@ def test_drought_validation_classifier_keeps_weak_signal_ambiguous() -> None:
 
     assert assessment["classification"] == "ambiguous"
     assert "weak_or_no_drought_signal" in assessment["reasons"]
+
+
+def test_drought_validation_classifier_keeps_high_percentile_signal_ambiguous() -> None:
+    assessment = classify_drought_validation(
+        DroughtValidationInputs(
+            response_status="completed",
+            trigger_candidate=True,
+            detection_reason="ndmi_ema_below_0.15_for_2_periods",
+            confidence=0.8,
+            target_period_count=4,
+            baseline_supported_period_count=4,
+            critical_period_count=1,
+            min_valid_pixel_count=80,
+            mean_cloud_pct=5.0,
+            rejected_period_count=0,
+            quality_flag_counts={},
+            min_baseline_percentile=0.6,
+        )
+    )
+
+    assert assessment["classification"] == "ambiguous"
+    assert "seasonal_percentile_not_low" in assessment["reasons"]
