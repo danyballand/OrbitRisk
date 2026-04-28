@@ -40,6 +40,8 @@ OrbitRisk now has a working technical spine:
 - first customer-readable 2022 drought validation report with strongest AOI, worst
   ambiguous failure case, benchmark excerpt, methodology, limitations, and
   reproducibility commands,
+- async quote job endpoints for submitting, polling, and fetching longer live risk
+  requests,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -52,6 +54,14 @@ The live API smoke path also works:
 
 ```text
 POST /v1/risk/quote/live?max_items=10
+```
+
+Longer pilot-style requests can use:
+
+```text
+POST /v1/risk/quote/jobs?max_items=80
+GET /v1/risk/quote/jobs/{job_id}
+GET /v1/risk/quote/jobs/{job_id}/result
 ```
 
 For the July 2022 sample fixture, it returns three P10D composited observations and a

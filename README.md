@@ -167,3 +167,11 @@ POST /v1/risk/quote/live?max_items=25
 
 `max_items` protects development calls from accidentally loading hundreds of Sentinel-2
 scenes. Increase it intentionally for multi-year validation runs.
+
+For longer pilot-style requests, submit and poll an async quote job:
+
+```text
+POST /v1/risk/quote/jobs?max_items=80
+GET /v1/risk/quote/jobs/{job_id}
+GET /v1/risk/quote/jobs/{job_id}/result
+```

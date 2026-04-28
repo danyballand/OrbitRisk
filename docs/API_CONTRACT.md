@@ -14,6 +14,16 @@ POST /v1/risk/quote/live?max_items=25
 The live endpoint currently uses Planetary Computer/STAC and returns composited periods
 according to `aggregation.temporal`.
 
+For multi-year pilot requests, use the asynchronous job endpoint:
+
+```text
+POST /v1/risk/quote/jobs?max_items=80
+GET /v1/risk/quote/jobs/{job_id}
+GET /v1/risk/quote/jobs/{job_id}/result
+```
+
+The synchronous live endpoint remains available for small requests and smoke tests.
+
 ### Request
 
 ```json
@@ -172,6 +182,55 @@ according to `aggregation.temporal`.
   }
 }
 ```
+
+## Async Quote Jobs
+
+Submit a job:
+
+```http
+POST /v1/risk/quote/jobs?max_items=80&use_cache=true
+Content-Type: application/json
+```
+
+The request body is the same `RiskRequest` used by `/v1/risk/quote/live`.
+
+Submission response:
+
+```json
+{
+  "job_id": "6fd4cfd3f8d5484ba2450da7da7e8c4a",
+  "request_id": "quote_2026_000123",
+  "status": "queued",
+  "status_url": "/v1/risk/quote/jobs/6fd4cfd3f8d5484ba2450da7da7e8c4a",
+  "result_url": "/v1/risk/quote/jobs/6fd4cfd3f8d5484ba2450da7da7e8c4a/result"
+}
+```
+
+Status response:
+
+```json
+{
+  "job_id": "6fd4cfd3f8d5484ba2450da7da7e8c4a",
+  "request_id": "quote_2026_000123",
+  "status": "completed",
+  "created_at": "2026-04-28T08:30:00Z",
+  "updated_at": "2026-04-28T08:31:14Z",
+  "status_url": "/v1/risk/quote/jobs/6fd4cfd3f8d5484ba2450da7da7e8c4a",
+  "result_url": "/v1/risk/quote/jobs/6fd4cfd3f8d5484ba2450da7da7e8c4a/result",
+  "error": null
+}
+```
+
+Job states:
+
+- `queued`: accepted by the API, not yet running.
+- `running`: live provider request is executing.
+- `completed`: result can be fetched from `result_url`.
+- `failed`: provider or processing failure; `error` contains the captured message.
+
+The current POC uses an in-memory job store. That is enough to validate the API shape,
+but it is not durable across process restarts. M4 artifact storage and/or a durable queue
+should replace it before a real pilot.
 
 ## Quality Rules
 

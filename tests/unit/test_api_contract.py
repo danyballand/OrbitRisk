@@ -6,6 +6,7 @@ import xarray as xr
 from fastapi.testclient import TestClient
 
 from orbitrisk.api.main import app
+from orbitrisk.api.routes import quote_job_store
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "sample_request.json"
 
@@ -79,6 +80,74 @@ def test_live_quote_endpoint_accepts_feature_collection_crop_mask(monkeypatch) -
     assert 0 < body["aoi_metrics"]["crop_mask_coverage_pct"] < 100
     assert body["aoi_metrics"]["crop_mask_geometry_count"] == 1
     assert body["series"][0]["mask_counts"]["non_crop"] > 0
+
+
+def test_quote_job_endpoints_complete_successfully(monkeypatch) -> None:
+    quote_job_store.clear()
+
+    class FakeProvider:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            return _dataset(tuple(geobox.shape))
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", FakeProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+
+    submitted = client.post("/v1/risk/quote/jobs?max_items=3&use_cache=false", json=payload)
+
+    assert submitted.status_code == 202
+    submitted_body = submitted.json()
+    assert submitted_body["request_id"] == payload["request_id"]
+    assert submitted_body["status"] == "queued"
+    assert submitted_body["status_url"].startswith("/v1/risk/quote/jobs/")
+    assert submitted_body["result_url"].endswith("/result")
+
+    status_response = client.get(submitted_body["status_url"])
+    assert status_response.status_code == 200
+    status_body = status_response.json()
+    assert status_body["status"] == "completed"
+    assert status_body["result_url"] == submitted_body["result_url"]
+
+    result_response = client.get(submitted_body["result_url"])
+    assert result_response.status_code == 200
+    result_body = result_response.json()
+    assert result_body["request_id"] == payload["request_id"]
+    assert result_body["source"]["provider"] == "planetary-computer"
+
+
+def test_quote_job_endpoints_capture_failed_job(monkeypatch) -> None:
+    quote_job_store.clear()
+
+    class FailingProvider:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def load_datacube(self, query, *, geobox=None):
+            raise RuntimeError("synthetic provider failure")
+
+    monkeypatch.setattr("orbitrisk.api.routes.PlanetaryComputerProvider", FailingProvider)
+    client = TestClient(app)
+    payload = json.loads(FIXTURE.read_text())
+    payload["date_range"] = {"start": "2022-07-01", "end": "2022-07-31"}
+
+    submitted = client.post("/v1/risk/quote/jobs?max_items=3&use_cache=false", json=payload)
+
+    assert submitted.status_code == 202
+    submitted_body = submitted.json()
+    status_response = client.get(submitted_body["status_url"])
+    assert status_response.status_code == 200
+    status_body = status_response.json()
+    assert status_body["status"] == "failed"
+    assert "synthetic provider failure" in status_body["error"]
+    assert status_body["result_url"] is None
+
+    result_response = client.get(submitted_body["result_url"])
+    assert result_response.status_code == 409
+    assert result_response.json()["detail"]["status"] == "failed"
 
 
 def _dataset(grid_shape: tuple[int, int]) -> xr.Dataset:

@@ -138,7 +138,7 @@ Goal: make the API reliable enough for a design partner pilot.
 
 Deliverables:
 
-- [ ] Async job submission and polling endpoints for multi-year requests.
+- [x] Async job submission and polling endpoints for multi-year requests.
 - [ ] Artifact storage abstraction for reports and cached responses.
 - [ ] API key auth and basic rate limiting.
 - [ ] Algorithm/version provenance in every response.
@@ -147,7 +147,7 @@ Deliverables:
 
 Exit criteria:
 
-- [ ] Multi-year requests no longer require synchronous HTTP completion.
+- [x] Multi-year requests no longer require synchronous HTTP completion.
 - [ ] A failed quote returns a structured error that can be logged in an actuarial workflow.
 - [ ] Responses contain enough provenance to reproduce or dispute a result.
 

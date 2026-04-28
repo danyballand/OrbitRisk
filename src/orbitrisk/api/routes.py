@@ -1,11 +1,13 @@
 from datetime import date, timedelta
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 
 from orbitrisk.config import get_settings
 from orbitrisk.geo.aoi import prepare_aoi
+from orbitrisk.jobs.store import InMemoryQuoteJobStore, QuoteJobRecord
 from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvider
 from orbitrisk.risk_engine import RiskEngine
+from orbitrisk.schemas.jobs import QuoteJobStatusResponse, QuoteJobSubmitResponse
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import (
     AoiMetrics,
@@ -21,6 +23,7 @@ from orbitrisk.timeseries.smoothing import ema
 from orbitrisk.timeseries.triggers import detect_water_stress_trigger
 
 router = APIRouter(prefix="/v1")
+quote_job_store = InMemoryQuoteJobStore()
 
 
 @router.post("/risk/quote", response_model=RiskResponse)
@@ -121,6 +124,72 @@ def quote_risk_live(
     max_items: int = Query(default=25, ge=1, le=500),
     use_cache: bool = Query(default=True),
 ) -> RiskResponse:
+    return _quote_live(payload, max_items=max_items, use_cache=use_cache)
+
+
+@router.post(
+    "/risk/quote/jobs",
+    response_model=QuoteJobSubmitResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def submit_quote_job(
+    payload: RiskRequest,
+    background_tasks: BackgroundTasks,
+    max_items: int = Query(default=80, ge=1, le=1000),
+    use_cache: bool = Query(default=True),
+) -> QuoteJobSubmitResponse:
+    record = quote_job_store.create(payload.request_id)
+    background_tasks.add_task(
+        _run_quote_job,
+        record.job_id,
+        payload,
+        max_items,
+        use_cache,
+    )
+    return QuoteJobSubmitResponse(
+        job_id=record.job_id,
+        request_id=record.request_id,
+        status=record.status,
+        status_url=_job_status_url(record.job_id),
+        result_url=_job_result_url(record.job_id),
+    )
+
+
+@router.get("/risk/quote/jobs/{job_id}", response_model=QuoteJobStatusResponse)
+def get_quote_job_status(job_id: str) -> QuoteJobStatusResponse:
+    return _job_status_response(_get_job_or_404(job_id))
+
+
+@router.get("/risk/quote/jobs/{job_id}/result", response_model=RiskResponse)
+def get_quote_job_result(job_id: str) -> RiskResponse:
+    record = _get_job_or_404(job_id)
+    if record.status == "failed":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "job_id": record.job_id,
+                "status": record.status,
+                "error": record.error,
+            },
+        )
+    if record.status != "completed" or record.result is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "job_id": record.job_id,
+                "status": record.status,
+                "error": "job_result_not_ready",
+            },
+        )
+    return record.result
+
+
+def _quote_live(
+    payload: RiskRequest,
+    *,
+    max_items: int,
+    use_cache: bool,
+) -> RiskResponse:
     settings = get_settings()
     provider_name = "planetary-computer"
     provider = PlanetaryComputerProvider(settings)
@@ -145,6 +214,52 @@ def quote_risk_live(
     if use_cache:
         cache.set(cache_key, response)
     return response
+
+
+def _run_quote_job(
+    job_id: str,
+    payload: RiskRequest,
+    max_items: int,
+    use_cache: bool,
+) -> None:
+    quote_job_store.mark_running(job_id)
+    try:
+        response = _quote_live(payload, max_items=max_items, use_cache=use_cache)
+    except Exception as exc:
+        quote_job_store.mark_failed(job_id, str(exc))
+        return
+    quote_job_store.mark_completed(job_id, response)
+
+
+def _get_job_or_404(job_id: str) -> QuoteJobRecord:
+    record = quote_job_store.get(job_id)
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"job_id": job_id, "error": "job_not_found"},
+        )
+    return record
+
+
+def _job_status_response(record: QuoteJobRecord) -> QuoteJobStatusResponse:
+    return QuoteJobStatusResponse(
+        job_id=record.job_id,
+        request_id=record.request_id,
+        status=record.status,
+        created_at=record.created_at,
+        updated_at=record.updated_at,
+        status_url=_job_status_url(record.job_id),
+        result_url=_job_result_url(record.job_id) if record.status == "completed" else None,
+        error=record.error,
+    )
+
+
+def _job_status_url(job_id: str) -> str:
+    return f"/v1/risk/quote/jobs/{job_id}"
+
+
+def _job_result_url(job_id: str) -> str:
+    return f"/v1/risk/quote/jobs/{job_id}/result"
 
 
 def _sample_period_dates(start: date, end: date, limit: int) -> list[date]:
