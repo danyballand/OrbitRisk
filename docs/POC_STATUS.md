@@ -42,6 +42,8 @@ OrbitRisk now has a working technical spine:
   reproducibility commands,
 - async quote job endpoints for submitting, polling, and fetching longer live risk
   requests,
+- local artifact storage abstraction for JSON responses, Markdown reports, and chart
+  artifacts with deterministic keys and content hashes,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

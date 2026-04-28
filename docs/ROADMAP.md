@@ -139,7 +139,7 @@ Goal: make the API reliable enough for a design partner pilot.
 Deliverables:
 
 - [x] Async job submission and polling endpoints for multi-year requests.
-- [ ] Artifact storage abstraction for reports and cached responses.
+- [x] Artifact storage abstraction for reports and cached responses.
 - [ ] API key auth and basic rate limiting.
 - [ ] Algorithm/version provenance in every response.
 - [ ] OpenAPI examples for dry-run, live quote, and crop-mask quote.
