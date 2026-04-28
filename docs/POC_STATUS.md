@@ -37,6 +37,9 @@ OrbitRisk now has a working technical spine:
 - deterministic NDMI trigger calibration that keeps the absolute EMA threshold as a
   candidate generator and requires a same-season percentile guard for clean accepted
   validation,
+- first customer-readable 2022 drought validation report with strongest AOI, worst
+  ambiguous failure case, benchmark excerpt, methodology, limitations, and
+  reproducibility commands,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.
@@ -61,16 +64,14 @@ Close, but not done.
 The technical POC needs:
 
 - full-batch observed raw-vs-buffer-vs-crop-mask benchmark outputs across all 10 RPG AOIs,
-- observed rejected AOI or failure-case classifications for the final customer-facing
-  validation report,
 - mask coverage chart artifacts across AOIs.
 
 The local AOI validation layer now rejects invalid geometries, empty negative buffers,
 and insufficient Sentinel-2 pixel support before any live raster provider call.
 
-Estimate: the engineering POC is roughly 80-85% complete. A rough demo is close; an
-actuary-grade POC still needs broader observed benchmark outputs, failure-case
-classifications, and a clear accepted/rejected/ambiguous AOI review loop.
+Estimate: the engineering POC is roughly 85% complete. A rough demo is close; an
+actuary-grade POC still needs broader observed benchmark outputs, mask coverage charts,
+and a design-partner review loop.
 
 ## Distance to a Sellable MGA POC
 

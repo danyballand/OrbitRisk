@@ -101,6 +101,9 @@ The first Languedoc batch is summarized in `docs/LANGUEDOC_2022_BATCH_VALIDATION
 five live AOIs completed, two were `accepted`, and three were `ambiguous` because cloud
 quality warnings or percentile/threshold calibration questions require review.
 
+The current customer-readable M3 report is
+`docs/2022_DROUGHT_VALIDATION_REPORT.md`.
+
 ## Drought Validation Classifier
 
 The drought-event classifier is separate from the basis-risk masking classifier. It

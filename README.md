@@ -27,6 +27,14 @@ returns an auditable JSON time series for actuarial workflows.
 The detailed build roadmap is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and mirrored
 as GitHub milestones/issues.
 
+## Validation Pack
+
+The current M3 drought-validation artifact is
+[docs/2022_DROUGHT_VALIDATION_REPORT.md](docs/2022_DROUGHT_VALIDATION_REPORT.md). It
+summarizes the July-August 2022 Bordeaux/Languedoc runs, strongest accepted AOI, worst
+ambiguous failure case, basis-risk mask benchmark excerpt, methodology, limitations, and
+reproducibility commands.
+
 ## Quickstart
 
 ```bash

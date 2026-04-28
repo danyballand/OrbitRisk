@@ -20,7 +20,7 @@ By 2026-05-31, OrbitRisk should produce a defensible demo pack for 5-10 vineyard
 - [x] explicit accepted/rejected/ambiguous AOI classification logic,
 - [ ] observed accepted/rejected/ambiguous classification on real AOIs,
 - [x] clear reasons when the signal is weak, cloudy, under-sampled, or not benchmarkable,
-- [ ] a technical explanation an actuary can audit without trusting a black box.
+- [x] a technical explanation an actuary can audit without trusting a black box.
 
 ## P0 Exit Criteria
 
@@ -122,7 +122,7 @@ Deliverables:
 - [x] Accepted/rejected/ambiguous AOI classifier.
 - [x] NDMI threshold and percentile calibration note.
 - [x] Investigation of missing seasonal baseline support in the first real RPG benchmark.
-- [ ] Failure-mode appendix covering cloud gaps, insufficient pixels, and unstable masks.
+- [x] Failure-mode appendix covering cloud gaps, insufficient pixels, and unstable masks.
 
 Exit criteria:
 
