@@ -6,6 +6,7 @@ from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.masking.vector_mask import VectorCropMask, crop_mask_from_geojson
 from orbitrisk.processing.datacube import summarize_datacube
 from orbitrisk.processing.observation import ObservationStats
+from orbitrisk.provenance import response_provenance
 from orbitrisk.schemas.request import RiskRequest
 from orbitrisk.schemas.response import (
     AoiMetrics,
@@ -117,15 +118,16 @@ class RiskEngine:
             dates=ndmi_dates,
         )
 
+        source = SourceMetadata(
+            provider=self.provider_name,
+            collection=self.collection,
+            processing_crs=prepared_aoi.processing_crs.to_string(),
+            resolution_m=payload.resolution_m,
+        )
         return RiskResponse(
             request_id=payload.request_id,
             status=_response_status(series),
-            source=SourceMetadata(
-                provider=self.provider_name,
-                collection=self.collection,
-                processing_crs=prepared_aoi.processing_crs.to_string(),
-                resolution_m=payload.resolution_m,
-            ),
+            source=source,
             aoi_metrics=AoiMetrics(
                 area_ha=prepared_aoi.area_ha,
                 usable_area_ha=prepared_aoi.usable_area_ha,
@@ -149,6 +151,13 @@ class RiskEngine:
                 trigger_reason=trigger.reason,
                 confidence=_confidence(series),
                 critical_periods=trigger.periods,
+            ),
+            provenance=response_provenance(
+                payload,
+                source=source,
+                crop_mask_geojson=crop_mask_document,
+                crop_mask_crs=crop_mask_source_crs,
+                max_items=max_items,
             ),
         )
 

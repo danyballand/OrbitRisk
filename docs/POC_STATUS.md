@@ -44,6 +44,8 @@ OrbitRisk now has a working technical spine:
   requests,
 - local artifact storage abstraction for JSON responses, Markdown reports, and chart
   artifacts with deterministic keys and content hashes,
+- response provenance metadata with algorithm version, processing version, input hash,
+  cache key, mask mode, and crop-mask hash when used,
 - SCL cloud/shadow/snow masking,
 - NDVI/NDMI/NDWI spatial statistics,
 - real-data smoke command.

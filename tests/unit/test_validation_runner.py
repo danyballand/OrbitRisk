@@ -136,6 +136,8 @@ def test_quote_with_cache_avoids_recomputing(tmp_path: Path) -> None:
     )
 
     assert first == second
+    assert first.provenance.cache_key is not None
+    assert second.provenance.cache_key == first.provenance.cache_key
     assert engine.calls == 1
 
 

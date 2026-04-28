@@ -17,6 +17,7 @@ from orbitrisk.config import get_settings
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.processing.datacube import summarize_datacube
+from orbitrisk.provenance import attach_cache_key
 from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvider
 from orbitrisk.reporting.charts import (
     write_mask_benchmark_batch_charts,
@@ -745,13 +746,14 @@ def _quote_with_cache(
     )
     cached = cache.get(cache_key)
     if cached is not None:
-        return cached
+        return attach_cache_key(cached, cache_key)
     response = engine.quote(
         request,
         max_items=max_items,
         crop_mask_geojson=crop_mask_geojson,
         crop_mask_crs=crop_mask_crs,
     )
+    response = attach_cache_key(response, cache_key)
     cache.set(cache_key, response)
     return response
 

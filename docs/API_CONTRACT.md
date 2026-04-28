@@ -179,6 +179,18 @@ The synchronous live endpoint remains available for small requests and smoke tes
         "severity": "high"
       }
     ]
+  },
+  "provenance": {
+    "algorithm_version": "orbitrisk.ndmi_ema_threshold.v0",
+    "processing_version": "orbitrisk.sentinel2_l2a_p10d.v0",
+    "provider": "sentinel-hub",
+    "collection": "sentinel-2-l2a",
+    "processing_crs": "auto-utm",
+    "resolution_m": 10,
+    "input_hash": "sha256-risk-input",
+    "cache_key": "sha256-cache-key-or-null",
+    "mask_mode": "vector_crop_mask",
+    "crop_mask_hash": "sha256-crop-mask-or-null"
   }
 }
 ```

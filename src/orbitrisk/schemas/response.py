@@ -68,6 +68,19 @@ class RiskSignal(BaseModel):
     critical_periods: list[CriticalPeriod] = Field(default_factory=list)
 
 
+class ProvenanceMetadata(BaseModel):
+    algorithm_version: str = "orbitrisk.ndmi_ema_threshold.v0"
+    processing_version: str = "orbitrisk.sentinel2_l2a_p10d.v0"
+    provider: str | None = None
+    collection: str | None = None
+    processing_crs: str | None = None
+    resolution_m: int | None = None
+    input_hash: str | None = None
+    cache_key: str | None = None
+    mask_mode: Literal["raw_aoi", "negative_buffer", "vector_crop_mask"] = "raw_aoi"
+    crop_mask_hash: str | None = None
+
+
 class RiskResponse(BaseModel):
     request_id: str
     status: Literal["completed", "partial", "failed"]
@@ -75,3 +88,4 @@ class RiskResponse(BaseModel):
     aoi_metrics: AoiMetrics
     series: list[Observation]
     risk_signal: RiskSignal
+    provenance: ProvenanceMetadata = Field(default_factory=ProvenanceMetadata)

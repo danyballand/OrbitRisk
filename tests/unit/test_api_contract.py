@@ -24,6 +24,12 @@ def test_quote_endpoint_returns_auditable_aoi_metadata() -> None:
     assert body["aoi_metrics"]["area_ha"] > body["aoi_metrics"]["usable_area_ha"]
     assert body["series"][0]["mask_counts"]["valid"] > 0
     assert "trigger_candidate" in body["risk_signal"]
+    assert body["provenance"]["algorithm_version"] == "orbitrisk.ndmi_ema_threshold.v0"
+    assert body["provenance"]["processing_version"] == "orbitrisk.sentinel2_l2a_p10d.v0"
+    assert body["provenance"]["provider"] == body["source"]["provider"]
+    assert body["provenance"]["processing_crs"] == body["source"]["processing_crs"]
+    assert body["provenance"]["input_hash"]
+    assert body["provenance"]["mask_mode"] == "negative_buffer"
 
 
 def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
@@ -52,6 +58,11 @@ def test_live_quote_endpoint_uses_provider(monkeypatch) -> None:
     assert body["source"]["provider"] == "planetary-computer"
     assert body["series"][0]["indices"]["ndmi"]["ema"] is not None
     assert body["series"][0]["quality_flags"] == []
+    assert body["provenance"]["provider"] == "planetary-computer"
+    assert body["provenance"]["collection"] == "sentinel-2-l2a"
+    assert body["provenance"]["resolution_m"] == 10
+    assert body["provenance"]["cache_key"]
+    assert body["provenance"]["input_hash"]
 
 
 def test_live_quote_endpoint_accepts_feature_collection_crop_mask(monkeypatch) -> None:
@@ -80,6 +91,8 @@ def test_live_quote_endpoint_accepts_feature_collection_crop_mask(monkeypatch) -
     assert 0 < body["aoi_metrics"]["crop_mask_coverage_pct"] < 100
     assert body["aoi_metrics"]["crop_mask_geometry_count"] == 1
     assert body["series"][0]["mask_counts"]["non_crop"] > 0
+    assert body["provenance"]["mask_mode"] == "vector_crop_mask"
+    assert body["provenance"]["crop_mask_hash"]
 
 
 def test_quote_job_endpoints_complete_successfully(monkeypatch) -> None:

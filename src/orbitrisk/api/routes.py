@@ -5,6 +5,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 from orbitrisk.config import get_settings
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.jobs.store import InMemoryQuoteJobStore, QuoteJobRecord
+from orbitrisk.provenance import attach_cache_key, response_provenance
 from orbitrisk.providers.planetary_computer_client import PlanetaryComputerProvider
 from orbitrisk.risk_engine import RiskEngine
 from orbitrisk.schemas.jobs import QuoteJobStatusResponse, QuoteJobSubmitResponse
@@ -93,15 +94,16 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
         dates=[obs.date for obs in observations],
     )
 
+    source = SourceMetadata(
+        provider="sentinel-hub",
+        collection="sentinel-2-l2a",
+        processing_crs=prepared_aoi.processing_crs.to_string(),
+        resolution_m=payload.resolution_m,
+    )
     return RiskResponse(
         request_id=payload.request_id,
         status="completed",
-        source=SourceMetadata(
-            provider="sentinel-hub",
-            collection="sentinel-2-l2a",
-            processing_crs=prepared_aoi.processing_crs.to_string(),
-            resolution_m=payload.resolution_m,
-        ),
+        source=source,
         aoi_metrics=AoiMetrics(
             area_ha=prepared_aoi.area_ha,
             usable_area_ha=prepared_aoi.usable_area_ha,
@@ -115,6 +117,7 @@ def quote_risk(payload: RiskRequest) -> RiskResponse:
             confidence=0.72 if trigger.triggered else 0.44,
             critical_periods=trigger.periods,
         ),
+        provenance=response_provenance(payload, source=source),
     )
 
 
@@ -208,9 +211,10 @@ def _quote_live(
     if use_cache:
         cached = cache.get(cache_key)
         if cached is not None:
-            return cached
+            return attach_cache_key(cached, cache_key)
 
     response = engine.quote(payload, max_items=max_items)
+    response = attach_cache_key(response, cache_key)
     if use_cache:
         cache.set(cache_key, response)
     return response

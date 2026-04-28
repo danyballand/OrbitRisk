@@ -141,7 +141,7 @@ Deliverables:
 - [x] Async job submission and polling endpoints for multi-year requests.
 - [x] Artifact storage abstraction for reports and cached responses.
 - [ ] API key auth and basic rate limiting.
-- [ ] Algorithm/version provenance in every response.
+- [x] Algorithm/version provenance in every response.
 - [ ] OpenAPI examples for dry-run, live quote, and crop-mask quote.
 - [ ] Error model for invalid geometry, no scenes, cloud-only scenes, and insufficient pixels.
 
@@ -149,7 +149,7 @@ Exit criteria:
 
 - [x] Multi-year requests no longer require synchronous HTTP completion.
 - [ ] A failed quote returns a structured error that can be logged in an actuarial workflow.
-- [ ] Responses contain enough provenance to reproduce or dispute a result.
+- [x] Responses contain enough provenance to reproduce or dispute a result.
 
 ### M5: MGA Demo Pack
 
