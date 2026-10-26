@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="OrbitRisk 2022 drought validation results on 10 vineyard parcels">
+<rect width="960" height="540" rx="8" fill="#fcfcfb"/>
+<text x="32.0" y="38.0" font-size="19" fill="#0b0b0b" font-weight="700" text-anchor="start">2022 drought check on 10 French vineyard parcels</text>
+<text x="32.0" y="60.0" font-size="13" fill="#52514e" font-weight="400" text-anchor="start">Sentinel-2 NDMI (canopy water index), 10-day composites, July-August 2022</text>
+<circle cx="37.0" cy="82.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="48.0" y="86.0" font-size="12" fill="#52514e" font-weight="400" text-anchor="start">accepted</text>
+<circle cx="127.8" cy="82.0" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<text x="138.8" y="86.0" font-size="12" fill="#52514e" font-weight="400" text-anchor="start">ambiguous (sent to review)</text>
+<circle cx="337.4" cy="82.0" r="4.5" fill="#fcfcfb" stroke="#52514e" stroke-width="2"/>
+<text x="348.4" y="86.0" font-size="12" fill="#52514e" font-weight="400" text-anchor="start">period with a cloud or pixel-quality warning</text>
+<text x="32.0" y="126.0" font-size="14" fill="#0b0b0b" font-weight="700" text-anchor="start">Same signal, different verdict</text>
+<text x="32.0" y="146.0" font-size="12" fill="#52514e" font-weight="400" text-anchor="start">Smoothed NDMI: both parcels sit below the 0.15 trigger (dashed)</text>
+<line x1="84.0" y1="250.4" x2="404.0" y2="250.4" stroke="#e8e7e3" stroke-width="1"/>
+<text x="76.0" y="254.4" font-size="11" fill="#8a8984" font-weight="400" text-anchor="end">-0.05</text>
+<line x1="84.0" y1="214.2" x2="404.0" y2="214.2" stroke="#e8e7e3" stroke-width="1"/>
+<text x="76.0" y="218.2" font-size="11" fill="#8a8984" font-weight="400" text-anchor="end">0.05</text>
+<line x1="84.0" y1="178.1" x2="404.0" y2="178.1" stroke="#52514e" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="76.0" y="182.1" font-size="11" fill="#0b0b0b" font-weight="600" text-anchor="end">0.15</text>
+<polyline points="98.5,243.7 171.3,242.9 219.8,243.4 268.2,243.5 341.0,243.5 389.5,243.9" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="98.5" cy="243.7" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="171.3" cy="242.9" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="219.8" cy="243.4" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="268.2" cy="243.5" r="4.5" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<circle cx="341.0" cy="243.5" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="389.5" cy="243.9" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<polyline points="98.5,222.3 171.3,228.7 219.8,232.3 268.2,237.7 316.7,240.0" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="98.5" cy="222.3" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="171.3" cy="228.7" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="219.8" cy="232.3" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="268.2" cy="237.7" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="316.7" cy="240.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="32.0" y="290.0" font-size="12" fill="#52514e" font-weight="400" text-anchor="start">Seasonal percentile vs the same dates in 2019-2021 (accepted only if &lt;= 0.25)</text>
+<text x="32.0" y="306.0" font-size="12" fill="#8a8984" font-weight="400" text-anchor="start">Only Pic Saint-Loup 02 is unusually dry for its own history</text>
+<line x1="84.0" y1="450.0" x2="404.0" y2="450.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="76.0" y="454.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="end">0</text>
+<line x1="84.0" y1="386.0" x2="404.0" y2="386.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="76.0" y="390.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="end">0.5</text>
+<line x1="84.0" y1="322.0" x2="404.0" y2="322.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="76.0" y="326.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="end">1</text>
+<line x1="84.0" y1="418.0" x2="404.0" y2="418.0" stroke="#52514e" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="76.0" y="422.0" font-size="11" fill="#0b0b0b" font-weight="600" text-anchor="end">0.25</text>
+<polyline points="98.5,322.0 171.3,332.7 219.8,354.0 268.2,364.7 341.0,364.7 389.5,378.9" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="98.5" cy="322.0" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="171.3" cy="332.7" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="219.8" cy="354.0" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="268.2" cy="364.7" r="4.5" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<circle cx="341.0" cy="364.7" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="389.5" cy="378.9" r="5" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/>
+<text x="401.5" y="393.9" font-size="12" fill="#0b0b0b" font-weight="600" text-anchor="start" stroke="#fcfcfb" stroke-width="4" stroke-linejoin="round" paint-order="stroke">Minervois 02</text>
+<text x="401.5" y="408.9" font-size="11" fill="#52514e" font-weight="400" text-anchor="start" stroke="#fcfcfb" stroke-width="4" stroke-linejoin="round" paint-order="stroke">ambiguous</text>
+<polyline points="98.5,381.1 171.3,438.4 219.8,403.5 268.2,450.0 316.7,424.4" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="98.5" cy="381.1" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="171.3" cy="438.4" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="219.8" cy="403.5" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="268.2" cy="450.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="316.7" cy="424.4" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="328.7" y="439.4" font-size="12" fill="#0b0b0b" font-weight="600" text-anchor="start" stroke="#fcfcfb" stroke-width="4" stroke-linejoin="round" paint-order="stroke">Pic Saint-Loup 02</text>
+<text x="328.7" y="454.4" font-size="11" fill="#52514e" font-weight="400" text-anchor="start" stroke="#fcfcfb" stroke-width="4" stroke-linejoin="round" paint-order="stroke">accepted</text>
+<text x="98.5" y="470.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">1 Jul</text>
+<text x="166.4" y="470.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">15 Jul</text>
+<text x="248.8" y="470.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">1 Aug</text>
+<text x="316.7" y="470.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">15 Aug</text>
+<text x="394.3" y="470.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">31 Aug</text>
+<text x="584.0" y="126.0" font-size="14" fill="#0b0b0b" font-weight="700" text-anchor="start">All 10 parcels</text>
+<text x="584.0" y="146.0" font-size="12" fill="#52514e" font-weight="400" text-anchor="start">Lowest seasonal percentile in July-August 2022</text>
+<line x1="742.0" y1="162.0" x2="742.0" y2="449.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="742.0" y="465.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">0</text>
+<line x1="832.0" y1="162.0" x2="832.0" y2="449.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="832.0" y="465.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">0.5</text>
+<line x1="922.0" y1="162.0" x2="922.0" y2="449.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="922.0" y="465.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="middle">1</text>
+<line x1="787.0" y1="162.0" x2="787.0" y2="449.0" stroke="#52514e" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="787.0" y="465.0" font-size="11" fill="#52514e" font-weight="400" text-anchor="middle">0.25</text>
+<line x1="742.0" y1="176.0" x2="922.0" y2="176.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="180.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Bordeaux Right Bank 01</text>
+<circle cx="742.0" cy="176.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="742.0" y1="205.0" x2="922.0" y2="205.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="209.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Médoc 01</text>
+<circle cx="742.0" cy="205.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="742.0" y1="234.0" x2="922.0" y2="234.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="238.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Médoc 02</text>
+<circle cx="742.0" cy="234.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="742.0" y1="263.0" x2="922.0" y2="263.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="267.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Pic Saint-Loup 02</text>
+<circle cx="742.0" cy="263.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="742.0" y1="292.0" x2="922.0" y2="292.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="296.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Sauternes 01</text>
+<circle cx="742.0" cy="292.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="742.0" y1="321.0" x2="922.0" y2="321.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="325.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Pic Saint-Loup 01</text>
+<circle cx="760.0" cy="321.0" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<line x1="742.0" y1="350.0" x2="922.0" y2="350.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="354.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Bordeaux Right Bank 02</text>
+<circle cx="742.0" cy="350.0" r="4.5" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<line x1="742.0" y1="379.0" x2="922.0" y2="379.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="383.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Minervois 01</text>
+<circle cx="787.0" cy="379.0" r="4.5" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<line x1="742.0" y1="408.0" x2="922.0" y2="408.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="412.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Minervois 02</text>
+<circle cx="842.0" cy="408.0" r="4.5" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<line x1="742.0" y1="437.0" x2="922.0" y2="437.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="730.0" y="441.0" font-size="12" fill="#0b0b0b" font-weight="400" text-anchor="end">Béziers 01</text>
+<circle cx="856.5" cy="437.0" r="4.5" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<text x="584.0" y="494.0" font-size="12" fill="#0b0b0b" font-weight="600" text-anchor="start">6 accepted, 4 ambiguous, 0 rejected</text>
+<line x1="32.0" y1="508.0" x2="928.0" y2="508.0" stroke="#e8e7e3" stroke-width="1"/>
+<text x="32.0" y="528.0" font-size="11" fill="#8a8984" font-weight="400" text-anchor="start">Source: reports/bordeaux-2022-batch-validation.json, reports/languedoc-2022-batch-validation.json. Rebuild with scripts/render_readme_figure.py.</text>
+</svg>
