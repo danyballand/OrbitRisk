@@ -7,7 +7,7 @@ A technical prototype that turns satellite images into an auditable drought-stre
 
 ![2022 drought check on 10 French vineyard parcels](docs/images/drought-2022-results.svg)
 
-- **Problem:** a parametric insurer needs a drought signal per parcel that it can verify, not a black-box score.
+- **Problem:** parametric insurance pays out automatically when a measured index crosses a threshold, so the insurer needs a drought signal per parcel that it can verify, not a black-box score.
 - **Input:** a vineyard parcel polygon (GeoJSON) and a date range.
 - **Processing:** free Sentinel-2 satellite images, with clouds and non-vine pixels masked out, are turned into a water-stress index (NDMI) every 10 days and compared with the same dates in earlier years.
 - **Output:** a JSON time series with a verdict per parcel (`accepted`, `ambiguous` or `rejected`) and the explicit reasons behind it.
