@@ -162,3 +162,7 @@ scripts/           Data-pack builder and README figure renderer
 - [Architecture decision records](docs/adr/)
 - [Demo pack](demo/mga_pilot_2022/README.md)
 - [Project status](docs/POC_STATUS.md) and [roadmap](docs/ROADMAP.md)
+
+## License
+
+Released under the [MIT License](LICENSE).
