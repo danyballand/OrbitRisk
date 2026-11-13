@@ -4,6 +4,7 @@ A technical prototype that turns satellite images into an auditable drought-stre
 
 [![CI](https://github.com/danyballand/OrbitRisk/actions/workflows/ci.yml/badge.svg)](https://github.com/danyballand/OrbitRisk/actions/workflows/ci.yml)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ![2022 drought check on 10 French vineyard parcels](docs/images/drought-2022-results.svg)
 
@@ -120,13 +121,27 @@ The accepted counterpart is [strongest_success_summary.json](demo/mga_pilot_2022
 Requires Python 3.11+ and a GDAL runtime for `rasterio`.
 
 ```bash
+git clone https://github.com/danyballand/OrbitRisk.git && cd OrbitRisk
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-pytest
-uvicorn orbitrisk.api.main:app --reload
+orbitrisk replay-2022
 ```
 
-Then `curl http://127.0.0.1:8000/health`. The default `POST /v1/risk/quote` endpoint validates the request and returns a deterministic dry-run response with placeholder values. Live Sentinel-2 runs, CLI commands and API keys are covered in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+`replay-2022` runs offline and prints the 2022 verdict for each of the 10 parcels from the tracked results:
+
+```text
+Parcel                  Region     Verdict    Min pct  Min px  Reasons
+----------------------  ---------  ---------  -------  ------  ------------------------------------------------------------
+BORDEAUX_RIGHT_BANK_01  bordeaux   accepted   0.00     2606    clear_drought_trigger
+BORDEAUX_RIGHT_BANK_02  bordeaux   ambiguous  0.00     1312    quality_warnings_require_review
+...
+MINERVOIS_02            languedoc  ambiguous  0.56     1274    seasonal_percentile_not_low, quality_warnings_require_review
+BEZIERS_01              languedoc  ambiguous  0.64     127     seasonal_percentile_not_low, quality_warnings_require_review
+
+10 parcels analysed: 6 accepted, 4 ambiguous, 0 rejected
+```
+
+To go further: `pytest` runs the test suite, and `uvicorn orbitrisk.api.main:app --reload` starts the API (the default `POST /v1/risk/quote` returns a deterministic dry-run response). Live Sentinel-2 runs against Planetary Computer, the other CLI commands and API keys are covered in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Validation and limitations
 
@@ -152,6 +167,16 @@ docs/              Validation report, architecture, API contract, ADRs, roadmap
 scripts/           Data-pack builder and README figure renderer
 ```
 
+## Status and next steps
+
+OrbitRisk is a working proof of concept, maintained as an open-source project. The next steps, in order:
+
+1. **Measure false positives.** Run the same parcels on non-drought summers (for example 2021 and 2023) and report how often the engine triggers when it should not.
+2. **Widen the sample.** More parcels and regions beyond Bordeaux and Languedoc, and the mask benchmark on more than one parcel.
+3. **Other crops.** Test whether the rules transfer beyond vineyards, starting with crops already covered by the IGN RPG register.
+
+Issues and pull requests are welcome, especially on validation data and masking.
+
 ## Further documentation
 
 - [2022 drought validation report](docs/2022_DROUGHT_VALIDATION_REPORT.md)
@@ -161,7 +186,11 @@ scripts/           Data-pack builder and README figure renderer
 - [NDMI trigger calibration](docs/NDMI_TRIGGER_CALIBRATION.md)
 - [Architecture decision records](docs/adr/)
 - [Demo pack](demo/mga_pilot_2022/README.md)
-- [Project status](docs/POC_STATUS.md) and [roadmap](docs/ROADMAP.md)
+- [Documentation index](docs/README.md), including the [original POC plan and roadmap](docs/archive/)
+
+## Author
+
+Built by [Dany Balland](https://github.com/danyballand).
 
 ## License
 

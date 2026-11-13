@@ -73,6 +73,14 @@ The full request/response contract is in [API_CONTRACT.md](API_CONTRACT.md).
 
 All commands below are exposed by the `orbitrisk` entry point.
 
+### Replay the 2022 results (offline)
+
+Prints the tracked 2022 verdict for each parcel without any network call. Add `--json` for machine-readable output, or `--report PATH` (repeatable) to point at other batch validation files.
+
+```bash
+orbitrisk replay-2022
+```
+
 ### Live smoke test
 
 Run a tiny real-data smoke test through Planetary Computer:

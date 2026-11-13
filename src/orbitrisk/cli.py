@@ -15,6 +15,12 @@ from orbitrisk.batch.requests import (
 )
 from orbitrisk.config import get_settings
 from orbitrisk.demo.pack import build_mga_demo_pack
+from orbitrisk.demo.replay import (
+    DEFAULT_REPORTS,
+    load_replay_rows,
+    render_replay_table,
+    summarize_rows,
+)
 from orbitrisk.engine import prepare_raster_job
 from orbitrisk.geo.aoi import prepare_aoi
 from orbitrisk.processing.datacube import summarize_datacube
@@ -38,6 +44,18 @@ from orbitrisk.validation.drought import (
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="orbitrisk")
     subparsers = parser.add_subparsers(dest="command", required=True)
+    replay = subparsers.add_parser(
+        "replay-2022",
+        help="Show the tracked 2022 drought results offline (no network needed)",
+    )
+    replay.add_argument(
+        "--report",
+        type=Path,
+        action="append",
+        default=None,
+        help="Batch validation JSON. Pass multiple times to override defaults.",
+    )
+    replay.add_argument("--json", action="store_true", help="Print JSON instead of a table")
     smoke = subparsers.add_parser("smoke-pc", help="Run a Planetary Computer smoke test")
     smoke.add_argument("request_json", type=Path)
     smoke.add_argument("--start", type=date.fromisoformat)
@@ -165,6 +183,14 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     args = parser.parse_args(argv)
+    if args.command == "replay-2022":
+        rows = load_replay_rows(args.report or list(DEFAULT_REPORTS))
+        if args.json:
+            payload = {"summary": summarize_rows(rows), "parcels": rows}
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        else:
+            print(render_replay_table(rows))
+        return 0
     if args.command == "smoke-pc":
         result = run_planetary_computer_smoke(args)
         print(json.dumps(result, indent=2, sort_keys=True))
